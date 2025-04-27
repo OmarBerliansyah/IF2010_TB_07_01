@@ -1,0 +1,55 @@
+=======================================
+PANDUAN DIREKTORI RESOURCES
+=======================================
+
+Folder: src/main/resources
+Fungsi: Tempat menyimpan file pendukung untuk program Java
+
+----------------------------------------
+FILE YANG BISA DISIMPAN:
+----------------------------------------
+1. File Konfigurasi
+   - application.properties
+   - config.json
+   - settings.xml
+
+2. File Media
+   - Gambar (.jpg, .png, .gif)
+   - Suara (.mp3, .wav)
+   - Font (.ttf, .otf)
+
+3. File Database
+   - Script SQL (.sql)
+   - Data JSON (.json)
+
+4. Template & Desain
+   - Layout (.fxml)
+   - Template (.html)
+
+----------------------------------------
+STRUKTUR FOLDER YANG DISARANKAN:
+----------------------------------------
+src/main/resources/
+  |-- config/      (File konfigurasi)
+  |-- images/      (File gambar)
+  |-- audio/       (File suara)
+  |-- fonts/       (File font)
+  |-- database/    (File database)
+  `-- templates/   (File template)
+
+----------------------------------------
+YANG TIDAK BOLEH DISIMPAN:
+----------------------------------------
+File Java (.java)      → Pindah ke src/main/java
+
+----------------------------------------
+TIPS PENTING:
+----------------------------------------
+1. Beri nama folder yang jelas
+2. Kelompokkan file sejenis
+3. Jaga kebersihan folder
+4. Simpan hanya file yang diperlukan
+
+[!] PERHATIAN: 
+Semua file di folder ini akan ikut di-copy 
+saat program dijalankan.
