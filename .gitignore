@@ -1,32 +1,5 @@
-# Compiled class files
-*.class
-
-# Package files
-*.jar
-*.war
-*.ear
-
-# Build output directories
-bin/
-target/
-build/
-
-# IDE files
-.vscode/
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# Log files
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Ignore Gradle project-specific cache directory
 .gradle
 
-# Ignore Gradle build output directory
 build
+
+# app/src/main/resources/SaveFiles/*
