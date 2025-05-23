@@ -1,7 +1,7 @@
 package objects;
 
 import entity.Entity;
-import main.java.GamePanel;
+import com.SpakborHills.main.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
