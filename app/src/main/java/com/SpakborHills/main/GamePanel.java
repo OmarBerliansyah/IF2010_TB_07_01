@@ -1,10 +1,14 @@
 package com.SpakborHills.main;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
 import javax.swing.JPanel;
+
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
@@ -26,10 +30,19 @@ public class GamePanel extends JPanel implements Runnable {
     // WORLD SEtTINGS
     public final int maxWorldCol = 32;
     public final int maxWorldRow = 32;
+    public final int maxMap = 10; // bisa bikin sampai 10 map
+    public int currentMap = 0;
+
+    // FULL SCREEN
+    int screenWidth2 = screenWidth;
+    int screenHeight2 = screenHeight;
+    Graphics2D g2;
+    public boolean fullScreenOn = false;
 
     //FPS
     int FPS = 60;
 
+    // SYSTEM
     TileManager tileM = new TileManager((this));
     public KeyHandler keyH = new KeyHandler(this); // Create an instance of the KeyHandler class to handle keyboard input
     Sound music = new Sound();
@@ -198,7 +211,7 @@ public class GamePanel extends JPanel implements Runnable {
                 @Override
                 public int compare(Entity e1, Entity e2) {
                     int result = Integer.compare(e1.worldY, e2.worldY);
-                    return 0;
+                    return result;
                 }
             });
 
