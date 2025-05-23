@@ -75,6 +75,18 @@ public class EventHandler {
                 gp.aSetter.setNPC();
             }
 
+            else if (hit(0, gp.aSetter.getDoorCol(), gp.aSetter.getDoorRow(), "any") == true) {
+                teleport(2, 11, 23);
+                gp.aSetter.setObject(); 
+                gp.aSetter.setNPC();
+            }
+
+            else if (hit(2, 12, 23, "any") == true) {
+                teleport(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow());
+                gp.aSetter.setObject(); 
+                gp.aSetter.setNPC();
+            }
+
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
             //     speak(gp.npc[1][0]);

@@ -1,14 +1,15 @@
 package com.SpakborHills.tile;
 
-import com.SpakborHills.main.GamePanel;
-import com.SpakborHills.main.UtilityTool;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import javax.imageio.ImageIO;
+
+import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.main.UtilityTool;
 
 public class TileManager {
     GamePanel gp;
@@ -24,6 +25,7 @@ public class TileManager {
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
         loadMap("maps/OceanMap.txt",1);
+        loadMap("maps/HouseMap.txt", 2);
     }
 
     public void getTileImage() {
@@ -55,6 +57,8 @@ public class TileManager {
         setup(25, "Starfish", false, TileType.NONE);
         setup(26, "PinggirPantaiTengah", false, TileType.NONE);
         setup(27, "PinggirPantaiTengahNext", false, TileType.NONE);
+        setup(28, "HouseWall", true, TileType.NONE);
+        setup(29, "HouseTiles", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){

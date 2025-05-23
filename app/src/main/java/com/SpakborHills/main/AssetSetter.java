@@ -15,7 +15,9 @@ public class AssetSetter {
     Random random;
     ArrayList<Rectangle> occupiedAreas;
     int houseCol, houseRow;
-    
+    private boolean houseAlreadyPlaced = false;
+    private int savedHouseCol, savedHouseRow;
+
     public AssetSetter(GamePanel gp) {
         this.gp = gp;
         this.random = new Random();
@@ -29,7 +31,16 @@ public class AssetSetter {
         }
         if (gp.currentMap == 0) {
             placeFixedPonds();
-            placeHousesAndShippingBins();
+            if (!houseAlreadyPlaced) {
+                placeHousesAndShippingBins(); 
+                houseAlreadyPlaced = true;
+                savedHouseCol = houseCol;
+                savedHouseRow = houseRow;
+            } else {
+                houseCol = savedHouseCol;
+                houseRow = savedHouseRow;
+                placeHouseAtSavedLocation();
+            }
             setTreesFromMap();
         }
     }
@@ -64,6 +75,14 @@ public class AssetSetter {
             }
         } else {
             System.out.println("Warning: House cannot be placed at chosen position " + (chosenIndex + 1));
+        }
+    }
+    public void placeHouseAtSavedLocation() {
+        if(isValidHouseArea(savedHouseCol, savedHouseRow)) {
+            placeHouse(savedHouseCol, savedHouseRow);
+            occupiedAreas.add(new Rectangle(savedHouseCol, savedHouseRow, 6, 6));
+        } else {
+            System.out.println("Warning: House cannot be placed at saved position (" + savedHouseCol + "," + savedHouseRow + ")");
         }
     }
     
