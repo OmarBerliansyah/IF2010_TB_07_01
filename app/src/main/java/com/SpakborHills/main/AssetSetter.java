@@ -1,9 +1,9 @@
 package com.SpakborHills.main;
 
 import com.SpakborHills.entity.NPC_1;
-import com.SpakborHills.objects.OBJ_Chest;
-import com.SpakborHills.objects.OBJ_Door;
-import com.SpakborHills.objects.OBJ_Wood;
+// import com.SpakborHills.objects.OBJ_Chest;
+// import com.SpakborHills.objects.OBJ_Door;
+// import com.SpakborHills.objects.OBJ_Wood;
 
 public class AssetSetter {
     GamePanel gp;
