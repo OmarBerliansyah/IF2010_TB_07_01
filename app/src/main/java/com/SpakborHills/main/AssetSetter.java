@@ -23,16 +23,22 @@ public class AssetSetter {
     }
     
     public void setObject() {
-        placeFixedPonds();
-        placeHousesAndShippingBins();
-        setTreesFromMap();
+        occupiedAreas.clear();
+        for(int i = 0; i < gp.obj.length; i++) {
+        gp.obj[i] = null;
+        }
+        if (gp.currentMap == 0) {
+            placeFixedPonds();
+            placeHousesAndShippingBins();
+            setTreesFromMap();
+        }
     }
     
     public void placeHousesAndShippingBins() {
         //kandidat lokasi
         int[][] possibleHouseLocations = {
             {5, 19},   // opsi 1: column 8, row 18
-            {8,24},  // opsi 2: column 15, row 22  
+            {8,23},  // opsi 2: column 15, row 22  
             {21, 23}   // opsi 3: column 25, row 12
         };
         
@@ -71,7 +77,7 @@ public class AssetSetter {
         for(int r = row; r < row + 6; r++) {
             for(int c = col; c < col + 6; c++) {
                 if(r >= gp.maxWorldRow || c >= gp.maxWorldCol) return false;
-                if(gp.tileM.mapTileNum[0][c][r] != 1) return false; // Not grass
+                if(gp.tileM.mapTileNum[gp.currentMap][c][r] != 1) return false; // Not grass
                 if(isAreaOccupied(c, r, 1, 1)) return false; // Already occupied
             }
         }
@@ -82,7 +88,7 @@ public class AssetSetter {
         if(col + 3 > gp.maxWorldCol || row + 2 > gp.maxWorldRow) return false;
         for(int r = row; r < row + 2; r++) {
             for(int c = col; c < col + 3; c++) {
-                if(gp.tileM.mapTileNum[0][c][r] != 1) return false; 
+                if(gp.tileM.mapTileNum[gp.currentMap][c][r] != 1) return false; 
                 if(isAreaOccupied(c, r, 1, 1)) return false; 
             }
         }
