@@ -37,7 +37,7 @@ public class NPC_1 extends Entity{
     public void setDialogue(){
         dialogue[0]="Hello, Aliya";
         dialogue[1]="Welcome to this Farm. \n My name is Rino, and I'm your guide. \n You can ask anything to me, \n and also you can find me just in this field";
-        dialogue[2]="I hope you can enjoy your life here,\n and interact as many as you can. Now, you can go to your house first.";
+        dialogue[2]="I hope you can enjoy your life here,\n and interact as many as you can. \n Now, you can go to your house first.";
         dialogue[3]="Bye-bye and See you!!!";
     }
 

@@ -2,6 +2,7 @@ package entity;
 
 import main.java.GamePanel;
 import main.java.KeyHandler;
+import main.java.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,6 +15,9 @@ public class Player extends Entity {
     public final int screenX;
     public final int screenY;
     public int hasWood = 0;
+    int standCounter = 0;
+    boolean moving = false;
+    int pixelCounter  = 0;
 
 
     public Player(GamePanel gp, KeyHandler keyH){
@@ -44,38 +48,61 @@ public class Player extends Entity {
     }
 
     public void getPlayerImage(){
-        try{
-            up1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Back1.png"));
-            up2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Back2.png"));
-            down1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Front1.png"));
-            down2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Front2.png"));
-            left1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Left1.png"));
-            left2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Left2.png"));
-            right1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Right1.png"));
-            right2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("player/Right2.png"));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        up1 = setup("player/Back1");
+        up2 = setup("player/Back2");
+        down1 = setup("player/Front1");
+        down2 = setup("player/Front2");
+        left1 = setup("player/Left1");
+        left2 = setup("player/Left2");
+        right1 = setup("player/Right1");
+        right2 = setup("player/Right2");
     }
+
 
     public void update(){
 
-        if(keyH.upPressed == true || keyH.downPressed == true ||
-                keyH.leftPressed == true || keyH.rightPressed == true ){
-            if(keyH.upPressed == true){
-                direction = "up";
-            }
-            else if (keyH.downPressed == true){
-                direction = "down";
-            }
-            else if(keyH.leftPressed == true){
-                direction = "left";
-            }
-            else if(keyH.rightPressed == true){
-                direction = "right";
-            }
+        if(moving == false){
+            if(keyH.upPressed == true || keyH.downPressed == true ||
+                    keyH.leftPressed == true || keyH.rightPressed == true || keyH.enterPressed == true ) {
+                if (keyH.upPressed == true) {
+                    direction = "up";
+                } else if (keyH.downPressed == true) {
+                    direction = "down";
+                } else if (keyH.leftPressed == true) {
+                    direction = "left";
+                } else if (keyH.rightPressed == true) {
+                    direction = "right";
+                }
 
+                //CHECK TILE COLLISION
+                collisionOn = false;
+                gp.cChecker.checkTile(this);
+
+                // CHECK OBJECT COLLISION
+                int objIndex = gp.cChecker.checkObject(this, true);
+                pickUpObject(objIndex);
+
+                // CHECK NPC COLLISION
+                int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+                interactNPC(npcIndex);
+
+                // CHECK EVENT
+                gp.eHandler.checkEvent();
+
+                moving = true;
+
+                gp.keyH.enterPressed = false;
+            }
+            else{
+                standCounter++;
+                if(standCounter == 20){
+                    spriteNum = 1;
+                    standCounter = 0;
+                }
+            }
+        }
+
+        if(moving == true){
             //CHECK TILE COLLISION
             collisionOn = false;
             gp.cChecker.checkTile(this);
@@ -88,8 +115,12 @@ public class Player extends Entity {
             int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
             interactNPC(npcIndex);
 
+            // CHECK EVENT
+            gp.eHandler.checkEvent();
+            gp.keyH.enterPressed = false;
+
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
-            if(collisionOn == false){
+            if(collisionOn == false && keyH.enterPressed == false){
                 switch(direction){
                     case "up": worldY -= speed; break;
                     case "down": worldY += speed; break;
@@ -106,6 +137,13 @@ public class Player extends Entity {
                     spriteNum = 1;
                 }
                 spriteCounter = 0;
+            }
+
+            pixelCounter += speed;
+
+            if(pixelCounter == 48){
+                moving = false;
+                pixelCounter = 0;
             }
         }
     }
@@ -138,7 +176,6 @@ public class Player extends Entity {
                 gp.NPC[i].speak();
             }
         }
-        gp.keyH.enterPressed = false;
     }
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
@@ -178,6 +215,6 @@ public class Player extends Entity {
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY,null);
     }
 }

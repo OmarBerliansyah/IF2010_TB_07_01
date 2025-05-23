@@ -5,8 +5,11 @@ import java.awt.event.KeyEvent; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed; // Movement flags
+    //DEBUG
+    boolean checkDrawTime;
     public KeyHandler(GamePanel gp){
+
         this.gp = gp;
     }
     @Override
@@ -44,10 +47,19 @@ public class KeyHandler implements KeyListener {
                         System.exit(0);
                     }
                 }
+                if(code == KeyEvent.VK_T){
+                    if(checkDrawTime == false){
+                        checkDrawTime = true;
+                    }
+                    else if(checkDrawTime == true){
+                        checkDrawTime = false;
+                    }
+                }
             }
             else if(gp.ui.titleScreenState == 1){
 //                if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
 //                    gp.ui.commandNum--;
+
 //                    if(gp.ui.commandNum < 0){
 //                        gp.ui.commandNum = 2;
 //                    }
@@ -87,22 +99,24 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
                 rightPressed = true; // Set the rightPressed flag to true
             }
-            if (code == KeyEvent.VK_P) {
+            if (code == KeyEvent.VK_P && !pausePressed) {
                 gp.gameState = gp.pauseState;
-                System.out.println("MASUK");
+                pausePressed = true;
             }
             if (code == KeyEvent.VK_ENTER) {
                 enterPressed = true;
             }
-            if (code == KeyEvent.VK_C) {
+            if (code == KeyEvent.VK_C && !characterPressed) {
                 gp.gameState = gp.characterState;
+                characterPressed = true;
             }
         }
 
         //PAUSE STATE
         if(gp.gameState == gp.pauseState){
-            if (code == KeyEvent.VK_P) {
+            if (code == KeyEvent.VK_P && !pausePressed) {
                 gp.gameState = gp.playState;
+                pausePressed = true;
             }
         }
 
@@ -115,8 +129,9 @@ public class KeyHandler implements KeyListener {
 
         //CHARACTER STATE
         if (gp.gameState == gp.characterState){
-            if(code == KeyEvent.VK_C){
+            if(code == KeyEvent.VK_C && !characterPressed){
                 gp.gameState = gp.playState;
+                characterPressed = true;
             }
             if(code == KeyEvent.VK_W){
                 if(gp.ui.slotRow != 0){
@@ -157,6 +172,12 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT) {
             rightPressed = false;
+        }
+        if(code == KeyEvent.VK_P){
+            pausePressed = false;
+        }
+        if(code == KeyEvent.VK_C){
+            characterPressed = false;
         }
     }
 }

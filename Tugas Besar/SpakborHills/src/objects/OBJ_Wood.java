@@ -1,16 +1,13 @@
 package objects;
 
-import javax.imageio.ImageIO;
-import java.io.IOException;
+import entity.Entity;
+import main.java.GamePanel;
 
-public class OBJ_Wood extends SuperObject{
-    public OBJ_Wood(){
+public class OBJ_Wood extends Entity {
+
+    public OBJ_Wood(GamePanel gp){
+        super(gp);
         name = "Wood";
-        try{
-            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream("objects/Wood.png"));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        down1 = setup("objects/Wood");
     }
 }

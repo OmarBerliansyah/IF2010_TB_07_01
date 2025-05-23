@@ -1,11 +1,14 @@
 package main.java;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.JPanel;
 
 import entity.Entity;
 import entity.Player;
-import objects.SuperObject;
+import environment.EnvironmentManager;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -33,14 +36,16 @@ public class GamePanel extends JPanel implements Runnable {
     Sound se = new Sound();
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
-    public UI ui = new UI(this);
+    public UI ui = new UI(this, keyH);
     public EventHandler eHandler = new EventHandler(this);
+    EnvironmentManager eManager = new EnvironmentManager(this);
     Thread gameThread; // Thread for the game loop
 
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH); // Create an instance of the Player class, passing the GamePanel and KeyHandler as parameters
-    public SuperObject obj[] = new SuperObject[10];
+    public Entity obj[] = new Entity[10];
     public Entity NPC[] = new Entity[10];
+    ArrayList<Entity> entityList = new ArrayList<>();
 
     //GAMESTATE
     public int gameState;
@@ -62,6 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setObject();
         aSetter.setNPC();
         playMusic(0);
+        eManager.setup();
         gameState = titleState;
     }
 
@@ -145,6 +151,7 @@ public class GamePanel extends JPanel implements Runnable {
                     NPC[i].update();
                 }
             }
+            eManager.update();
         }
         if (gameState == pauseState){
         }
@@ -156,6 +163,12 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw the game graphics here
         Graphics2D g2 = (Graphics2D) g; // Cast the Graphics object to Graphics2D for better control
 
+        // DEBUG
+        long drawStart = 0;
+        if(keyH.checkDrawTime == true){
+            drawStart = System.nanoTime();
+        }
+
         // TITLE SCREEN
         if(gameState == titleState){
             ui.draw(g2);
@@ -164,23 +177,54 @@ public class GamePanel extends JPanel implements Runnable {
         else{
             //TILE
             tileM.draw(g2);
-            //OBJECT
-            for(int i = 0; i< obj.length; i++){
-                if(obj[i] != null){
-                    obj[i].draw(g2, this);
-                }
-            }
-            //NPC
-            for(int i= 0; i < NPC.length; i++){
+
+            //ADD ENTITY TO LIST
+            entityList.add(player);
+
+            for(int i = 0; i<NPC.length; i++){
                 if(NPC[i] != null){
-                    NPC[i].draw(g2);
+                    entityList.add(NPC[i]);
                 }
             }
-            //PLAYER
-            player.draw(g2); // Draw the player entity
+
+            for(int i = 0; i <obj.length; i++){
+                if(obj[i] != null){
+                    entityList.add(obj[i]);
+                }
+            }
+
+            //SORT
+            Collections.sort(entityList, new Comparator<Entity>() {
+                @Override
+                public int compare(Entity e1, Entity e2) {
+                    int result = Integer.compare(e1.worldY, e2.worldY);
+                    return 0;
+                }
+            });
+
+            // DRAW ENTITIES
+            for(int i = 0; i<entityList.size();i++){
+                entityList.get(i).draw(g2);
+            }
+
+            // EMPTY ENTITY LIST
+            entityList.clear();
+
+            //ENVIROTNMENT
+            eManager.draw(g2);
+
+            //DEBUG
+            if(keyH.checkDrawTime == true){
+                long drawEnd = System.nanoTime();
+                long passed = drawEnd - drawStart;
+                g2.setColor(Color.white);
+                g2.drawString("Draw Time: "+passed, 10, 400);
+                System.out.println("Draw Time: "+passed);
+            }
 
             //UI
             ui.draw(g2);
+
             g2.dispose();
         }
     }

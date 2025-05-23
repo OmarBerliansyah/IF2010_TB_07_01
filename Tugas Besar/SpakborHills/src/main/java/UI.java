@@ -9,6 +9,7 @@ import java.io.IOException;
 
 public class UI {
     GamePanel gp;
+    KeyHandler keyH;
     Graphics2D g2;
     Font arial_40;
     //BufferedImage woodImage;
@@ -23,8 +24,9 @@ public class UI {
     public int titleScreenState = 0; // 0 : the first screen, 1: the second screen
 
 
-    public UI(GamePanel gp){
+    public UI(GamePanel gp, KeyHandler keyH){
         this.gp = gp;
+        this.keyH = keyH;
         arial_40 = new Font("Bernard MT Condensed", Font.PLAIN, 40);
         //OBJ_Wood wood = new OBJ_Wood();
         //woodImage = wood.image;
@@ -184,6 +186,7 @@ public class UI {
         g2.drawRoundRect(x+5, y+5, width-10, height-10, 25,25);
     }
     public void drawPauseScreen(){
+        System.out.println("Drawing");
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 80F));
         String text = "PAUSED";
 

@@ -7,6 +7,8 @@
       <sourceFolder url="file://$MODULE_DIR$/My2DGame/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/My2DGame/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/My2DGame/src/main/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/SpakborHills/res" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/SpakborHills/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

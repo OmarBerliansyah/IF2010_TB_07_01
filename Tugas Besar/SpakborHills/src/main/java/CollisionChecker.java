@@ -22,6 +22,11 @@ public class CollisionChecker {
         int entityBottomRow = entityBottomWorldY/gp.tileSize;
 
         int tileNum1, tileNum2;
+        // Clamp supaya tidak ke luar batas
+        entityLeftCol = Math.max(0, Math.min(entityLeftCol, gp.maxWorldCol - 1));
+        entityRightCol = Math.max(0, Math.min(entityRightCol, gp.maxWorldCol - 1));
+        entityTopRow = Math.max(0, Math.min(entityTopRow, gp.maxWorldRow - 1));
+        entityBottomRow = Math.max(0, Math.min(entityBottomRow, gp.maxWorldRow - 1));
 
         switch(entity.direction){
             case "up":
