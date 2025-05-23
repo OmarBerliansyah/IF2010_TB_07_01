@@ -71,7 +71,7 @@ public class AssetSetter {
         for(int r = row; r < row + 6; r++) {
             for(int c = col; c < col + 6; c++) {
                 if(r >= gp.maxWorldRow || c >= gp.maxWorldCol) return false;
-                if(gp.tileM.mapTileNum[c][r] != 1) return false; // Not grass
+                if(gp.tileM.mapTileNum[0][c][r] != 1) return false; // Not grass
                 if(isAreaOccupied(c, r, 1, 1)) return false; // Already occupied
             }
         }
@@ -82,7 +82,7 @@ public class AssetSetter {
         if(col + 3 > gp.maxWorldCol || row + 2 > gp.maxWorldRow) return false;
         for(int r = row; r < row + 2; r++) {
             for(int c = col; c < col + 3; c++) {
-                if(gp.tileM.mapTileNum[c][r] != 1) return false; 
+                if(gp.tileM.mapTileNum[0][c][r] != 1) return false; 
                 if(isAreaOccupied(c, r, 1, 1)) return false; 
             }
         }
