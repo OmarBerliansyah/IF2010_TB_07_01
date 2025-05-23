@@ -1,13 +1,11 @@
 package com.SpakborHills.entity;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.main.UtilityTool;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -48,14 +46,14 @@ public class Player extends Entity {
     }
 
     public void getPlayerImage(){
-        up1 = setup("player/Back1");
-        up2 = setup("player/Back2");
-        down1 = setup("player/Front1");
-        down2 = setup("player/Front2");
-        left1 = setup("player/Left1");
-        left2 = setup("player/Left2");
-        right1 = setup("player/Right1");
-        right2 = setup("player/Right2");
+        up1 = setup("player/PlayerUp1");
+        up2 = setup("player/PlayerUp2");
+        down1 = setup("player/PlayerDown1");
+        down2 = setup("player/PlayerDown2");
+        left1 = setup("player/PlayerLeft1");
+        left2 = setup("player/PlayerLeft2");
+        right1 = setup("player/PlayerRight1");
+        right2 = setup("player/PlayerRight2");
     }
 
 
