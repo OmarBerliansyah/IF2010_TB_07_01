@@ -18,22 +18,30 @@ public class TileManager {
     public TileManager(GamePanel gp){
         this.gp = gp;
 
-        tile = new Tile[10];
+        tile = new Tile[15];
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
         getTileImage();
         loadMap("maps/WorldMap.txt");
     }
 
     public void getTileImage() {
-        setup(0, "Tile", false);
-        setup(1, "Wall", true);
-        setup(2, "Pond", true);
-        setup(3, "Earth", false);
-        setup(4, "Tree", true);
-        setup(5, "Sand", false);
+        setup(0, "Soil", false, TileType.TILLABLE);
+        setup(1, "Grass", false, TileType.NONE);
+        setup(2, "GrassFench", true, TileType.NONE); // Assuming "Fench" means Fence and is a collision object
+        setup(3, "GrassFenchBA", true, TileType.NONE);
+        setup(4, "GrassFenchBB", true, TileType.NONE);
+        setup(5, "GrassFenchBT", true, TileType.NONE);
+        setup(6, "SoilStone", false, TileType.NONE); // Or true if it's a collision object
+        setup(7, "Bushes", true, TileType.NONE); // Or false depending on behavior
+        setup(8, "HoedSoil", false, TileType.TILLED);
+        setup(9, "Planted", false, TileType.PLANTED);
+        setup(10, "PlantedWatered", false, TileType.PLANTED); // Visually different, but same type for interaction
+        setup(11, "GrassFenchBBK", true, TileType.NONE);
+        setup(12, "GrassFenchBAK", true, TileType.NONE);
+        setup(13, "GrassFenchBTK", true, TileType.NONE);
     }
 
-    public void setup(int index, String imageName, boolean collision){
+    public void setup(int index, String imageName, boolean collision, TileType type){
         UtilityTool uTool = new UtilityTool();
 
         try{
