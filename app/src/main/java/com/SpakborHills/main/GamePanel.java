@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH); // Create an instance of the Player class, passing the GamePanel and KeyHandler as parameters
-    public Entity obj[] = new Entity[10];
+    public Entity obj[] = new Entity[100];
     public Entity NPC[] = new Entity[10];
     ArrayList<Entity> entityList = new ArrayList<>();
 

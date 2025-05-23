@@ -1,15 +1,17 @@
 package com.SpakborHills.entity;
 
-import com.SpakborHills.main.GamePanel;
-import com.SpakborHills.main.UtilityTool;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.main.UtilityTool;
+
 public class Entity {
-    GamePanel gp;
+    public GamePanel gp;
     public int worldX,worldY;
     public int speed;
 
