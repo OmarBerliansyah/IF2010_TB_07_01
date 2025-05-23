@@ -1,36 +1,89 @@
 package com.SpakborHills.main;
 
-import com.SpakborHills.objects.OBJ_Wood;
 
 import javax.imageio.ImageIO;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream; 
 
 public class UI {
     GamePanel gp;
     KeyHandler keyH;
     Graphics2D g2;
-    Font arial_40;
-    //BufferedImage woodImage;
+    
+    Font menuFont;
+    Font selectorFont; 
+
     public boolean messageOn = false;
     public String message = "";
     int messageCounter = 0;
     public String currentDialogue = "";
     public BufferedImage titleScreenImage;
+    public BufferedImage spakborHillsLogo;
     public int slotCol = 0;
     public int slotRow = 0;
     public int commandNum = 0;
     public int titleScreenState = 0; // 0 : the first screen, 1: the second screen
 
 
-    public UI(GamePanel gp, KeyHandler keyH){
+    public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
-        arial_40 = new Font("Bernard MT Condensed", Font.PLAIN, 40);
-        //OBJ_Wood wood = new OBJ_Wood();
-        //woodImage = wood.image;
+        
+        InputStream is = null; // Untuk font
+
+        try {
+            // Path ke file font kamu di dalam folder resources
+            String fontPath = "fonts/SDV.ttf"; 
+            is = getClass().getClassLoader().getResourceAsStream(fontPath);
+        
+            if (is != null) {
+                Font baseFont = Font.createFont(Font.TRUETYPE_FONT, is);
+                
+                menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
+                selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
+                                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+
+                System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
+            } else {
+                System.err.println("ERROR UI: File font kustom '" + fontPath + "' TIDAK DITEMUKAN!");
+                throw new IOException("File font tidak ditemukan: " + fontPath); 
+            }
+        } catch (IOException | FontFormatException e) { 
+            e.printStackTrace();
+            System.err.println("ERROR UI: Gagal memuat atau memproses font kustom 'fonts/SDV.ttf'. Menggunakan font default.");
+            menuFont = new Font(Font.SANS_SERIF, Font.BOLD, 48); // Fallback untuk menuFont
+            selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
+        }          
+
+        // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
+        try {
+            // Memuat background title screen
+            InputStream tsIs = getClass().getClassLoader().getResourceAsStream("title/Title.jpg");
+            if (tsIs != null) {
+                titleScreenImage = ImageIO.read(tsIs);
+                tsIs.close(); // Selalu tutup InputStream setelah digunakan
+            } else {
+                System.err.println("ERROR UI: File background 'title/Title.jpg' tidak ditemukan!");
+            }
+
+            // Memuat logo
+            InputStream logoIs = getClass().getClassLoader().getResourceAsStream("title/SpakborHillsLogo.png");
+            if (logoIs != null) {
+                spakborHillsLogo = ImageIO.read(logoIs);
+                logoIs.close(); // Selalu tutup InputStream
+            } else {
+                System.err.println("ERROR UI: File logo 'title/SpakborHillsLogo.png' tidak ditemukan!");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("ERROR UI: Gagal memuat gambar untuk title screen.");
+            titleScreenImage = null;
+            spakborHillsLogo = null;
+        }
     }
 
     public void showMessage(String text){
@@ -40,7 +93,7 @@ public class UI {
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
-        g2.setFont(arial_40);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.white);
 
         // TITLE SCREEN
@@ -63,73 +116,100 @@ public class UI {
     }
 
     public void drawTitleScreen(){
-        if(titleScreenState == 0){
-            //TITLE SCREEN
-            try{
-                titleScreenImage = ImageIO.read(getClass().getClassLoader().getResourceAsStream("title/Title.jpg"));
+        if (titleScreenState == 0) {
+            // 1. GAMBAR BACKGROUND
+            if (titleScreenImage != null) {
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                // Fallback jika background gagal dimuat
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+                g2.setColor(Color.WHITE);
+                g2.drawString("Background Error", getXforCenteredText("Background Error"), gp.screenHeight / 2 - 20);
             }
-            catch (IOException e){
-                e.printStackTrace();
+
+            // 2. GAMBAR LOGO DI ATAS BACKGROUND
+            if (spakborHillsLogo != null) {
+                int originalLogoWidth = spakborHillsLogo.getWidth();
+                int originalLogoHeight = spakborHillsLogo.getHeight();
+
+                double scaleFactor = 0.90;
+
+                int drawLogoWidth = (int)(originalLogoWidth * scaleFactor);
+                int drawLogoHeight = (int)(originalLogoHeight * scaleFactor);
+
+                int x_logo = (gp.screenWidth - drawLogoWidth) / 2; // Tengah horizontal
+                int y_logo = gp.tileSize * 1; // Posisi Y dari atas (misal 1x tileSize, sesuaikan!)
+
+                g2.drawImage(spakborHillsLogo, x_logo, y_logo, drawLogoWidth, drawLogoHeight, null);
+            } else {
+                // Fallback jika logo gagal dimuat
+                g2.setFont(g2.getFont().deriveFont(Font.BOLD, 70F)); // Font sementara untuk pesan error
+                String logoErrorText = "LOGO ERROR";
+                int x_logo_error = getXforCenteredText(logoErrorText);
+                int y_logo_error = gp.tileSize * 3; // Posisi teks error
+                
+                g2.setColor(Color.BLACK); // Shadow untuk teks error
+                g2.drawString(logoErrorText, x_logo_error + 4, y_logo_error + 4);
+                g2.setColor(Color.RED); // Teks error
+                g2.drawString(logoErrorText, x_logo_error, y_logo_error);
             }
-            g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
 
-            //TITLE NAME
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
-            String text = "SPAKBOR HILLS";
-            int x = getXforCenteredText(text);
-            int y = gp.tileSize*3 ;
+            // 3. GAMBAR MENU DI BAWAH LOGO
+            g2.setFont(menuFont);
+            String text;
+            int x_menu;
 
-            //SHADOW ON TEXT
-            g2.setColor(Color.black);
-            g2.drawString(text, x+5, y+5);
+            int y_logo_height_for_menu_calc = 0;
+            int y_logo_top_position = gp.tileSize * 1; 
+            if (spakborHillsLogo != null) {
+                double scaleFactor = 0.75; // Pastikan ini sama dengan scaleFactor saat menggambar logo
+                y_logo_height_for_menu_calc = (int)(spakborHillsLogo.getHeight() * scaleFactor);
+            }
+            int y_logo_bottom = (spakborHillsLogo != null) ? (y_logo_top_position + y_logo_height_for_menu_calc) : (gp.tileSize * 5);
+            
+            // --- MEMPERBESAR SPACING MENU ---
+            // int y_menu_start = y_logo_bottom + gp.tileSize * 1; // Spacing sebelumnya
+            int y_menu_start = y_logo_bottom + gp.tileSize * 2; // Diperbesar jadi 2 tileSize (atau sesuaikan: 1.5, 2.5, dll.)
 
-            //MAIN COLOR
-            g2.setColor(Color.white);
-            g2.drawString(text, x, y);
+            int current_menu_y = y_menu_start;
 
-            //MENU
-            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-
+            // MENU ITEM: NEW GAME
             text = "NEW GAME";
-            x = getXforCenteredText(text);
-            y += gp.tileSize*3.5;
-            //SHADOW ON TEXT
-            g2.setColor(Color.black);
-            g2.drawString(text, x+3, y+3);
+            x_menu = getXforCenteredText(text);
 
-            //MAIN COLOR
-            g2.setColor(Color.white);
-            g2.drawString(text, x, y);
-            if(commandNum == 0){
-                g2.drawString(">", x-gp.tileSize, y);
+            g2.setColor(Color.black); // Shadow
+            g2.drawString(text, x_menu + 3, current_menu_y + 3);
+            g2.setColor(Color.white); // Main text
+            g2.drawString(text, x_menu, current_menu_y);
+            if (commandNum == 0) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3); // Jarak selector dari teks menu
+                g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
+                g2.setFont(originalFont);       // Kembalikan ke font menu
+           
             }
+            current_menu_y += gp.tileSize * 2.0;
 
-            text = "LOAD GAME";
-            x = getXforCenteredText(text);
-            y += gp.tileSize;
-            //SHADOW ON TEXT
-            g2.setColor(Color.black);
-            g2.drawString(text, x+3, y+3);
-
-            //MAIN COLOR
-            g2.setColor(Color.white);
-            g2.drawString(text, x, y);
-            if(commandNum == 1){
-                g2.drawString(">", x-gp.tileSize, y);
-            }
-
+            // MENU ITEM: QUIT
             text = "QUIT";
-            x = getXforCenteredText(text);
-            y += gp.tileSize;
-            //SHADOW ON TEXT
-            g2.setColor(Color.black);
-            g2.drawString(text, x+3, y+3);
+            x_menu = getXforCenteredText(text);
 
-            //MAIN COLOR
-            g2.setColor(Color.white);
-            g2.drawString(text, x, y);
-            if(commandNum == 2){
-                g2.drawString(">", x-gp.tileSize, y);
+            g2.setColor(Color.black); // Shadow
+            g2.drawString(text, x_menu + 3, current_menu_y + 3);
+            g2.setColor(Color.white); // Main text
+            g2.drawString(text, x_menu, current_menu_y);
+            if (commandNum == 1) { // commandNum untuk QUIT sekarang 1
+                Font originalFont = g2.getFont(); 
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
+                g2.setFont(originalFont);
             }
 
         }
