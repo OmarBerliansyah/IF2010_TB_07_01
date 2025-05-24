@@ -15,11 +15,19 @@ public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][][];
+    public int mapCols[] = new int[10];
+    public int mapRows[] = new int[10];
 
     public TileManager(GamePanel gp){
         this.gp = gp;
 
         tile = new Tile[40];
+        mapCols[0] = gp.maxWorldCol;
+        mapRows[0] = gp.maxWorldRow;
+        mapCols[1] = gp.maxWorldCol;
+        mapRows[1] = gp.maxWorldRow;
+        mapCols[2] = 24; 
+        mapRows[2] = 24; 
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
@@ -90,11 +98,15 @@ public class TileManager {
 
             int col = 0;
             int row = 0;
+            int maxCol = mapCols[map];
+            int maxRow = mapRows[map];
 
-            while(col < gp.maxWorldCol && row < gp.maxWorldRow){
+            while(col < maxCol && row < maxRow){
                 String line = br.readLine();
-
-                while(col < gp.maxWorldCol){
+                if (line == null) {
+                break;
+                }
+                while(col < maxCol){
                     String numbers[] = line.split(" ");
 
                     int num = Integer.parseInt(numbers[col]);
@@ -102,7 +114,7 @@ public class TileManager {
                     mapTileNum[map][col][row] = num;
                     col++;
                 }
-                if(col == gp.maxWorldCol){
+                if(col >= maxCol){
                     col = 0;
                     row++;
                 }
@@ -110,17 +122,20 @@ public class TileManager {
             br.close();
         }
         catch(Exception e){
-
+            e.printStackTrace();
         }
     }
 
     public void draw(Graphics2D g2){
         int worldCol = 0;
         int worldRow = 0;
+        int currentMap = gp.currentMap;
+        int maxCol = mapCols[currentMap];
+        int maxRow = mapRows[currentMap];
 
-        while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow){
+        while(worldCol < maxCol && worldRow < maxRow){
 
-            int tileNum = mapTileNum[gp.currentMap][worldCol][worldRow];
+            int tileNum = mapTileNum[currentMap][worldCol][worldRow];
 
             int worldX = worldCol * gp.tileSize;
             int worldY = worldRow * gp.tileSize;
@@ -135,9 +150,7 @@ public class TileManager {
                 g2.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
             worldCol++;
-
-
-            if(worldCol == gp.maxWorldCol){
+            if(worldCol == maxCol){
                 worldCol = 0;
                 worldRow++;
             }

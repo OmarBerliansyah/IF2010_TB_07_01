@@ -18,6 +18,7 @@ public class AssetSetter {
     int houseCol, houseRow;
     private boolean houseAlreadyPlaced = false;
     private int savedHouseCol, savedHouseRow;
+    int houseIndex = 0;
 
     public AssetSetter(GamePanel gp) {
         this.gp = gp;
@@ -33,58 +34,32 @@ public class AssetSetter {
         if (gp.currentMap == 0) {
             placeFixedPonds();
             if (!houseAlreadyPlaced) {
-                placeHousesAndShippingBins(); 
-                houseAlreadyPlaced = true;
-                savedHouseCol = houseCol;
-                savedHouseRow = houseRow;
+                int[][] possibleHouseLocations = {
+                {10,0}, {21,0}, {2,25}, {16,25}
+            };
+            houseIndex = random.nextInt(possibleHouseLocations.length); // houseIndex harusnya field di class
+            this.houseCol = possibleHouseLocations[houseIndex][0];
+            this.houseRow = possibleHouseLocations[houseIndex][1];
+            savedHouseCol = this.houseCol;
+            savedHouseRow = this.houseRow;
+            houseAlreadyPlaced = true; // Tandai bahwa rumah sudah ditempatkan
+            System.out.println("Initial house placement at (" + this.houseCol + "," + this.houseRow + ")");
             } else {
                 houseCol = savedHouseCol;
                 houseRow = savedHouseRow;
-                placeHouseAtSavedLocation();
+                System.out.println("Restoring house at saved position (" + this.houseCol + "," + this.houseRow + ")");
             }
+            placeHouse(this.houseCol, this.houseRow);
+            int binCol = this.houseCol + 6 + 1;
+            int binRow = this.houseRow + 2;
+            placeShippingBin(binCol, binRow); 
             setTreesFromMap();
             setTrees2FromMap();
+        }else if (gp.currentMap == 1){
+            //map 1 objects
         }
-    }
-    
-    public void placeHousesAndShippingBins() {
-        //kandidat lokasi
-        int[][] possibleHouseLocations = {
-            {5, 19},   // opsi 1: column 8, row 18
-            {8,23},  // opsi 2: column 15, row 22  
-            {21, 23}   // opsi 3: column 25, row 12
-        };
-        
-        // randomisasi lokasi rumah
-        int chosenIndex = random.nextInt(possibleHouseLocations.length);
-        this.houseCol = possibleHouseLocations[chosenIndex][0];
-        this.houseRow = possibleHouseLocations[chosenIndex][1];
-
-        
-        if(isValidHouseArea(houseCol, houseRow)) {
-            int binCol = houseCol + 6 + 1; 
-            int binRow = houseRow + 2; 
-            if(isValidShippingBinArea(binCol, binRow)) {
-                placeHouse(houseCol, houseRow);
-                occupiedAreas.add(new Rectangle(houseCol, houseRow, 6, 6));
-                placeShippingBin(binCol, binRow);
-                occupiedAreas.add(new Rectangle(binCol, binRow, 3, 2));
-                
-                System.out.println("Placed house at position " + (chosenIndex + 1) + " (" + houseCol + "," + houseRow + 
-                                 ") with shipping bin at (" + binCol + "," + binRow + ")");
-            } else {
-                System.out.println("Warning: Shipping bin cannot be placed for house at position " + (chosenIndex + 1));
-            }
-        } else {
-            System.out.println("Warning: House cannot be placed at chosen position " + (chosenIndex + 1));
-        }
-    }
-    public void placeHouseAtSavedLocation() {
-        if(isValidHouseArea(savedHouseCol, savedHouseRow)) {
-            placeHouse(savedHouseCol, savedHouseRow);
-            occupiedAreas.add(new Rectangle(savedHouseCol, savedHouseRow, 6, 6));
-        } else {
-            System.out.println("Warning: House cannot be placed at saved position (" + savedHouseCol + "," + savedHouseRow + ")");
+        else if (gp.currentMap == 2){
+            //map 2 objects
         }
     }
     
@@ -94,43 +69,13 @@ public class AssetSetter {
         occupiedAreas.add(new Rectangle(col, row, 4, 3));
     }
     
-    private boolean isValidHouseArea(int col, int row) {
-        for(int r = row; r < row + 6; r++) {
-            for(int c = col; c < col + 6; c++) {
-                if(r >= gp.maxWorldRow || c >= gp.maxWorldCol) return false;
-                if(gp.tileM.mapTileNum[gp.currentMap][c][r] != 1) return false; // Not grass
-                if(isAreaOccupied(c, r, 1, 1)) return false; // Already occupied
-            }
-        }
-        return true;
-    }
-    
-    private boolean isValidShippingBinArea(int col, int row) {
-        if(col + 3 > gp.maxWorldCol || row + 2 > gp.maxWorldRow) return false;
-        for(int r = row; r < row + 2; r++) {
-            for(int c = col; c < col + 3; c++) {
-                if(gp.tileM.mapTileNum[gp.currentMap][c][r] != 1) return false; 
-                if(isAreaOccupied(c, r, 1, 1)) return false; 
-            }
-        }
-        return true;
-    }
-    private boolean isAreaOccupied(int col, int row, int width, int height) {
-        Rectangle checkArea = new Rectangle(col, row, width, height);
-        for(Rectangle occupied : occupiedAreas) {
-            if(checkArea.intersects(occupied)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     private void placeHouse(int col, int row) {
         int objIndex = getNextAvailableObjectIndex();
         if(objIndex != -1) {
             gp.obj[objIndex] = new OBJ_House(gp);
             gp.obj[objIndex].worldX = col * gp.tileSize;
             gp.obj[objIndex].worldY = row * gp.tileSize;
+            occupiedAreas.add(new Rectangle(col, row, 6, 6)); 
         }
     }
     
@@ -141,6 +86,7 @@ public class AssetSetter {
             gp.obj[objIndex] = new OBJ_ShippingBin(gp);
             gp.obj[objIndex].worldX = col * gp.tileSize;
             gp.obj[objIndex].worldY = row * gp.tileSize;
+            occupiedAreas.add(new Rectangle(col, row, 3, 2));
         }
     }
     
@@ -196,17 +142,26 @@ public class AssetSetter {
         
     }
 
-    public void setTrees2FromMap() {
-        int[][] treePositions2 = {
-            {30,0},  
-            {28,0},       
-            {26,0}, 
-            {24,0},   
-            {30,3},   
-            {30,5},  
-            {30,7}, 
-            {30,9},   
+    public void setTrees2FromMap() { // different tree photo
+        int[][] treePositions2;
+        treePositions2 = switch (houseIndex+1) {
+            case 1 -> new int[][]{
+                {30,0}, {28,0}, {26,0}, {24,0},
+                {30,3}, {30,5}, {30,7}, {30,9}
+            };
+            case 2 -> new int[][]{
+                {19,0}, {13,0}, {15,0}, {17,0},
+                {19,3}, {13,3}, {15,3}, {17,3}
+            };
+            case 3 -> new int[][]{
+                {30,0}, {28,0}, {26,0}, {24,0},
+                {30,3}, {30,5}, {30,7}, {30,9}
+            };
+            default -> new int[][]{
+                {30,3}, {30,5}, {30,7}, {30,9}
+            };
         };
+        
         for(int i = 0; i < treePositions2.length; i++) {
             int col = treePositions2[i][0];
             int row = treePositions2[i][1];

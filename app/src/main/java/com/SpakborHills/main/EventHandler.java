@@ -33,7 +33,7 @@ public class EventHandler {
                 col = 0;
                 row++;
 
-                if (row == gp.maxWorldCol) {
+                if (row == gp.maxWorldRow) {
                     row = 0;
                     map++;
                 }
@@ -64,15 +64,15 @@ public class EventHandler {
             // TELEPORT TO OCEAN
             if (hit(0, 10, 31, "any") == true) {
                 teleport(1, 10, 5);
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
+                if(gp.currentMap == 1) {
+                    gp.aSetter.setObject(); 
+                    gp.aSetter.setNPC();
+                }
             }
 
             // BACK TELEPORT TO MAIN MAP
             else if (hit(1, 10, 1, "any") == true) {
                 teleport(0, 10, 31);
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
             }
 
             else if (hit(0, gp.aSetter.getDoorCol(), gp.aSetter.getDoorRow(), "any") == true) {
