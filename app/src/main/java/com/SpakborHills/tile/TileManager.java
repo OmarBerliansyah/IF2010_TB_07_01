@@ -59,6 +59,9 @@ public class TileManager {
         setup(27, "PinggirPantaiTengahNext", false, TileType.NONE);
         setup(28, "HouseWall", true, TileType.NONE);
         setup(29, "HouseTiles", false, TileType.NONE);
+        setup(30, "GrassFlower", false, TileType.NONE);
+        setup(31, "GrassCorn", true, TileType.NONE);
+        setup(32, "GrassFlower2", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){

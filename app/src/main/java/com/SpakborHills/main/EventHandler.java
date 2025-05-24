@@ -70,7 +70,7 @@ public class EventHandler {
 
             // BACK TELEPORT TO MAIN MAP
             else if (hit(1, 10, 1, "any") == true) {
-                teleport(0, 10, 12);
+                teleport(0, 10, 31);
                 gp.aSetter.setObject(); 
                 gp.aSetter.setNPC();
             }
