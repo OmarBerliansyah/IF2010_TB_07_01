@@ -73,6 +73,7 @@ public class EventHandler {
             // BACK TELEPORT TO MAIN MAP
             else if (hit(1, 10, 1, "any") == true) {
                 teleport(0, 10, 31);
+                if (gp.currentMap ==0)gp.aSetter.setObject();
             }
 
             else if (hit(0, gp.aSetter.getDoorCol(), gp.aSetter.getDoorRow(), "any") == true) {

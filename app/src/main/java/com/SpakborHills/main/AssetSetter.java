@@ -35,7 +35,7 @@ public class AssetSetter {
             placeFixedPonds();
             if (!houseAlreadyPlaced) {
                 int[][] possibleHouseLocations = {
-                {10,0}, {21,0}, {2,25}, {16,25}
+                {10,0}, {21,0}, {2,24}, {16,24}
             };
             houseIndex = random.nextInt(possibleHouseLocations.length); // houseIndex harusnya field di class
             this.houseCol = possibleHouseLocations[houseIndex][0];
