@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.SpakborHills.entity.NPC_1;
 import com.SpakborHills.objects.OBJ_House;
+import com.SpakborHills.objects.OBJ_Keset;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
@@ -59,7 +60,10 @@ public class AssetSetter {
             //map 1 objects
         }
         else if (gp.currentMap == 2){
-            //map 2 objects
+            int objIndex = getNextAvailableObjectIndex();
+            gp.obj[objIndex] = new OBJ_Keset(gp);
+            gp.obj[objIndex].worldX = 11 * gp.tileSize;
+            gp.obj[objIndex].worldY = 22 * gp.tileSize;//map 2 objects
         }
     }
     
