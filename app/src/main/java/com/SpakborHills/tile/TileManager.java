@@ -83,7 +83,7 @@ public class TileManager {
         setup(40, "GrassSoilBawah", false, TileType.NONE);
         setup(41, "GressSoilKaBEdge", false, TileType.NONE);
         setup(42, "GressSoilKaAEdge", false, TileType.NONE);
-        setup(43, "Soilkeinjek", false, TileType.NONE);
+        setup(43, "Soilkeinjek", false, TileType.TILLABLE);
         setup(44, "rumahataskanan", false, TileType.NONE);
         setup(45, "rumahataskiri", false, TileType.NONE);
         setup(46, "rumahatas", false, TileType.NONE);

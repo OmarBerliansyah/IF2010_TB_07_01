@@ -119,8 +119,8 @@ public class Player extends Entity {
     }
 
     public void getPlayerTillingImage(){
-        tillingUp = setup("player/PlayerUpHoe", gp.tileSize, gp.tileSize*2);
-        tillingDown = setup("player/PlayerDownHoe", gp.tileSize, gp.tileSize*2);
+        tillingUp = setup("player/PlayerUpHoe", gp.tileSize, gp.tileSize);
+        tillingDown = setup("player/PlayerDownHoe", gp.tileSize, gp.tileSize);
         tillingLeft = setup("player/PlayerLeftPickAxe",gp.tileSize, gp.tileSize);
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
@@ -334,8 +334,6 @@ public class Player extends Entity {
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
         BufferedImage image = null;
-        int tempScreenX = screenX;
-        int tempScreenY = screenY;
         switch (direction){
             case "up":
                 if(tilling == false){
@@ -347,7 +345,6 @@ public class Player extends Entity {
                     }
                 }
                 if(tilling == true){
-                    tempScreenY = screenY - gp.tileSize;
                     if(spriteNum == 1){
                         image = up1;
                     }
@@ -366,7 +363,6 @@ public class Player extends Entity {
                     }
                 }
                 if(tilling == true){
-                    tempScreenY = screenY + gp.tileSize;
                     if(spriteNum == 1){
                         image = down1;
                     }
@@ -412,6 +408,6 @@ public class Player extends Entity {
                 }
                 break;
         }
-        g2.drawImage(image, tempScreenX, tempScreenY,null);
+        g2.drawImage(image, screenX, screenY, null);
     }
 }
