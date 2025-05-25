@@ -91,7 +91,7 @@ public class EventHandler {
             }
 
             // TELEPORT TO FOREST RIVER
-            else if (hit(0, 0, 16, "any") == true) {
+            else if (hit(0, 18, 20, "any") == true) {
                 teleport(3, 31, 16);
                 if(gp.currentMap == 3) {
                     gp.aSetter.setObject(); 
