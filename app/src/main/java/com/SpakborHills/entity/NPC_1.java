@@ -19,19 +19,14 @@ public class NPC_1 extends Entity{
     }
 
     public void getNPC1Image(){
-        try{
-            up1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexbelakang.png"));
-            up2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexbelakangjalan.png"));
-            down1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexdepan.png"));
-            down2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexdepanjalan.png"));
-            left1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkiri.png"));
-            left2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkirijalan.png"));
-            right1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkanan.png"));
-            right2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkananjalan.png"));
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        up1 = setup("NPC/abibelakang", gp.tileSize, gp.tileSize);
+        up2 = setup("NPC/abibelakangjalan", gp.tileSize, gp.tileSize);
+        down1 = setup("NPC/abidepan", gp.tileSize, gp.tileSize);
+        down2 = setup("NPC/abidepanjalan", gp.tileSize, gp.tileSize);
+        left1 = setup("NPC/abikiri", gp.tileSize, gp.tileSize);
+        left2 = setup("NPC/abikirijalan", gp.tileSize, gp.tileSize);
+        right1 = setup("NPC/abikanan", gp.tileSize, gp.tileSize);
+        right2 = setup("NPC/abikananjalan", gp.tileSize, gp.tileSize);
     }
 
     public void setDialogue(){

@@ -7,7 +7,7 @@ public class OBJ_Pond extends Entity {
     public OBJ_Pond(GamePanel gp){
         super(gp);
         name = "Pond";
-        down1 = setup("objects/Pond"); // Your pond sprite file
+        down1 = setup("objects/Pond",  gp.tileSize, gp.tileSize); // Your pond sprite file
         collision = true; // Players can walk through water, or set true if you want collision
 
         solidArea.x = 0;
@@ -16,6 +16,7 @@ public class OBJ_Pond extends Entity {
         solidArea.height = 4 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        isPickable = false;
     }
     
     @Override

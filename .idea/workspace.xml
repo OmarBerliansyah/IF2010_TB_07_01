@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="089924ec-6052-448d-be75-93a4b33681c8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/Entity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/Entity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/NPC_1.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/NPC_1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/entity/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Chest.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Chest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Door.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Door.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_House.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_House.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Pond.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Pond.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_ShippingBin.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_ShippingBin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Tree.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Tree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Tree2.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Tree2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Wood.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/SpakborHills/objects/OBJ_Wood.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2xYwjwiKh2NJvQaftLVcqTV56Ex" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "aliya",
+    "last_opened_file_path": "C:/Users/ASUS/Documents/GitHub/Tugas_Besar_IF2010_K4_07",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.23774.435" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-IU-251.23774.435" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="089924ec-6052-448d-be75-93a4b33681c8" name="Changes" comment="" />
+      <created>1748128491111</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748128491111</updated>
+      <workItem from="1748128491112" duration="198000" />
+    </task>
+    <servers />
+  </component>
+</project>

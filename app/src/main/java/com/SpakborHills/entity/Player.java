@@ -3,9 +3,19 @@ package com.SpakborHills.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
+import java.util.ArrayList;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.OBJ_Wood;
+import com.SpakborHills.main.UtilityTool;
+import com.SpakborHills.tile.TileType;
+import com.SpakborHills.tile.Tile;
+import com.SpakborHills.tile.TileManager;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -19,7 +29,10 @@ public class Player extends Entity {
     public String gender;
     public String farmName;
     public Entity partner;
-    public String location;
+    public String location;    
+    public ArrayList<InventoryItem> inventory = new ArrayList<>();
+    public final int maxInventorySize = 20;
+
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -36,9 +49,13 @@ public class Player extends Entity {
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 46;
         solidArea.height = 46;
-        
+        tillingArea.width = 36;
+        tillingArea.height = 36;
+
         setDefaultValues();
         getPlayerImage();
+        getPlayerTillingImage();
+        setItems(); 
     }
 
     public void setDefaultValues(){
@@ -55,6 +72,7 @@ public class Player extends Entity {
         updateLocation();
  // Initialize partner as null, can be set later
     }
+
     public void updateLocation() {
         if (gp.currentMap == 0) {
             location = "Farm";
@@ -71,19 +89,48 @@ public class Player extends Entity {
     }
 
 
+    public void setItems(){
+        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
+    }
+
+    public class InventoryItem {
+        public Entity item;
+        public int count;
+
+        public InventoryItem(Entity item, int count) {
+            this.item = item;
+            this.count = count;
+        }
+    }
+
     public void getPlayerImage(){
-        up1 = setup("player/PlayerUp1");
-        up2 = setup("player/PlayerUp2");
-        down1 = setup("player/PlayerDown1");
-        down2 = setup("player/PlayerDown2");
-        left1 = setup("player/PlayerLeft1");
-        left2 = setup("player/PlayerLeft2");
-        right1 = setup("player/PlayerRight1");
-        right2 = setup("player/PlayerRight2");
+        up1 = setup("player/PlayerUp1", gp.tileSize, gp.tileSize);
+        up2 = setup("player/PlayerUp2", gp.tileSize, gp.tileSize);
+        down1 = setup("player/PlayerDown1", gp.tileSize, gp.tileSize);
+        down2 = setup("player/PlayerDown2", gp.tileSize, gp.tileSize);
+        left1 = setup("player/PlayerLeft1", gp.tileSize, gp.tileSize);
+        left2 = setup("player/PlayerLeft2",gp.tileSize, gp.tileSize);
+        right1 = setup("player/PlayerRight1",gp.tileSize, gp.tileSize);
+        right2 = setup("player/PlayerRight2",gp.tileSize, gp.tileSize);
+    }
+
+    public void getPlayerTillingImage(){
+        tillingUp = setup("player/PlayerUpHoe", gp.tileSize, gp.tileSize*2);
+        tillingDown = setup("player/PlayerDownHoe", gp.tileSize, gp.tileSize*2);
+        tillingLeft = setup("player/PlayerLeftPickAxe",gp.tileSize, gp.tileSize);
+        tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
 
     public void update(){
+
+        if(tilling == true){
+            tilling();
+        }
 
         if(moving == false){
             boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
@@ -144,6 +191,7 @@ public class Player extends Entity {
             // CHECK EVENT
             gp.eHandler.checkEvent();
             gp.keyH.enterPressed = false;
+        
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if(collisionOn == false && keyH.enterPressed == false){
@@ -154,6 +202,7 @@ public class Player extends Entity {
                     case "right": worldX += speed; break;
                 }
             }
+            
             spriteCounter++;
             if(spriteCounter > 12){
                 if(spriteNum == 1){
@@ -177,14 +226,37 @@ public class Player extends Entity {
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
         if(i != 999){
-            String objectName = gp.obj[i].name;
+            String text; 
+
+            if(gp.obj[i].isPickable){
+                boolean itemAlreadyInInventory = false;
+                for (InventoryItem invItem : inventory) {
+                    if (invItem.item.name.equals(gp.obj[i].name)) {
+                        invItem.count++;
+                        itemAlreadyInInventory = true;
+                        break;
+                    }
+                }
+                // klo item belum ada, tambahin ke inventory
+                if (!itemAlreadyInInventory) {
+                    inventory.add(new InventoryItem(gp.obj[i], 1));
+                }
+                gp.playSE(1);
+                text = "Got a " + gp.obj[i].name + "!";
+            } else {
+                text = "You cannot carry any more!";
+            }
+            gp.ui.addMessage(text);
+            gp.obj[i] = null;
+
+            /*String objectName = gp.obj[i].name;
             switch (objectName){
                 case "Wood":
                     gp.playSE(1);
                     hasWood++;
                     gp.obj[i]=null;
                     gp.ui.showMessage("You got a wood!");//video 10
-                    break;
+                    break; */
 //                case "Key":
 //                    if(hasKey > 0){
 //                        gp.obj[i] = null;
@@ -193,54 +265,153 @@ public class Player extends Entity {
 //                    break;
             }
         }
+
+    public void tilling(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+            // Tentukan tile yang akan diolah berdasarkan arah pemain
+            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
+            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
+
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
+                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
+                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                    // energy--;
+                    // gp.playSE(indeksSuaraCangkul);
+                }
+            }
+        }
+        if(spriteCounter > 25){
+            spriteNum = 1;
+            spriteCounter = 0;
+            tilling = false;
+        }
+        
     }
 
     public void interactNPC(int i){
-        if(i != 999){
-            if(gp.keyH.enterPressed){
+        if(gp.keyH.enterPressed) {
+            if (i != 999) {
                 gp.gameState = gp.dialogueState;
                 gp.NPC[i].speak();
             }
+            else{
+                tilling = true;
+            }
+            gp.keyH.enterPressed = false;
         }
     }
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
         BufferedImage image = null;
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
         switch (direction){
             case "up":
-                if(spriteNum == 1){
-                    image = up1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = up2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = up2;
+                if(tilling == true){
+                    tempScreenY = screenY - gp.tileSize;
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingUp;
+                    }
                 }
                 break;
             case "down":
-                if(spriteNum == 1){
-                    image = down1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = down1;
+                    }
+                    if(spriteNum == 2){
+                        image = down2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = down2;
+                if(tilling == true){
+                    tempScreenY = screenY + gp.tileSize;
+                    if(spriteNum == 1){
+                        image = down1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingDown;
+                    }
                 }
                 break;
             case "left":
-                if(spriteNum == 1){
-                    image = left1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = left1;
+                    }
+                    if(spriteNum == 2){
+                        image = left2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = left2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = left1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingLeft;
+                    }
                 }
                 break;
             case "right":
-                if(spriteNum == 1){
-                    image = right1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = right1;
+                    }
+                    if(spriteNum == 2){
+                        image = right2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = right2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = right1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingRight;
+                    }
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY,null);
+        g2.drawImage(image, tempScreenX, tempScreenY,null);
     }
 }

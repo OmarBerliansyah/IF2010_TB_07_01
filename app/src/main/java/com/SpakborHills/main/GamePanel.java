@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable {
     int FPS = 60;
 
     // SYSTEM
-    TileManager tileM = new TileManager((this));
+    public TileManager tileM = new TileManager((this));
     public KeyHandler keyH = new KeyHandler(this); // Create an instance of the KeyHandler class to handle keyboard input
     Sound music = new Sound();
     Sound se = new Sound();
@@ -118,41 +118,7 @@ public class GamePanel extends JPanel implements Runnable {
                 e.printStackTrace(); // Print the stack trace if an exception occurs
             }
         }
-
-        // 1 UPDATE : update information such as character position
-        // 2 DRAW : draw the screen with the updated information
-        // 3 REPAINT : repaint the screen with the new graphics
     }
-
-    // public void run(){
-
-    //     double drawInternal = 1000000000/FPS; // 0.01666 second
-    //     double delta = 0; // Time difference between frames
-    //     long lastTime = System.nanoTime(); // Get the current time in nanoseconds
-    //     long currentTime; // Variable to store the current time
-    //     long timer = 0;
-    //     int drawCount = 0;
-
-    //     while(gameThread != null){
-    //         currentTime = System.nanoTime(); // Get the current time in nanoseconds
-    //         delta += (currentTime - lastTime) / drawInternal; // Calculate the time difference
-    //         timer += (currentTime - lastTime); // Update the timer
-    //         lastTime = currentTime; // Update the last time
-
-    //         if(delta >= 1) { // If the time difference is greater than or equal to 1
-    //             update(); // Update the game logic
-    //             repaint();
-    //             delta--; // Decrease the delta by 1
-    //             drawCount++;
-    //         }
-
-    //         if(timer >= 1000000000) {
-    //             System.out.println("FPS:"+drawCount); // Print the FPS to the console
-    //             drawCount = 0; // Reset the draw count
-    //             timer = 0;
-    //         }
-    //     }
-    // }
 
     public void update() {
         // // Update game logic here

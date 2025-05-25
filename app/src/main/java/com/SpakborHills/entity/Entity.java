@@ -16,12 +16,14 @@ public class Entity {
     public int speed;
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
     public String direction = "down";
 
     public int spriteCounter = 0;
     public int spriteNum =1;
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 56);
+    public Rectangle tillingArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 
@@ -33,10 +35,15 @@ public class Entity {
     public BufferedImage image;
     public String name;
     public boolean collision = false;
+    boolean tilling = false;
+
+    public boolean isPickable = true;
 
     // player attributes
     public int energy;
     public int gold;
+    // ITEM ATTRIBUTES 
+    public String description = "";
 
     public Entity(GamePanel gp){
         this.gp = gp;
@@ -142,13 +149,13 @@ public class Entity {
         }
     }
 
-    public BufferedImage setup(String imageName){
+    public BufferedImage setup(String imageName, int width, int height) {
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
 
         try{
             image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(imageName+".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
+            image = uTool.scaleImage(image, width, height);
         }
         catch(IOException e){
             e.printStackTrace();

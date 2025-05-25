@@ -7,7 +7,7 @@ public class OBJ_ShippingBin extends Entity {
     public OBJ_ShippingBin(GamePanel gp){
         super(gp);
         name = "ShippingBin";
-        down1 = setup("objects/ShippingBin"); // Your shipping bin sprite file
+        down1 = setup("objects/ShippingBin",  gp.tileSize, gp.tileSize); // Your shipping bin sprite file
         collision = true;
         
         // Shipping bin is 3x2 tiles
@@ -17,6 +17,7 @@ public class OBJ_ShippingBin extends Entity {
         solidArea.height = 2 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        isPickable = false;
     }
     
     @Override

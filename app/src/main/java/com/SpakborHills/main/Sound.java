@@ -10,8 +10,9 @@ public class Sound {
     URL soundURL[] = new URL[30];
 
     public Sound(){
-        soundURL[0] = getClass().getClassLoader().getResource("sound/Sound.wav");
+        soundURL[0] = getClass().getClassLoader().getResource("sound/Stecu.wav");
         soundURL[1] = getClass().getClassLoader().getResource("sound/Pickup.wav");
+        soundURL[2] = getClass().getClassLoader().getResource("sound/cursor.wav");
     }
 
     public void setFile(int i){

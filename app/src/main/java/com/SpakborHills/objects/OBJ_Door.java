@@ -8,7 +8,7 @@ public class OBJ_Door extends Entity {
     public OBJ_Door(GamePanel gp){
         super(gp);
         name = "Door";
-        down1 = setup("objects/Door");
+        down1 = setup("objects/Door",  gp.tileSize, gp.tileSize);
         collision = true;
 
         solidArea.x = 0;
@@ -17,5 +17,6 @@ public class OBJ_Door extends Entity {
         solidArea.height = 32;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        isPickable = false;
     }
 }

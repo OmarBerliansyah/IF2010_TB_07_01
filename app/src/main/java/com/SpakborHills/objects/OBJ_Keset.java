@@ -10,8 +10,9 @@ public class OBJ_Keset extends Entity {
     public OBJ_Keset(GamePanel gp){
         super(gp);
         name = "Keset";
-        down1 = setup("objects/keset"); 
+        down1 = setup("objects/keset", gp.tileSize, gp.tileSize); 
         collision = false;
+        isPickable = false;
     }
     @Override
     public void draw(Graphics2D g2){
