@@ -377,7 +377,6 @@ public class UI {
         // Start game
         gp.player.updateLocation();
         gp.gameState = gp.playState;
-        gp.playMusic(0);
     }
 
     public void drawDialogueScreen(){

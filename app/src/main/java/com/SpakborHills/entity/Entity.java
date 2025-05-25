@@ -16,6 +16,7 @@ public class Entity {
     public int speed;
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+    public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
     public String direction = "down";
 
     public int spriteCounter = 0;
@@ -33,6 +34,7 @@ public class Entity {
     public BufferedImage image;
     public String name;
     public boolean collision = false;
+    boolean tilling = false;
 
     // player attributes
     public int energy;
@@ -144,13 +146,13 @@ public class Entity {
         }
     }
 
-    public BufferedImage setup(String imageName){
+    public BufferedImage setup(String imageName, int width, int height) {
         UtilityTool uTool = new UtilityTool();
         BufferedImage image = null;
 
         try{
             image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(imageName+".png"));
-            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
+            image = uTool.scaleImage(image, width, height);
         }
         catch(IOException e){
             e.printStackTrace();
