@@ -21,6 +21,7 @@ public class UI {
     
     Font menuFont;
     Font selectorFont; 
+    Font inputFont;
 
     public boolean messageOn = false;
     public String message = "";
@@ -56,7 +57,7 @@ public class UI {
                 
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
-                                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
 
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
@@ -68,6 +69,7 @@ public class UI {
             System.err.println("ERROR UI: Gagal memuat atau memproses font kustom 'fonts/SDV.ttf'. Menggunakan font default.");
             menuFont = new Font(Font.SANS_SERIF, Font.BOLD, 48); // Fallback untuk menuFont
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
+            inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
         }          
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
@@ -228,13 +230,20 @@ public class UI {
         else if(titleScreenState == 1){
             //CLASS SELECTION SCREEN
             g2.setColor(Color.white);
-            g2.setFont(g2.getFont().deriveFont(42F));
+            g2.setFont(inputFont);
            
             // BACKGROUND
-            g2.setColor(Color.BLACK);
+            if (titleScreenImage != null) {
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                // Fallback jika background gagal dimuat
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+                g2.setColor(Color.WHITE);
+                g2.drawString("Background Error", getXforCenteredText("Background Error"), gp.screenHeight / 2 - 20);
+            }
+            g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-            g2.setColor(Color.white);
-
             int centerX = gp.screenWidth / 2;
             int startY = gp.tileSize * 3;
             int lineSpacing = gp.tileSize * 2;
