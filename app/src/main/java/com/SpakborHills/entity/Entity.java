@@ -34,6 +34,9 @@ public class Entity {
     public String name;
     public boolean collision = false;
 
+    // player attributes
+    public int energy;
+    public int gold;
     // ITEM ATTRIBUTES 
     public String description = "";
 
@@ -137,7 +140,7 @@ public class Entity {
                     }
                     break;
             }
-            g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+            g2.drawImage(image, screenX, screenY, gp.tileSize , gp.tileSize, null);
         }
     }
 

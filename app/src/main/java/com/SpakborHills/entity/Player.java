@@ -22,7 +22,10 @@ public class Player extends Entity {
     int standCounter = 0;
     boolean moving = false;
     int pixelCounter  = 0;
-    public ArrayList<Entity> inventory = new ArrayList<>(); 
+    public String gender;
+    public String farmName;
+    public Entity partner;
+    public String location;    public ArrayList<Entity> inventory = new ArrayList<>(); 
     public final int maxInventorySize = 20;
 
 
@@ -41,7 +44,7 @@ public class Player extends Entity {
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 46;
         solidArea.height = 46;
-
+        
         setDefaultValues();
         getPlayerImage();
         setItems(); 
@@ -52,7 +55,30 @@ public class Player extends Entity {
         worldY = gp.tileSize * 21;
         speed = 4;
         direction = "down";
+        energy = 100;//energi awal  & maks
+        gold = 0;
+        name = "Player";
+        farmName = "Spakbor Hills";
+        gender = "tes";
+        partner = null;
+        updateLocation();
+ // Initialize partner as null, can be set later
     }
+    public void updateLocation() {
+        if (gp.currentMap == 0) {
+            location = "Farm";
+        } else if (gp.currentMap == 1) {
+            location = "Ocean";
+        } else if (gp.currentMap == 2) {
+            location = "House";
+        } else {
+            location = "Unknown Area";
+        }
+    }
+    public String getCurrentLocation() {
+        return location;
+    }
+
 
     public void setItems(){
         //inventory.add(currentWeapon);
@@ -80,8 +106,8 @@ public class Player extends Entity {
     public void update(){
 
         if(moving == false){
-            if(keyH.upPressed == true || keyH.downPressed == true ||
-                    keyH.leftPressed == true || keyH.rightPressed == true || keyH.enterPressed == true ) {
+            boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
+            if(movementKeyPressed || keyH.enterPressed ) {
                 if (keyH.upPressed == true) {
                     direction = "up";
                 } else if (keyH.downPressed == true) {
@@ -107,7 +133,9 @@ public class Player extends Entity {
                 // CHECK EVENT
                 gp.eHandler.checkEvent();
 
-                moving = true;
+                if(movementKeyPressed) {
+                    moving = true;
+                }
 
                 gp.keyH.enterPressed = false;
             }

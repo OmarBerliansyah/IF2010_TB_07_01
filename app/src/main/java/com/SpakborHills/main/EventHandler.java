@@ -33,7 +33,7 @@ public class EventHandler {
                 col = 0;
                 row++;
 
-                if (row == gp.maxWorldCol) {
+                if (row == gp.maxWorldRow) {
                     row = 0;
                     map++;
                 }
@@ -62,30 +62,49 @@ public class EventHandler {
             // }
 
             // TELEPORT TO OCEAN
-            if (hit(0, 10, 31, "any") == true) {
+            if (hit(0, 13, 31, "any") == true) {
                 teleport(1, 10, 5);
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
+                if(gp.currentMap == 1) {
+                    gp.aSetter.setObject(); 
+                    gp.aSetter.setNPC();
+                }
             }
 
-            // BACK TELEPORT TO MAIN MAP
+            // BACK TELEPORT TO MAIN MAP FROM OCEAN
             else if (hit(1, 10, 1, "any") == true) {
-                teleport(0, 10, 12);
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
+                teleport(0, 13, 31);
+                if (gp.currentMap ==0)gp.aSetter.setObject();
             }
 
-            else if (hit(0, gp.aSetter.getDoorCol(), gp.aSetter.getDoorRow(), "any") == true) {
+            // TELEPORT TO HOUSE
+            else if (hit(0, gp.aSetter.getDoorCol()+1+1, gp.aSetter.getDoorRow(), "any") == true) {
                 teleport(2, 11, 23);
                 gp.aSetter.setObject(); 
                 gp.aSetter.setNPC();
             }
 
-            else if (hit(2, 12, 23, "any") == true) {
+            // TELEPORT TO MAIN FROM HOUSE
+            else if (hit(2, 11, 23, "any") == true) {
                 teleport(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow());
                 gp.aSetter.setObject(); 
                 gp.aSetter.setNPC();
             }
+
+            // TELEPORT TO FOREST RIVER
+            else if (hit(0, 0, 16, "any") == true) {
+                teleport(3, 31, 16);
+                if(gp.currentMap == 3) {
+                    gp.aSetter.setObject(); 
+                    gp.aSetter.setNPC();
+                }
+            }
+
+            // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
+            else if (hit(3, 31, 16, "any") == true) {
+                teleport(0, 0, 16);
+                if (gp.currentMap ==0)gp.aSetter.setObject();
+            }
+            
 
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {

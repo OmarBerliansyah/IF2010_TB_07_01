@@ -20,14 +20,14 @@ public class NPC_1 extends Entity{
 
     public void getNPC1Image(){
         try{
-            up1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/B1.png"));
-            up2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/B2.png"));
-            down1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/F1.png"));
-            down2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/F2.png"));
-            left1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/L1.png"));
-            left2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/L2.png"));
-            right1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/R1.png"));
-            right2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/R2.png"));
+            up1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexbelakang.png"));
+            up2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexbelakangjalan.png"));
+            down1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexdepan.png"));
+            down2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexdepanjalan.png"));
+            left1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkiri.png"));
+            left2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkirijalan.png"));
+            right1 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkanan.png"));
+            right2 = ImageIO.read(getClass().getClassLoader().getResourceAsStream("NPC/alexkananjalan.png"));
         }
         catch(IOException e){
             e.printStackTrace();

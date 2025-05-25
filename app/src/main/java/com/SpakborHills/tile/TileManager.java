@@ -15,17 +15,28 @@ public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][][];
+    public int mapCols[] = new int[10];
+    public int mapRows[] = new int[10];
 
     public TileManager(GamePanel gp){
         this.gp = gp;
 
-        tile = new Tile[40];
+        tile = new Tile[100];
+        mapCols[0] = gp.maxWorldCol;
+        mapRows[0] = gp.maxWorldRow;
+        mapCols[1] = gp.maxWorldCol;
+        mapRows[1] = gp.maxWorldRow;
+        mapCols[2] = 24; 
+        mapRows[2] = 24; 
+        mapCols[3] = gp.maxWorldCol;
+        mapRows[3] = gp.maxWorldRow;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
         loadMap("maps/OceanMap.txt",1);
         loadMap("maps/HouseMap.txt", 2);
+        loadMap("maps/ForestMap.txt", 3);
     }
 
     public void getTileImage() {
@@ -59,6 +70,29 @@ public class TileManager {
         setup(27, "PinggirPantaiTengahNext", false, TileType.NONE);
         setup(28, "HouseWall", true, TileType.NONE);
         setup(29, "HouseTiles", false, TileType.NONE);
+        setup(30, "GrassFlower", false, TileType.NONE);
+        setup(31, "GrassCorn", true, TileType.NONE);
+        setup(32, "GrassFlower2", false, TileType.NONE);
+        setup(33, "Water", true, TileType.NONE);
+        setup(34, "GrassStone", false, TileType.NONE);
+        setup(35, "GrassSoilTengah2", false, TileType.NONE);
+        setup(36, "GrassSoilAtas", false, TileType.NONE);
+        setup(37, "GrassSoilTengahKiri", false, TileType.NONE);
+        setup(38, "GrassSoilKAEdge", false, TileType.NONE);
+        setup(39, "GrassSoilKBEdge", false, TileType.NONE);
+        setup(40, "GrassSoilBawah", false, TileType.NONE);
+        setup(41, "GressSoilKaBEdge", false, TileType.NONE);
+        setup(42, "GressSoilKaAEdge", false, TileType.NONE);
+        setup(43, "Soilkeinjek", false, TileType.NONE);
+        setup(44, "rumahataskanan", false, TileType.NONE);
+        setup(45, "rumahataskiri", false, TileType.NONE);
+        setup(46, "rumahatas", false, TileType.NONE);
+        setup(47, "rumahbawah", false, TileType.NONE);
+        setup(48, "rumahkanan", false, TileType.NONE);
+        setup(49, "rumahkiri", false, TileType.NONE);
+        setup(50, "rumahbawahkiri", false, TileType.NONE);
+        setup(51, "rumahbawahkanan", false, TileType.NONE);
+        setup(52, "rumahtengah", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){
@@ -87,11 +121,15 @@ public class TileManager {
 
             int col = 0;
             int row = 0;
+            int maxCol = mapCols[map];
+            int maxRow = mapRows[map];
 
-            while(col < gp.maxWorldCol && row < gp.maxWorldRow){
+            while(col < maxCol && row < maxRow){
                 String line = br.readLine();
-
-                while(col < gp.maxWorldCol){
+                if (line == null) {
+                break;
+                }
+                while(col < maxCol){
                     String numbers[] = line.split(" ");
 
                     int num = Integer.parseInt(numbers[col]);
@@ -99,7 +137,7 @@ public class TileManager {
                     mapTileNum[map][col][row] = num;
                     col++;
                 }
-                if(col == gp.maxWorldCol){
+                if(col >= maxCol){
                     col = 0;
                     row++;
                 }
@@ -107,17 +145,20 @@ public class TileManager {
             br.close();
         }
         catch(Exception e){
-
+            e.printStackTrace();
         }
     }
 
     public void draw(Graphics2D g2){
         int worldCol = 0;
         int worldRow = 0;
+        int currentMap = gp.currentMap;
+        int maxCol = mapCols[currentMap];
+        int maxRow = mapRows[currentMap];
 
-        while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow){
+        while(worldCol < maxCol && worldRow < maxRow){
 
-            int tileNum = mapTileNum[gp.currentMap][worldCol][worldRow];
+            int tileNum = mapTileNum[currentMap][worldCol][worldRow];
 
             int worldX = worldCol * gp.tileSize;
             int worldY = worldRow * gp.tileSize;
@@ -132,9 +173,7 @@ public class TileManager {
                 g2.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
             worldCol++;
-
-
-            if(worldCol == gp.maxWorldCol){
+            if(worldCol == maxCol){
                 worldCol = 0;
                 worldRow++;
             }

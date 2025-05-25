@@ -1,7 +1,7 @@
 package com.SpakborHills.main; // Package declaration for the main class
 
-import java.awt.event.KeyListener; // Import the KeyListener interface for handling keyboard events
-import java.awt.event.KeyEvent; // Import the KeyEvent class for key even
+import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
+import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
@@ -14,7 +14,15 @@ public class KeyHandler implements KeyListener {
     }
     @Override
     public void keyTyped(KeyEvent e) {
-        // Not used in this example
+         // INPUT TEXT HANDLING untuk title screen
+        if (gp.gameState == gp.titleState && gp.ui.titleScreenState == 1) {
+            char c = e.getKeyChar();
+            // Only allow letters, numbers, and spaces
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || 
+                (c >= '0' && c <= '9') || c == ' ') {
+                gp.ui.addCharacterToInput(c);
+            }
+        }
     }
 
     @Override
@@ -48,15 +56,55 @@ public class KeyHandler implements KeyListener {
                     }
                 }
                 if(code == KeyEvent.VK_T){
-                    if(checkDrawTime == false){
-                        checkDrawTime = true;
-                    }
-                    else if(checkDrawTime == true){
-                        checkDrawTime = false;
-                    }
+                    checkDrawTime = !checkDrawTime; 
                 }
             }
             else if(gp.ui.titleScreenState == 1){
+                // INPUT SCREEN HANDLING
+                if (code == KeyEvent.VK_UP) {
+                    gp.ui.isTyping = false; // Stop typing when navigating
+                    gp.ui.inputState--;
+                    if(gp.ui.inputState < 0){
+                        gp.ui.inputState = 3; // Wrap to last option
+                    }
+                }if (code == KeyEvent.VK_DOWN) {
+                    gp.ui.isTyping = false; // Stop typing when navigating
+                    gp.ui.inputState++;
+                    if(gp.ui.inputState > 3){
+                        gp.ui.inputState = 0; // Wrap to first option
+                    }
+                }if(code == KeyEvent.VK_ENTER){
+                    if(gp.ui.inputState == 0) {
+                        // Start typing name
+                        gp.ui.isTyping = true;
+                    } else if(gp.ui.inputState == 1) {
+                        // Start typing farm name
+                        gp.ui.isTyping = true;
+                    } else if(gp.ui.inputState == 2) {
+                        // Toggle gender
+                        gp.ui.toggleGender();
+                    } else if(gp.ui.inputState == 3) {
+                        // Start game
+                        gp.ui.startGame();
+                    }
+                }if(code == KeyEvent.VK_DELETE || code == KeyEvent.VK_BACK_SPACE) {
+                    gp.ui.removeLastCharacter();
+                }  
+                if(code == KeyEvent.VK_G && !gp.ui.isTyping) {
+                    // Shortcut untuk toggle gender
+                    gp.ui.toggleGender();
+                }
+                if(code == KeyEvent.VK_ESCAPE) {
+                    // Cancel typing or go back to main menu
+                    if(gp.ui.isTyping) {
+                        gp.ui.isTyping = false;
+                    } else {
+                        gp.ui.titleScreenState = 0; // Go back to main menu
+                        gp.ui.inputState = 0;
+                        gp.ui.isTyping = false;
+                    }
+                }
+
 //                if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
 //                    gp.ui.commandNum--;
 
@@ -71,9 +119,14 @@ public class KeyHandler implements KeyListener {
 //                    }
 //                }
                 if(code == KeyEvent.VK_ENTER){
-                    if(gp.ui.commandNum == 0){
-                        gp.gameState = gp.playState;
-                        gp.playMusic(0);
+                    if(gp.ui.inputState == 0) {
+                        gp.ui.isTyping = true;
+                    } else if(gp.ui.inputState == 1) {
+                        gp.ui.isTyping = true;
+                    } else if(gp.ui.inputState == 2) {
+                        gp.ui.toggleGender();
+                    } else if(gp.ui.inputState == 3) {
+                        gp.ui.startGame();
                     }
 //                    if(gp.ui.commandNum == 1){
 //                        //implement nanti

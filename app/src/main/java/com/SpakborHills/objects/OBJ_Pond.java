@@ -12,8 +12,8 @@ public class OBJ_Pond extends Entity {
 
         solidArea.x = 0;
         solidArea.y = 0;
-        solidArea.width = 4 * gp.tileSize;
-        solidArea.height = 3 * gp.tileSize;
+        solidArea.width = 3 * gp.tileSize;
+        solidArea.height = 4 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
     }
@@ -28,7 +28,7 @@ public class OBJ_Pond extends Entity {
            worldY + (3 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
            worldY - (3 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
             
-            g2.drawImage(down1, screenX, screenY, 4 * gp.tileSize, 3 * gp.tileSize, null);
+            g2.drawImage(down1, screenX, screenY, 3 * gp.tileSize, 4 * gp.tileSize, null);
         }
     }
 }

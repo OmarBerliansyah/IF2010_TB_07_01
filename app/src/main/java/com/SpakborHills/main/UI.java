@@ -1,11 +1,18 @@
 package com.SpakborHills.main;
 
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -16,6 +23,7 @@ public class UI {
     
     Font menuFont;
     Font selectorFont; 
+    Font inputFont;
 
     public boolean messageOn = false;
     public ArrayList<String> message = new ArrayList<>(); 
@@ -27,6 +35,12 @@ public class UI {
     public int slotRow = 0;
     public int commandNum = 0;
     public int titleScreenState = 0; // 0 : the first screen, 1: the second screen
+    // INPUT SYSTEM
+    public String inputPlayerName = "";
+    public String inputFarmName = "";
+    public String inputGender = "Male"; // Default Male
+    public int inputState = 0; // 0 = name, 1 = farm name, 2 = gender, 3 = done
+    public boolean isTyping = false;
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -45,7 +59,7 @@ public class UI {
                 
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
-                                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
 
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
@@ -57,6 +71,7 @@ public class UI {
             System.err.println("ERROR UI: Gagal memuat atau memproses font kustom 'fonts/SDV.ttf'. Menggunakan font default.");
             menuFont = new Font(Font.SANS_SERIF, Font.BOLD, 48); // Fallback untuk menuFont
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
+            inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
         }          
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
@@ -252,27 +267,119 @@ public class UI {
         else if(titleScreenState == 1){
             //CLASS SELECTION SCREEN
             g2.setColor(Color.white);
-            g2.setFont(g2.getFont().deriveFont(42F));
+            g2.setFont(inputFont);
+           
+            // BACKGROUND
+            if (titleScreenImage != null) {
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                // Fallback jika background gagal dimuat
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+                g2.setColor(Color.WHITE);
+                g2.drawString("Background Error", getXforCenteredText("Background Error"), gp.screenHeight / 2 - 20);
+            }
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            int centerX = gp.screenWidth / 2;
+            int startY = gp.tileSize * 3;
+            int lineSpacing = gp.tileSize * 2;
 
-            String text = "Insert Your Name"; //BUTUH INPUT DARI USER BISA GA YA
-            int x = getXforCenteredText(text);
-            int y = gp.tileSize*3;
-            g2.drawString(text, x, y);
+            // PLAYER NAME INPUT
+            String nameText = "Your Name: " + inputPlayerName;
+            if (inputState == 0 && isTyping) {
+                nameText += "_"; // Cursor blink effect
+            }
+            g2.setColor(inputState == 0 ? Color.YELLOW : Color.WHITE);
+            int nameX = getXforCenteredText(nameText);
+            g2.drawString(nameText, nameX, startY);
 
-            text = "Insert Farm Name"; //BUTUH INPUT DARI USER BISA GA YA
-            x = getXforCenteredText(text);
-            y += gp.tileSize*3;
-            g2.drawString(text,x,y);
+            // FARM NAME INPUT  
+            String farmText = "Farm Name: " + inputFarmName;
+            if (inputState == 1 && isTyping) {
+                farmText += "_";
+            }
+            g2.setColor(inputState == 1 ? Color.YELLOW : Color.WHITE);
+            int farmX = getXforCenteredText(farmText);
+            g2.drawString(farmText, farmX, startY + lineSpacing);
 
-            text = "OKE"; //BUTUH INPUT DARI USER BISA GA YA
-            x = getXforCenteredText(text);
-            y += gp.tileSize*3;
-            g2.drawString(text,x,y);
-            if(commandNum == 0){
-                g2.drawString(">", x-gp.tileSize, y);
+            // GENDER SELECTION
+            String genderText = "Gender: " + inputGender + " (Press G to change)";
+            g2.setColor(inputState == 2 ? Color.YELLOW : Color.WHITE);
+            int genderX = getXforCenteredText(genderText);
+            g2.drawString(genderText, genderX, startY + lineSpacing * 2);
+
+            // START GAME BUTTON
+            g2.setColor(inputState == 3 ? Color.YELLOW : Color.WHITE);
+            String startText = "START GAME";
+            int startX = getXforCenteredText(startText);
+            g2.drawString(startText, startX, startY + lineSpacing * 3);
+            if(inputState == 3){
+                g2.drawString(">", startX - gp.tileSize, startY + lineSpacing * 3);
+            }
+
+            // INSTRUCTIONS
+            g2.setFont(g2.getFont().deriveFont(18F));
+            g2.setColor(Color.LIGHT_GRAY);
+            String instruction = "Use UP/DOWN to navigate, ENTER to select/toggle/confirm, Type to input text";
+            int instrX = getXforCenteredText(instruction);
+            g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
+        }
+    }
+    public void addCharacterToInput(char c) {
+        if (!isTyping) return;
+        
+        if (inputState == 0) { // Player name
+            if (inputPlayerName.length() < 12) { // Max 12 characters
+                inputPlayerName += c;
+            }
+        } else if (inputState == 1) { // Farm name
+            if (inputFarmName.length() < 15) { // Max 15 characters
+                inputFarmName += c;
             }
         }
     }
+    public void removeLastCharacter() {
+        if (!isTyping) return;
+        
+        if (inputState == 0 && inputPlayerName.length() > 0) {
+            inputPlayerName = inputPlayerName.substring(0, inputPlayerName.length() - 1);
+        } else if (inputState == 1 && inputFarmName.length() > 0) {
+            inputFarmName = inputFarmName.substring(0, inputFarmName.length() - 1);
+        }
+    }
+    public void toggleGender() {
+        if (inputGender.equals("Male")) {
+            inputGender = "Female";
+        } else {
+            inputGender = "Male";  
+        }
+    }
+    public void startGame() {
+        // Set default values jika kosong
+        if (inputPlayerName.isEmpty()) {
+            inputPlayerName = "Player";
+        }
+        if (inputFarmName.isEmpty()) {
+            inputFarmName = "My Farm";
+        }
+        
+        // Apply ke player
+        gp.player.name = inputPlayerName;
+        gp.player.farmName = inputFarmName;
+        gp.player.gender = inputGender;
+
+        // Reset title screen state
+        titleScreenState = 0;
+        inputState = 0;
+        isTyping = false;
+        
+        // Start game
+        gp.player.updateLocation();
+        gp.gameState = gp.playState;
+        gp.playMusic(0);
+    }
+
     public void drawDialogueScreen(){
         //WINDOW
         int x = gp.tileSize*2;
@@ -317,23 +424,64 @@ public class UI {
         int x = gp.screenWidth/2 - length /2;
         return x;
     }
+    public int getXforRightAlignedText(String text, int padding ){
+        int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        int x = padding-length;
+        return x;
+    }
+    private String truncateText(String text, int maxWidth) {
+        FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+        String truncated = text;
+
+        while (metrics.stringWidth(truncated) > maxWidth && truncated.length() > 0) {
+            truncated = truncated.substring(0, truncated.length() - 1);
+        }
+
+        return truncated;
+    }
     public void drawCharacterScreen(){
         final int frameX = gp.tileSize*2;
         final int frameY = gp.tileSize;
         final int frameWidth = gp.tileSize*5;
         final int frameHeight = gp.tileSize*10;
         drawSubWindow(frameX, frameY, frameWidth, frameHeight);
+        final int padding = frameX + frameWidth - 20;
 
         //TEXT
         g2.setColor(Color.white);
-        g2.setFont(g2.getFont().deriveFont(32F));
+        g2.setFont(g2.getFont().deriveFont(24F));
 
         int textX = frameX + 20;
         int textY = frameY + gp.tileSize;
         final int lineHeight = 32;
+         final int maxValueWidth = frameWidth - 180;
 
         //NAMES
-        //masih atur-atur ye
+        g2.drawString("Name: ", textX, textY);
+        g2.drawString(truncateText(gp.player.name, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.name, maxValueWidth), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Farm Name: " ,textX, textY);
+        g2.drawString(truncateText(gp.player.farmName, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.farmName, maxValueWidth), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Energy : ", textX, textY);
+        g2.drawString(String.valueOf(gp.player.energy), getXforRightAlignedText(String.valueOf(gp.player.energy), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Gold : ", textX, textY);
+        g2.drawString(String.valueOf(gp.player.gold), getXforRightAlignedText(String.valueOf(gp.player.gold), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Gender : ", textX, textY);
+        g2.drawString(truncateText(gp.player.gender, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.gender, maxValueWidth), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Location : ", textX, textY);
+        g2.drawString(truncateText(gp.player.getCurrentLocation(), maxValueWidth), getXforRightAlignedText(truncateText(gp.player.getCurrentLocation(), maxValueWidth), padding), textY);
+        textY += lineHeight;
+        g2.drawString("Partner : ", textX, textY);
+        if (gp.player.partner != null) {
+            g2.drawString(truncateText(gp.player.partner.name, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.partner.name, maxValueWidth), padding), textY);
+        } else {
+            g2.drawString("None", getXforRightAlignedText("None", padding), textY);
+        }
+        //masih atur-atur ye . disini 
     }
     public void drawInventory(){
         int frameX = gp.tileSize*9;
