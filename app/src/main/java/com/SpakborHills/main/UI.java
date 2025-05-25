@@ -498,8 +498,16 @@ public class UI {
 
         // DRAW PLAYER'S ITEMS
         for(int i = 0; i < gp.player.inventory.size(); i++){
-            g2.drawImage(gp.player.inventory.get(i).down1, slotX, slotY, null);
+            g2.drawImage(gp.player.inventory.get(i).item.down1, slotX, slotY, null);
 
+            // nambahin jumlah item di pojok kanan bawah
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+            g2.setColor(Color.WHITE);
+            String itemCount = String.valueOf(gp.player.inventory.get(i).count);
+            int textX = slotX + gp.tileSize - g2.getFontMetrics().stringWidth(itemCount) - 2;
+            int textY = slotY + gp.tileSize - 2;
+            g2.drawString(itemCount, textX, textY);
+            
             slotX += slotSize; 
 
             if(i == 4 || i == 9 || i == 14){
@@ -529,7 +537,7 @@ public class UI {
 
         if(itemIndex < gp.player.inventory.size()){
             drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight); 
-            for(String line : gp.player.inventory.get(itemIndex).description.split("\n")){
+            for(String line : gp.player.inventory.get(itemIndex).item.description.split("\n")){
                 g2.drawString(line, textX, textY);
                 textY += 32;
             }

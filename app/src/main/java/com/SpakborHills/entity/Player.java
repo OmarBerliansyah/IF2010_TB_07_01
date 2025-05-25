@@ -25,7 +25,8 @@ public class Player extends Entity {
     public String gender;
     public String farmName;
     public Entity partner;
-    public String location;    public ArrayList<Entity> inventory = new ArrayList<>(); 
+    public String location;    
+    public ArrayList<InventoryItem> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
 
 
@@ -83,11 +84,21 @@ public class Player extends Entity {
 
 
     public void setItems(){
-        inventory.add(new OBJ_ParsnipSeeds((gp))); 
-        inventory.add(new OBJ_Hoe((gp)));
-        inventory.add(new OBJ_WateringCan((gp)));
-        inventory.add(new OBJ_Pickaxe((gp)));
-        inventory.add(new OBJ_FishingRod((gp)));
+        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
+    }
+
+    public class InventoryItem {
+        public Entity item;
+        public int count;
+
+        public InventoryItem(Entity item, int count) {
+            this.item = item;
+            this.count = count;
+        }
     }
 
     public void getPlayerImage(){
@@ -212,17 +223,26 @@ public class Player extends Entity {
             String text; 
 
             if(gp.obj[i].isPickable){
-                if(inventory.size() != maxInventorySize){
-                    inventory.add(gp.obj[i]); 
-                    gp.playSE(1);
-                    text = "Got a " + gp.obj[i].name + "!"; 
+                boolean itemAlreadyInInventory = false;
+                for (InventoryItem invItem : inventory) {
+                    if (invItem.item.name.equals(gp.obj[i].name)) {
+                        invItem.count++;
+                        itemAlreadyInInventory = true;
+                        break;
+                    }
                 }
-                else {
-                    text = "You cannot carry any more!"; 
+                // klo item belum ada, tambahin ke inventory
+                if (!itemAlreadyInInventory) {
+                    inventory.add(new InventoryItem(gp.obj[i], 1));
                 }
-                gp.ui.addMessage(text);
-                gp.obj[i] = null; 
+                gp.playSE(1);
+                text = "Got a " + gp.obj[i].name + "!";
+            } else {
+                text = "You cannot carry any more!";
             }
+            gp.ui.addMessage(text);
+            gp.obj[i] = null;
+
             /*String objectName = gp.obj[i].name;
             switch (objectName){
                 case "Wood":
