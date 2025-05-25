@@ -8,6 +8,7 @@ import com.SpakborHills.objects.OBJ_House;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
+import com.SpakborHills.objects.OBJ_Wood;
 
 
 public class AssetSetter {
@@ -43,6 +44,16 @@ public class AssetSetter {
             }
             setTreesFromMap();
         }
+
+        int i = 0; 
+        gp.obj[i] = new OBJ_Wood(gp); 
+        gp.obj[i].worldX = gp.tileSize*25; 
+        gp.obj[i].worldY = gp.tileSize*23;
+        i++; 
+        gp.obj[i] = new OBJ_Wood(gp); 
+        gp.obj[i].worldX = gp.tileSize*21; 
+        gp.obj[i].worldY = gp.tileSize*19;
+        i++; 
     }
     
     public void placeHousesAndShippingBins() {

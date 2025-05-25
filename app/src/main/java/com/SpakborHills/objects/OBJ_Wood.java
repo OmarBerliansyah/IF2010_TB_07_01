@@ -9,5 +9,6 @@ public class OBJ_Wood extends Entity {
         super(gp);
         name = "Wood";
         down1 = setup("objects/Wood");
+        description = "[" + name + "]\nIni kayu booossss"; 
     }
 }

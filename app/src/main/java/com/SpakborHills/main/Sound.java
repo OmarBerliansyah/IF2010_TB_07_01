@@ -12,6 +12,7 @@ public class Sound {
     public Sound(){
         soundURL[0] = getClass().getClassLoader().getResource("sound/Sound.wav");
         soundURL[1] = getClass().getClassLoader().getResource("sound/Pickup.wav");
+        soundURL[2] = getClass().getClassLoader().getResource("sound/cursor.wav");
     }
 
     public void setFile(int i){
