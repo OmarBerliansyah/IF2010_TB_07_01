@@ -28,12 +28,15 @@ public class TileManager {
         mapRows[1] = gp.maxWorldRow;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
+        mapCols[3] = gp.maxWorldCol;
+        mapRows[3] = gp.maxWorldRow;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
         loadMap("maps/OceanMap.txt",1);
         loadMap("maps/HouseMap.txt", 2);
+        loadMap("maps/ForestMap.txt", 3);
     }
 
     public void getTileImage() {

@@ -35,7 +35,7 @@ public class AssetSetter {
             placeFixedPonds();
             if (!houseAlreadyPlaced) {
                 int[][] possibleHouseLocations = {
-                {10,0}, {21,0}, {2,24}, {16,24}
+                {14,0}, {21,0}, {2,24}, {16,24}
             };
             houseIndex = random.nextInt(possibleHouseLocations.length); // houseIndex harusnya field di class
             this.houseCol = possibleHouseLocations[houseIndex][0];
@@ -64,7 +64,7 @@ public class AssetSetter {
     }
     
     public void placeFixedPonds() {
-        int col = 26, row = 25;
+        int col = 28, row = 25;
         placePond(col, row);
         occupiedAreas.add(new Rectangle(col, row, 3, 4));
     }
@@ -152,7 +152,7 @@ public class AssetSetter {
             };
             case 2 -> new int[][]{
                  {13,0}, {15,0}, {17,0},
-                {7,3}, {5,3}, {9,3}, {21,0}
+                {7,3}, {5,3}, {9,3}, {11,3}
             };
             case 3 -> new int[][]{
                 {30,0}, {28,0}, {26,0}, {24,0},
