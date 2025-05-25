@@ -16,6 +16,7 @@ public class OBJ_House extends Entity {
         solidArea.height = 6 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        isPickable = false;
     }
     
     @Override

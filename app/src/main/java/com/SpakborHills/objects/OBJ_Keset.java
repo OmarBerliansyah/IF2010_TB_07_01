@@ -12,6 +12,7 @@ public class OBJ_Keset extends Entity {
         name = "Keset";
         down1 = setup("objects/keset", gp.tileSize, gp.tileSize); 
         collision = false;
+        isPickable = false;
     }
     @Override
     public void draw(Graphics2D g2){

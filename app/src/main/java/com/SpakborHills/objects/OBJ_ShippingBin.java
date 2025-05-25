@@ -17,6 +17,7 @@ public class OBJ_ShippingBin extends Entity {
         solidArea.height = 2 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        isPickable = false;
     }
     
     @Override

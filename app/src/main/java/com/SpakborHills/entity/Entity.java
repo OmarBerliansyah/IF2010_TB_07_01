@@ -37,9 +37,13 @@ public class Entity {
     public boolean collision = false;
     boolean tilling = false;
 
+    public boolean isPickable = true;
+
     // player attributes
     public int energy;
     public int gold;
+    // ITEM ATTRIBUTES 
+    public String description = "";
 
     public Entity(GamePanel gp){
         this.gp = gp;

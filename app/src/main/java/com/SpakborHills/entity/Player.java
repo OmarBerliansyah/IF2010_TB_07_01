@@ -3,9 +3,15 @@ package com.SpakborHills.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
+import java.util.ArrayList;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.OBJ_Wood;
 import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
 import com.SpakborHills.tile.Tile;
@@ -23,7 +29,9 @@ public class Player extends Entity {
     public String gender;
     public String farmName;
     public Entity partner;
-    public String location;
+    public String location;    public ArrayList<Entity> inventory = new ArrayList<>(); 
+    public final int maxInventorySize = 20;
+
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -46,6 +54,7 @@ public class Player extends Entity {
         setDefaultValues();
         getPlayerImage();
         getPlayerTillingImage();
+        setItems(); 
     }
 
     public void setDefaultValues(){
@@ -78,6 +87,14 @@ public class Player extends Entity {
         return location;
     }
 
+
+    public void setItems(){
+        inventory.add(new OBJ_ParsnipSeeds((gp))); 
+        inventory.add(new OBJ_Hoe((gp)));
+        inventory.add(new OBJ_WateringCan((gp)));
+        inventory.add(new OBJ_Pickaxe((gp)));
+        inventory.add(new OBJ_FishingRod((gp)));
+    }
 
     public void getPlayerImage(){
         up1 = setup("player/PlayerUp1", gp.tileSize, gp.tileSize);
@@ -198,14 +215,28 @@ public class Player extends Entity {
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
         if(i != 999){
-            String objectName = gp.obj[i].name;
+            String text; 
+
+            if(gp.obj[i].isPickable){
+                if(inventory.size() != maxInventorySize){
+                    inventory.add(gp.obj[i]); 
+                    gp.playSE(1);
+                    text = "Got a " + gp.obj[i].name + "!"; 
+                }
+                else {
+                    text = "You cannot carry any more!"; 
+                }
+                gp.ui.addMessage(text);
+                gp.obj[i] = null; 
+            }
+            /*String objectName = gp.obj[i].name;
             switch (objectName){
                 case "Wood":
                     gp.playSE(1);
                     hasWood++;
                     gp.obj[i]=null;
                     gp.ui.showMessage("You got a wood!");//video 10
-                    break;
+                    break; */
 //                case "Key":
 //                    if(hasKey > 0){
 //                        gp.obj[i] = null;
@@ -214,7 +245,6 @@ public class Player extends Entity {
 //                    break;
             }
         }
-    }
 
     public void tilling(){
         spriteCounter++;
