@@ -228,44 +228,29 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-        if(i != 999){
-            String text; 
-
-            if(gp.obj[i].isPickable){
-                boolean itemAlreadyInInventory = false;
-                for (InventoryItem invItem : inventory) {
-                    if (invItem.item.name.equals(gp.obj[i].name)) {
-                        invItem.count++;
-                        itemAlreadyInInventory = true;
-                        break;
+        if (i != 999 && gp.obj[i] != null) {
+            if (gp.obj[i].isPickable) {
+                if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
+                    boolean itemAlreadyInInventory = false;
+                    for (InventoryItem invItem : inventory) {
+                        if (invItem.item.name.equals(gp.obj[i].name)) {
+                            invItem.count++;
+                            itemAlreadyInInventory = true;
+                            break;
+                        }
                     }
-                }
-                // klo item belum ada, tambahin ke inventory
-                if (!itemAlreadyInInventory) {
-                    inventory.add(new InventoryItem(gp.obj[i], 1));
-                }
-                gp.playSE(1);
-                text = "Got a " + gp.obj[i].name + "!";
-            } else {
-                text = "You cannot carry any more!";
-            }
-            gp.ui.addMessage(text);
-            gp.obj[i] = null;
-
-            /*String objectName = gp.obj[i].name;
-            switch (objectName){
-                case "Wood":
+                    // klo item belum ada, tambahin ke inventory
+                    if (!itemAlreadyInInventory) {
+                        inventory.add(new InventoryItem(gp.obj[i], 1));
+                    }
                     gp.playSE(1);
-                    hasWood++;
-                    gp.obj[i]=null;
-                    gp.ui.showMessage("You got a wood!");//video 10
-                    break; */
-//                case "Key":
-//                    if(hasKey > 0){
-//                        gp.obj[i] = null;
-//                        hasKey --;
-//                    }
-//                    break;
+                    gp.ui.addMessage("Got a " + gp.obj[i].name + "!");
+                    gp.obj[i] = null;
+                } else {
+                    gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
+                }
+    
+            }
             }
         }
 
