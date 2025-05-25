@@ -108,8 +108,8 @@ public class Player extends Entity {
     }
 
     public void getPlayerTillingImage(){
-        tillingUp = setup("player/PlayerHoeUp", gp.tileSize, gp.tileSize*2);
-        tillingDown = setup("player/PlayerHoeFront", gp.tileSize, gp.tileSize*2);
+        tillingUp = setup("player/PlayerUpHoe", gp.tileSize, gp.tileSize*2);
+        tillingDown = setup("player/PlayerDownHoe", gp.tileSize, gp.tileSize*2);
         tillingLeft = setup("player/PlayerLeftPickAxe",gp.tileSize, gp.tileSize);
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
