@@ -10,5 +10,6 @@ public class OBJ_WateringCan extends Entity {
         name = "Watering Can";
         down1 = setup("objects/wateringcan", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nini Watering Can"; 
+        isPickable = true;
     }
 }

@@ -10,5 +10,6 @@ public class OBJ_Pickaxe extends Entity {
         name = "Pickaxe";
         down1 = setup("objects/pickaxe", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nini Pickaxe"; 
+        isPickable = true;
     }
 }

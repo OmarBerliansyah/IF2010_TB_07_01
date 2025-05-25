@@ -83,9 +83,6 @@ public class Player extends Entity {
 
 
     public void setItems(){
-        //inventory.add(currentWeapon);
-        //inventory.add(currentShield); 
-        //inventory.add(new OBJ_Key(gp)); 
         inventory.add(new OBJ_ParsnipSeeds((gp))); 
         inventory.add(new OBJ_Hoe((gp)));
         inventory.add(new OBJ_WateringCan((gp)));
@@ -214,16 +211,18 @@ public class Player extends Entity {
         if(i != 999){
             String text; 
 
-            if(inventory.size() != maxInventorySize){
-                inventory.add(gp.obj[i]); 
-                gp.playSE(1);
-                text = "Got a " + gp.obj[i].name + "!"; 
+            if(gp.obj[i].isPickable){
+                if(inventory.size() != maxInventorySize){
+                    inventory.add(gp.obj[i]); 
+                    gp.playSE(1);
+                    text = "Got a " + gp.obj[i].name + "!"; 
+                }
+                else {
+                    text = "You cannot carry any more!"; 
+                }
+                gp.ui.addMessage(text);
+                gp.obj[i] = null; 
             }
-            else {
-                text = "You cannot carry any more!"; 
-            }
-            gp.ui.addMessage(text);
-            gp.obj[i] = null; 
             /*String objectName = gp.obj[i].name;
             switch (objectName){
                 case "Wood":

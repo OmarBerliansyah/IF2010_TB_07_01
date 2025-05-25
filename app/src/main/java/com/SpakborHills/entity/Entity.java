@@ -36,6 +36,8 @@ public class Entity {
     public boolean collision = false;
     boolean tilling = false;
 
+    public boolean isPickable = true;
+
     // player attributes
     public int energy;
     public int gold;

@@ -10,5 +10,6 @@ public class OBJ_FishingRod extends Entity {
         name = "Fishing Rod";
         down1 = setup("objects/fishingrod", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nini Fishing Rod"; 
+        isPickable = true;
     }
 }

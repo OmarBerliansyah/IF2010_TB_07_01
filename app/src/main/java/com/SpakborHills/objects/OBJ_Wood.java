@@ -10,5 +10,6 @@ public class OBJ_Wood extends Entity {
         name = "Wood";
         down1 = setup("objects/Wood", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nIni kayu booossss"; 
+        isPickable = false;
     }
 }

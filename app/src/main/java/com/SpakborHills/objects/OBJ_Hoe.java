@@ -10,5 +10,6 @@ public class OBJ_Hoe extends Entity {
         name = "Hoe";
         down1 = setup("objects/Hoe",gp.tileSize, gp.tileSize );
         description = "[" + name + "]\nini Hoe"; 
+        isPickable = true;
     }
 }
