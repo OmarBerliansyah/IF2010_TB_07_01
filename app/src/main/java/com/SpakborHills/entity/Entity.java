@@ -39,9 +39,6 @@ public class Entity {
 
     public boolean isPickable = true;
 
-    // player attributes
-    public int energy;
-    public int gold;
     // ITEM ATTRIBUTES 
     public String description = "";
 
