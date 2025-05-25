@@ -76,7 +76,7 @@ public class EventHandler {
                 if (gp.currentMap ==0)gp.aSetter.setObject();
             }
 
-            else if (hit(0, gp.aSetter.getDoorCol(), gp.aSetter.getDoorRow(), "any") == true) {
+            else if (hit(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow(), "any") == true) {
                 teleport(2, 11, 23);
                 gp.aSetter.setObject(); 
                 gp.aSetter.setNPC();
