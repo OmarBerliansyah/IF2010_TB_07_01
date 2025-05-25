@@ -7,7 +7,7 @@ public class Main {
         JFrame window = new JFrame(); // Create a new JFrame object
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Buat tombol close
         window.setResizable(false);
-        window.setTitle("My 2D Game"); // Set the title of the window
+        window.setTitle("Spakbor Hills feat Stecu"); // Set the title of the window
 
         GamePanel gamePanel = new GamePanel(); // Create a new instance of the GamePanel class
         window.add(gamePanel);

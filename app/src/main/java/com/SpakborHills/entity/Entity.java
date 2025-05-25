@@ -23,6 +23,7 @@ public class Entity {
     public int spriteNum =1;
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 56);
+    public Rectangle tillingArea = new Rectangle(0, 0, 0, 0);
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
 

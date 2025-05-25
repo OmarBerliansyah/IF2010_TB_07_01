@@ -6,6 +6,10 @@ import java.awt.image.BufferedImage;
 
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
+import com.SpakborHills.main.UtilityTool;
+import com.SpakborHills.tile.TileType;
+import com.SpakborHills.tile.Tile;
+import com.SpakborHills.tile.TileManager;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -36,7 +40,9 @@ public class Player extends Entity {
         solidAreaDefaultY = solidArea.y;
         solidArea.width = 46;
         solidArea.height = 46;
-        
+        tillingArea.width = 36;
+        tillingArea.height = 36;
+
         setDefaultValues();
         getPlayerImage();
         getPlayerTillingImage();
@@ -217,12 +223,49 @@ public class Player extends Entity {
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
+            // Tentukan tile yang akan diolah berdasarkan arah pemain
+            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
+            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
+
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
+                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
+                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                    // energy--;
+                    // gp.playSE(indeksSuaraCangkul);
+                }
+            }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
             tilling = false;
         }
+        
     }
 
     public void interactNPC(int i){
@@ -241,6 +284,8 @@ public class Player extends Entity {
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
         BufferedImage image = null;
+        int tempScreenX = screenX;
+        int tempScreenY = screenY;
         switch (direction){
             case "up":
                 if(tilling == false){
@@ -252,6 +297,7 @@ public class Player extends Entity {
                     }
                 }
                 if(tilling == true){
+                    tempScreenY = screenY - gp.tileSize;
                     if(spriteNum == 1){
                         image = up1;
                     }
@@ -270,6 +316,7 @@ public class Player extends Entity {
                     }
                 }
                 if(tilling == true){
+                    tempScreenY = screenY + gp.tileSize;
                     if(spriteNum == 1){
                         image = down1;
                     }
@@ -315,6 +362,6 @@ public class Player extends Entity {
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY,null);
+        g2.drawImage(image, tempScreenX, tempScreenY,null);
     }
 }
