@@ -83,7 +83,7 @@ public class TileManager {
         setup(40, "GrassSoilBawah", false, TileType.NONE);
         setup(41, "GressSoilKaBEdge", false, TileType.NONE);
         setup(42, "GressSoilKaAEdge", false, TileType.NONE);
-        setup(43, "Soilkeinjek", false, TileType.NONE);
+        setup(43, "Soilkeinjek", false, TileType.TILLABLE);
         setup(44, "rumahataskanan", false, TileType.NONE);
         setup(45, "rumahataskiri", false, TileType.NONE);
         setup(46, "rumahatas", false, TileType.NONE);
@@ -93,6 +93,14 @@ public class TileManager {
         setup(50, "rumahbawahkiri", false, TileType.NONE);
         setup(51, "rumahbawahkanan", false, TileType.NONE);
         setup(52, "rumahtengah", false, TileType.NONE);
+        setup(53, "SoilBATU", false, TileType.NONE);
+        setup(54, "GressSoilKaBEdge2", false, TileType.NONE);
+        setup(55, "GressSoilKaAEdge2", false, TileType.NONE);
+        setup(56, "GressSoilKaAEdge3", false, TileType.NONE);
+        setup(57, "GrassSoilTengahKiri2", false, TileType.NONE);
+        setup(58, "GrassSoilMasukKanan", false, TileType.NONE);
+        setup(59, "SoilStone2", false, TileType.NONE);
+        setup(60, "SoilRumput", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){
