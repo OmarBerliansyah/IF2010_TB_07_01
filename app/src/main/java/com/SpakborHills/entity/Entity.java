@@ -34,6 +34,9 @@ public class Entity {
     public String name;
     public boolean collision = false;
 
+    // player attributes
+    public int energy;
+    public int gold;
 
     public Entity(GamePanel gp){
         this.gp = gp;
