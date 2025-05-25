@@ -8,7 +8,7 @@ public class OBJ_Hoe extends Entity {
     public OBJ_Hoe(GamePanel gp){
         super(gp);
         name = "Hoe";
-        down1 = setup("objects/Hoe");
+        down1 = setup("objects/Hoe",gp.tileSize, gp.tileSize );
         description = "[" + name + "]\nini Hoe"; 
     }
 }

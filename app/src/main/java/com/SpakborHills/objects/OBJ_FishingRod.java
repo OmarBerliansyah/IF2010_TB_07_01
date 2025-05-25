@@ -8,7 +8,7 @@ public class OBJ_FishingRod extends Entity {
     public OBJ_FishingRod(GamePanel gp){
         super(gp);
         name = "Fishing Rod";
-        down1 = setup("objects/fishingrod");
+        down1 = setup("objects/fishingrod", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nini Fishing Rod"; 
     }
 }

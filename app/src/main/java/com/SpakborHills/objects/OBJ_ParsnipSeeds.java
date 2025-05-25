@@ -8,7 +8,7 @@ public class OBJ_ParsnipSeeds extends Entity {
     public OBJ_ParsnipSeeds(GamePanel gp){
         super(gp);
         name = "Parsnip Seeds";
-        down1 = setup("objects/ParsnipSeeds");
+        down1 = setup("objects/ParsnipSeeds",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nini Parsnip Seeds"; 
     }
 }
