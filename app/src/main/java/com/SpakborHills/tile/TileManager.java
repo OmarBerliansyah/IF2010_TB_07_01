@@ -21,7 +21,7 @@ public class TileManager {
     public TileManager(GamePanel gp){
         this.gp = gp;
 
-        tile = new Tile[40];
+        tile = new Tile[100];
         mapCols[0] = gp.maxWorldCol;
         mapRows[0] = gp.maxWorldRow;
         mapCols[1] = gp.maxWorldCol;
@@ -70,6 +70,17 @@ public class TileManager {
         setup(30, "GrassFlower", false, TileType.NONE);
         setup(31, "GrassCorn", true, TileType.NONE);
         setup(32, "GrassFlower2", false, TileType.NONE);
+        setup(33, "Water", true, TileType.NONE);
+        setup(34, "GrassStone", false, TileType.NONE);
+        setup(35, "GrassSoilTengah2", false, TileType.NONE);
+        setup(36, "GrassSoilAtas", false, TileType.NONE);
+        setup(37, "GrassSoilTengahKiri", false, TileType.NONE);
+        setup(38, "GrassSoilKAEdge", false, TileType.NONE);
+        setup(39, "GrassSoilKBEdge", false, TileType.NONE);
+        setup(40, "GrassSoilBawah", false, TileType.NONE);
+        setup(41, "GressSoilKaBEdge", false, TileType.NONE);
+        setup(42, "GressSoilKaAEdge", false, TileType.NONE);
+        setup(43, "Soilkeinjek", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){

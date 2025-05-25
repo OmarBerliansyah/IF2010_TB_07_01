@@ -64,9 +64,9 @@ public class AssetSetter {
     }
     
     public void placeFixedPonds() {
-        int col = 20, row = 10;
+        int col = 26, row = 25;
         placePond(col, row);
-        occupiedAreas.add(new Rectangle(col, row, 4, 3));
+        occupiedAreas.add(new Rectangle(col, row, 3, 4));
     }
     
     private void placeHouse(int col, int row) {
@@ -122,6 +122,7 @@ public class AssetSetter {
             {3,5}, 
             {1,7},  
             {3,7},  
+            {11,0}, 
         };
         for(int i = 0; i < treePositions.length; i++) {
             int col = treePositions[i][0];
@@ -150,8 +151,8 @@ public class AssetSetter {
                 {30,3}, {30,5}, {30,7}, {30,9}
             };
             case 2 -> new int[][]{
-                {19,0}, {13,0}, {15,0}, {17,0},
-                {19,3}, {13,3}, {15,3}, {17,3}
+                 {13,0}, {15,0}, {17,0},
+                {7,3}, {5,3}, {9,3}, {21,0}
             };
             case 3 -> new int[][]{
                 {30,0}, {28,0}, {26,0}, {24,0},
