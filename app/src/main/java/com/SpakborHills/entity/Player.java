@@ -39,6 +39,7 @@ public class Player extends Entity {
         
         setDefaultValues();
         getPlayerImage();
+        getPlayerTillingImage();
     }
 
     public void setDefaultValues(){
@@ -55,6 +56,7 @@ public class Player extends Entity {
         updateLocation();
  // Initialize partner as null, can be set later
     }
+
     public void updateLocation() {
         if (gp.currentMap == 0) {
             location = "Farm";
@@ -72,18 +74,29 @@ public class Player extends Entity {
 
 
     public void getPlayerImage(){
-        up1 = setup("player/PlayerUp1");
-        up2 = setup("player/PlayerUp2");
-        down1 = setup("player/PlayerDown1");
-        down2 = setup("player/PlayerDown2");
-        left1 = setup("player/PlayerLeft1");
-        left2 = setup("player/PlayerLeft2");
-        right1 = setup("player/PlayerRight1");
-        right2 = setup("player/PlayerRight2");
+        up1 = setup("player/PlayerUp1", gp.tileSize, gp.tileSize);
+        up2 = setup("player/PlayerUp2", gp.tileSize, gp.tileSize);
+        down1 = setup("player/PlayerDown1", gp.tileSize, gp.tileSize);
+        down2 = setup("player/PlayerDown2", gp.tileSize, gp.tileSize);
+        left1 = setup("player/PlayerLeft1", gp.tileSize, gp.tileSize);
+        left2 = setup("player/PlayerLeft2",gp.tileSize, gp.tileSize);
+        right1 = setup("player/PlayerRight1",gp.tileSize, gp.tileSize);
+        right2 = setup("player/PlayerRight2",gp.tileSize, gp.tileSize);
+    }
+
+    public void getPlayerTillingImage(){
+        tillingUp = setup("player/PlayerHoeUp", gp.tileSize, gp.tileSize*2);
+        tillingDown = setup("player/PlayerHoeFront", gp.tileSize, gp.tileSize*2);
+        tillingLeft = setup("player/PlayerLeftPickAxe",gp.tileSize, gp.tileSize);
+        tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
 
     public void update(){
+
+        if(tilling == true){
+            tilling();
+        }
 
         if(moving == false){
             boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
@@ -144,6 +157,7 @@ public class Player extends Entity {
             // CHECK EVENT
             gp.eHandler.checkEvent();
             gp.keyH.enterPressed = false;
+        
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
             if(collisionOn == false && keyH.enterPressed == false){
@@ -154,6 +168,7 @@ public class Player extends Entity {
                     case "right": worldX += speed; break;
                 }
             }
+            
             spriteCounter++;
             if(spriteCounter > 12){
                 if(spriteNum == 1){
@@ -195,12 +210,31 @@ public class Player extends Entity {
         }
     }
 
+    public void tilling(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+        }
+        if(spriteCounter > 25){
+            spriteNum = 1;
+            spriteCounter = 0;
+            tilling = false;
+        }
+    }
+
     public void interactNPC(int i){
-        if(i != 999){
-            if(gp.keyH.enterPressed){
+        if(gp.keyH.enterPressed) {
+            if (i != 999) {
                 gp.gameState = gp.dialogueState;
                 gp.NPC[i].speak();
             }
+            else{
+                tilling = true;
+            }
+            gp.keyH.enterPressed = false;
         }
     }
     public void draw(Graphics2D g2){
@@ -209,35 +243,75 @@ public class Player extends Entity {
         BufferedImage image = null;
         switch (direction){
             case "up":
-                if(spriteNum == 1){
-                    image = up1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = up2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = up2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingUp;
+                    }
                 }
                 break;
             case "down":
-                if(spriteNum == 1){
-                    image = down1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = down1;
+                    }
+                    if(spriteNum == 2){
+                        image = down2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = down2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = down1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingDown;
+                    }
                 }
                 break;
             case "left":
-                if(spriteNum == 1){
-                    image = left1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = left1;
+                    }
+                    if(spriteNum == 2){
+                        image = left2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = left2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = left1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingLeft;
+                    }
                 }
                 break;
             case "right":
-                if(spriteNum == 1){
-                    image = right1;
+                if(tilling == false){
+                    if(spriteNum == 1){
+                        image = right1;
+                    }
+                    if(spriteNum == 2){
+                        image = right2;
+                    }
                 }
-                if(spriteNum == 2){
-                    image = right2;
+                if(tilling == true){
+                    if(spriteNum == 1){
+                        image = right1;
+                    }
+                    if(spriteNum == 2){
+                        image = tillingRight;
+                    }
                 }
                 break;
         }

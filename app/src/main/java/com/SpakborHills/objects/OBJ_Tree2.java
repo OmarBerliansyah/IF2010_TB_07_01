@@ -10,7 +10,7 @@ public class OBJ_Tree2 extends Entity {
     public OBJ_Tree2(GamePanel gp){
         super(gp);
         name = "Tree2";
-        down1 = setup("objects/pohon2"); 
+        down1 = setup("objects/pohon2",  gp.tileSize, gp.tileSize); 
         collision = true;
 
         solidArea.x = gp.tileSize / 4; // Start collision area slightly inset from left edge

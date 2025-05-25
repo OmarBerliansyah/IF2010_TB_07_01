@@ -7,7 +7,7 @@ public class OBJ_House extends Entity {
     public OBJ_House(GamePanel gp){
         super(gp);
         name = "House";
-        down1 = setup("objects/House"); // Your house sprite file
+        down1 = setup("objects/House", gp.tileSize, gp.tileSize); // Your house sprite file
         collision = true;
 
         solidArea.x = 0;
