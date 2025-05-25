@@ -28,12 +28,15 @@ public class TileManager {
         mapRows[1] = gp.maxWorldRow;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
+        mapCols[3] = gp.maxWorldCol;
+        mapRows[3] = gp.maxWorldRow;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
         loadMap("maps/OceanMap.txt",1);
         loadMap("maps/HouseMap.txt", 2);
+        loadMap("maps/ForestMap.txt", 3);
     }
 
     public void getTileImage() {
@@ -81,6 +84,15 @@ public class TileManager {
         setup(41, "GressSoilKaBEdge", false, TileType.NONE);
         setup(42, "GressSoilKaAEdge", false, TileType.NONE);
         setup(43, "Soilkeinjek", false, TileType.NONE);
+        setup(44, "rumahataskanan", false, TileType.NONE);
+        setup(45, "rumahataskiri", false, TileType.NONE);
+        setup(46, "rumahatas", false, TileType.NONE);
+        setup(47, "rumahbawah", false, TileType.NONE);
+        setup(48, "rumahkanan", false, TileType.NONE);
+        setup(49, "rumahkiri", false, TileType.NONE);
+        setup(50, "rumahbawahkiri", false, TileType.NONE);
+        setup(51, "rumahbawahkanan", false, TileType.NONE);
+        setup(52, "rumahtengah", false, TileType.NONE);
     }
 
     public void setup(int index, String imageName, boolean collision, TileType type){
