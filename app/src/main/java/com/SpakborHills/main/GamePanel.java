@@ -9,7 +9,6 @@ import java.util.Comparator;
 
 import javax.swing.JPanel;
 
-
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
@@ -56,7 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH); // Create an instance of the Player class, passing the GamePanel and KeyHandler as parameters
-    public Entity obj[] = new Entity[100];
+    public Entity mapObjects[][] = new Entity[maxMap][100];
     public Entity NPC[] = new Entity[10];
     ArrayList<Entity> entityList = new ArrayList<>();
 
@@ -75,8 +74,11 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyH); // Add key listener for handling keyboard input
         this.setFocusable(true); // Make the panel focusable to receive key events
     }
-
+     public Entity[] getCurrentMapObjects() {
+        return mapObjects[currentMap];
+    }
     public void setUpGame(){
+        initializeAllMapObjects();
         aSetter.setObject();
         aSetter.setNPC();
         playMusic(0);
@@ -119,7 +121,14 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-
+     private void initializeAllMapObjects() {
+        // Initialize array untuk semua map
+        for(int map = 0; map < maxMap; map++) {
+            for(int i = 0; i < mapObjects[map].length; i++) {
+                mapObjects[map][i] = null;
+            }
+        }
+    }
     public void update() {
         // // Update game logic here
         if(gameState == playState){
@@ -128,6 +137,12 @@ public class GamePanel extends JPanel implements Runnable {
             for(int i = 0; i < NPC.length ; i++){
                 if(NPC[i] != null){
                     NPC[i].update();
+                }
+            }
+            Entity[] currentObjects = getCurrentMapObjects();
+            for (Entity currentObject : currentObjects) {
+                if (currentObject != null) {
+                    currentObject.update();
                 }
             }
             eManager.update();
@@ -160,15 +175,15 @@ public class GamePanel extends JPanel implements Runnable {
             //ADD ENTITY TO LIST
             entityList.add(player);
 
-            for(int i = 0; i<NPC.length; i++){
-                if(NPC[i] != null){
-                    entityList.add(NPC[i]);
+            for (Entity NPC1 : NPC) {
+                if (NPC1 != null) {
+                    entityList.add(NPC1);
                 }
             }
-
-            for(int i = 0; i <obj.length; i++){
-                if(obj[i] != null){
-                    entityList.add(obj[i]);
+            Entity[] currentObjects = getCurrentMapObjects();
+            for (Entity currentObject : currentObjects) {
+                if (currentObject != null) {
+                    entityList.add(currentObject);
                 }
             }
 

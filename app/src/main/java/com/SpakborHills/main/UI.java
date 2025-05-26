@@ -14,7 +14,10 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Iterator;
-import com.SpakborHills.entity.*;;
+import com.SpakborHills.entity.*;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 public class UI {
     GamePanel gp;

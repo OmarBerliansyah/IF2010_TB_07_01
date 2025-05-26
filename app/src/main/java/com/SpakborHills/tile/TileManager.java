@@ -30,6 +30,8 @@ public class TileManager {
         mapRows[2] = 24; 
         mapCols[3] = gp.maxWorldCol;
         mapRows[3] = gp.maxWorldRow;
+        mapCols[4] = gp.maxWorldCol;
+        mapRows[4] = gp.maxWorldRow;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
@@ -37,6 +39,7 @@ public class TileManager {
         loadMap("maps/OceanMap.txt",1);
         loadMap("maps/HouseMap.txt", 2);
         loadMap("maps/ForestMap.txt", 3);
+        loadMap("maps/npcMap.txt", 4);
     }
 
     public void getTileImage() {
