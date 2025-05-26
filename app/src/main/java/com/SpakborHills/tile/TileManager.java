@@ -101,7 +101,12 @@ public class TileManager {
         setup(58, "GrassSoilMasukKanan", false, TileType.NONE);
         setup(59, "SoilStone2", false, TileType.NONE);
         setup(60, "SoilRumput", false, TileType.NONE);
+        setup(61, "GrassSoilKAEdge2", false, TileType.NONE);
+        setup(62, "GrassSoilTengahKiri4", false, TileType.NONE);
+        setup(63, "GrassSoilKAEdge3", false, TileType.NONE);
+        setup(64, "GrassSoilKAEdge4", false, TileType.NONE);
     }
+
 
     public void setup(int index, String imageName, boolean collision, TileType type){
         UtilityTool uTool = new UtilityTool();

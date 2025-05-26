@@ -11,10 +11,9 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 public class UI {
     GamePanel gp;
@@ -321,7 +320,7 @@ public class UI {
             // INSTRUCTIONS
             g2.setFont(g2.getFont().deriveFont(18F));
             g2.setColor(Color.LIGHT_GRAY);
-            String instruction = "Use UP/DOWN to navigate, ENTER to select/toggle/confirm, Type to input text";
+            String instruction = "Use UP/DOWN to navigate, ENTER to select, Type to input text";
             int instrX = getXforCenteredText(instruction);
             g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
         }
