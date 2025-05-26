@@ -34,7 +34,6 @@ public class Player extends Entity {
     public final int maxInventorySize = 20;
     public Entity equippedItem;
 
-
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
         this.keyH = keyH;
@@ -57,6 +56,7 @@ public class Player extends Entity {
         getPlayerImage();
         getPlayerTillingImage();
         setItems(); 
+        getPlayerSeedsImage();
     }
 
     public void setDefaultValues(){
@@ -126,11 +126,42 @@ public class Player extends Entity {
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
+    public void getPlayerSeedsImage(){
+        blueberrySeeds = setup("player/PlayerBlueberrySeeds", gp.tileSize, gp.tileSize);
+    }
+
+    public void equipItem(int inventoryIndex) {
+        if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
+            equippedItem = inventory.get(inventoryIndex).item;
+        }
+    }
+
+    public void unEquipItem() {
+        equippedItem = null;
+    }
 
     public void update(){
 
-        if(tilling == true){
-            tilling();
+        if(keyH.tillingPressed){
+            if(energy >= 5){
+                tilling = true;
+                keyH.tillingPressed = false; // Reset the tillingPressed flag
+                tilling();
+            }
+            else{
+                gp.ui.addMessage("Need more energy to till this soil!");
+            }
+        }
+
+        else if(keyH.plantingPressed){
+            if(energy >= 5){
+                planting = true;
+                planting();
+            }
+            else{
+                gp.ui.addMessage("Need more energy to plant this seed!");
+            }
+            keyH.plantingPressed = false; // Reset the plantingPressed flag
         }
 
         if(moving == false){
@@ -166,6 +197,8 @@ public class Player extends Entity {
                 }
 
                 gp.keyH.enterPressed = false;
+                gp.keyH.tillingPressed = false;
+                gp.keyH.plantingPressed = false;
             }
             else{
                 standCounter++;
@@ -192,6 +225,8 @@ public class Player extends Entity {
             // CHECK EVENT
             gp.eHandler.checkEvent();
             gp.keyH.enterPressed = false;
+            gp.keyH.tillingPressed = false;
+            gp.keyH.plantingPressed = false;
         
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
@@ -226,44 +261,30 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-        if(i != 999){
-            String text; 
+        if (i != 999 && gp.obj[i] != null) {
             Entity[] currentMapObjects = gp.getCurrentMapObjects();
-            if(currentMapObjects[i].isPickable){
-                boolean itemAlreadyInInventory = false;
-                for (InventoryItem invItem : inventory) {
-                    if (invItem.item.name.equals(currentMapObjects[i].name)) {
-                        invItem.count++;
-                        itemAlreadyInInventory = true;
-                        break;
+            if (currentMapObjects[i].isPickable) {
+                if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
+                    boolean itemAlreadyInInventory = false;
+                    for (InventoryItem invItem : inventory) {
+                        if (invItem.item.name.equals(currentMapObjects[i].name)) {
+                            invItem.count++;
+                            itemAlreadyInInventory = true;
+                            break;
+                        }
                     }
-                }
-                // klo item belum ada, tambahin ke inventory
-                if (!itemAlreadyInInventory) {
-                    inventory.add(new InventoryItem(currentMapObjects[i], 1));
-                }
-                gp.playSE(1);
-                text = "Got a " + currentMapObjects[i].name + "!";
-            } else {
-                text = "You cannot carry any more!";
-            }
-            gp.ui.addMessage(text);
-            currentMapObjects[i] = null;
-
-            /*String objectName = gp.obj[i].name;
-            switch (objectName){
-                case "Wood":
+                    // klo item belum ada, tambahin ke inventory
+                    if (!itemAlreadyInInventory) {
+                        inventory.add(new InventoryItem(currentMapObjects[i], 1));
+                    }
                     gp.playSE(1);
-                    hasWood++;
-                    gp.obj[i]=null;
-                    gp.ui.showMessage("You got a wood!");//video 10
-                    break; */
-//                case "Key":
-//                    if(hasKey > 0){
-//                        gp.obj[i] = null;
-//                        hasKey --;
-//                    }
-//                    break;
+                    gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");
+                    gp.obj[i] = null;
+                } else {
+                    gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
+                }
+    
+            }
             }
         }
 
@@ -325,12 +346,10 @@ public class Player extends Entity {
                 gp.gameState = gp.dialogueState;
                 gp.NPC[i].speak();
             }
-            else{
-                tilling = true;
-            }
             gp.keyH.enterPressed = false;
         }
     }
+
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
@@ -353,6 +372,14 @@ public class Player extends Entity {
                         image = tillingUp;
                     }
                 }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
+                    }
+                }
                 break;
             case "down":
                 if(tilling == false){
@@ -369,6 +396,14 @@ public class Player extends Entity {
                     }
                     if(spriteNum == 2){
                         image = tillingDown;
+                    }
+                }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
                     }
                 }
                 break;
@@ -389,6 +424,14 @@ public class Player extends Entity {
                         image = tillingLeft;
                     }
                 }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
+                    }
+                }
                 break;
             case "right":
                 if(tilling == false){
@@ -405,6 +448,14 @@ public class Player extends Entity {
                     }
                     if(spriteNum == 2){
                         image = tillingRight;
+                    }
+                }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
                     }
                 }
                 break;

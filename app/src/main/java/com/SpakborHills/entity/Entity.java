@@ -17,6 +17,7 @@ public class Entity {
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
+    public BufferedImage blueberrySeeds;
     public String direction = "down";
 
     public int spriteCounter = 0;
@@ -36,6 +37,7 @@ public class Entity {
     public String name;
     public boolean collision = false;
     boolean tilling = false;
+    boolean planting = false;
 
     public boolean isPickable = true;
 
