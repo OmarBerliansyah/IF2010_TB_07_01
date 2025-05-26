@@ -11,16 +11,13 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-<<<<<<< HEAD
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Iterator;
-import com.SpakborHills.entity.*;;
-=======
+import com.SpakborHills.entity.*;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
->>>>>>> f8c40e08505b12b7384bb03e479c37ceb4d5da26
 
 public class UI {
     GamePanel gp;
