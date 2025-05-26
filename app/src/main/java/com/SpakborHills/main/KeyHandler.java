@@ -239,5 +239,17 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_ENTER){
             enterPressed = false;
         }
+        if (gp.gameState == gp.characterState) {
+            if (code == KeyEvent.VK_E) { 
+                int selectedIndex = gp.ui.getItemIndexOnSLot();
+                if (selectedIndex < gp.player.inventory.size()) {
+                    if (gp.player.equippedItem == gp.player.inventory.get(selectedIndex).item) {
+                        gp.player.unEquipItem(); 
+                    } else {
+                        gp.player.equipItem(selectedIndex); 
+                    }
+                }
+            }
+        }
     }
 }

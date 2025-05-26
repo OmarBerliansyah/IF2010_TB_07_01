@@ -11,10 +11,10 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.Iterator;
+import com.SpakborHills.entity.*;;
 
 public class UI {
     GamePanel gp;
@@ -498,6 +498,13 @@ public class UI {
 
         // DRAW PLAYER'S ITEMS
         for(int i = 0; i < gp.player.inventory.size(); i++){
+            g2.drawImage(gp.player.inventory.get(i).item.down1, slotX, slotY, null);
+
+            // EQUIP CURSOR 
+            if (gp.player.equippedItem == gp.player.inventory.get(i).item) {
+                g2.setColor(new Color(240, 190, 90, 200));
+                g2.fillRoundRect(slotX + 2, slotY + 2, gp.tileSize - 4, gp.tileSize - 4, 8, 8);
+            }
             g2.drawImage(gp.player.inventory.get(i).item.down1, slotX, slotY, null);
 
             // nambahin jumlah item di pojok kanan bawah

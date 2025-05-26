@@ -32,7 +32,7 @@ public class Player extends Entity {
     public String location;    
     public ArrayList<InventoryItem> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
-
+    public Entity equippedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -125,6 +125,15 @@ public class Player extends Entity {
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
+    public void equipItem(int inventoryIndex) {
+        if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
+            equippedItem = inventory.get(inventoryIndex).item;
+        }
+    }
+
+    public void unEquipItem() {
+        equippedItem = null;
+    }
 
     public void update(){
 
