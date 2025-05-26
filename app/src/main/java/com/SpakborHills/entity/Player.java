@@ -261,8 +261,8 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-        if (i != 999 && gp.obj[i] != null) {
-            Entity[] currentMapObjects = gp.getCurrentMapObjects();
+         Entity[] currentMapObjects = gp.getCurrentMapObjects();
+        if (i != 999 && currentMapObjects[i] != null) {
             if (currentMapObjects[i].isPickable) {
                 if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
                     boolean itemAlreadyInInventory = false;
@@ -279,7 +279,7 @@ public class Player extends Entity {
                     }
                     gp.playSE(1);
                     gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");
-                    gp.obj[i] = null;
+                    currentMapObjects[i] = null;
                 } else {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
@@ -287,6 +287,55 @@ public class Player extends Entity {
             }
             }
         }
+    public void planting(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
+            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
+
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
+                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
+                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
+                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                    energy -= 5;
+                    // gp.playSE(indeksSuaraCangkul);
+                }
+            }
+        }
+        if(spriteCounter > 25){
+            spriteNum = 1;
+            spriteCounter = 0;
+            planting = false;
+        }
+    }    
 
     public void tilling(){
         spriteCounter++;
