@@ -5,7 +5,7 @@ import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, tillingPressed, plantingPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
     public KeyHandler(GamePanel gp){
@@ -163,6 +163,12 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.characterState;
                 characterPressed = true;
             }
+            if (code == KeyEvent.VK_Q && !tillingPressed) {
+                tillingPressed = true;
+            }
+            if (code == KeyEvent.VK_Y && !plantingPressed) {
+                plantingPressed = true;
+            }
         }
 
         //PAUSE STATE
@@ -238,6 +244,12 @@ public class KeyHandler implements KeyListener {
         }
         if(code == KeyEvent.VK_ENTER){
             enterPressed = false;
+        }
+        if(code == KeyEvent.VK_Q){
+            tillingPressed = false;
+        }
+        if(code == KeyEvent.VK_Y){
+            plantingPressed = false;
         }
     }
 }

@@ -59,6 +59,7 @@ public class Player extends Entity {
         getPlayerImage();
         getPlayerTillingImage();
         setItems(); 
+        getPlayerSeedsImage();
     }
 
     public void setDefaultValues(){
@@ -128,11 +129,33 @@ public class Player extends Entity {
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
+    public void getPlayerSeedsImage(){
+        blueberrySeeds = setup("player/PlayerBlueberrySeeds", gp.tileSize, gp.tileSize);
+    }
+
 
     public void update(){
 
-        if(tilling == true){
-            tilling();
+        if(keyH.tillingPressed){
+            if(energy >= 5){
+                tilling = true;
+                keyH.tillingPressed = false; // Reset the tillingPressed flag
+                tilling();
+            }
+            else{
+                gp.ui.addMessage("Need more energy to till this soil!");
+            }
+        }
+
+        else if(keyH.plantingPressed){
+            if(energy >= 5){
+                planting = true;
+                planting();
+            }
+            else{
+                gp.ui.addMessage("Need more energy to plant this seed!");
+            }
+            keyH.plantingPressed = false; // Reset the plantingPressed flag
         }
 
         if(moving == false){
@@ -168,6 +191,8 @@ public class Player extends Entity {
                 }
 
                 gp.keyH.enterPressed = false;
+                gp.keyH.tillingPressed = false;
+                gp.keyH.plantingPressed = false;
             }
             else{
                 standCounter++;
@@ -194,6 +219,8 @@ public class Player extends Entity {
             // CHECK EVENT
             gp.eHandler.checkEvent();
             gp.keyH.enterPressed = false;
+            gp.keyH.tillingPressed = false;
+            gp.keyH.plantingPressed = false;
         
 
             // IF COLLISION IS FALSE, PLAYER CAN MOVE
@@ -253,9 +280,58 @@ public class Player extends Entity {
             }
             }
         }
+    
+    public void planting(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
+            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
+
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
+                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
+                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
+                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                    energy -= 5;
+                    // gp.playSE(indeksSuaraCangkul);
+                }
+            }
+        }
+        if(spriteCounter > 25){
+            spriteNum = 1;
+            spriteCounter = 0;
+            planting = false;
+        }
+    }
 
     public void tilling(){
-        boolean messagedone = false;
         spriteCounter++;
         if(spriteCounter <= 5){
             spriteNum = 1;
@@ -298,9 +374,6 @@ public class Player extends Entity {
                     // gp.playSE(indeksSuaraCangkul);
                 }
             }
-            else{
-                gp.ui.addMessage("Need more energy to till this soil!");
-            }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
@@ -316,12 +389,10 @@ public class Player extends Entity {
                 gp.gameState = gp.dialogueState;
                 gp.NPC[i].speak();
             }
-            else{
-                tilling = true;
-            }
             gp.keyH.enterPressed = false;
         }
     }
+
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
@@ -344,6 +415,14 @@ public class Player extends Entity {
                         image = tillingUp;
                     }
                 }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
+                    }
+                }
                 break;
             case "down":
                 if(tilling == false){
@@ -360,6 +439,14 @@ public class Player extends Entity {
                     }
                     if(spriteNum == 2){
                         image = tillingDown;
+                    }
+                }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
                     }
                 }
                 break;
@@ -380,6 +467,14 @@ public class Player extends Entity {
                         image = tillingLeft;
                     }
                 }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
+                    }
+                }
                 break;
             case "right":
                 if(tilling == false){
@@ -396,6 +491,14 @@ public class Player extends Entity {
                     }
                     if(spriteNum == 2){
                         image = tillingRight;
+                    }
+                }
+                if(planting == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = blueberrySeeds;
                     }
                 }
                 break;

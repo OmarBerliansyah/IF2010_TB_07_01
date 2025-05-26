@@ -453,7 +453,7 @@ public class UI {
         int textX = frameX + 20;
         int textY = frameY + gp.tileSize;
         final int lineHeight = 32;
-         final int maxValueWidth = frameWidth - 180;
+        final int maxValueWidth = frameWidth - 180;
 
         //NAMES
         g2.drawString("Name: ", textX, textY);
@@ -482,6 +482,7 @@ public class UI {
         }
         //masih atur-atur ye . disini 
     }
+    
     public void drawInventory(){
         int frameX = gp.tileSize*9;
         int frameY = gp.tileSize;
