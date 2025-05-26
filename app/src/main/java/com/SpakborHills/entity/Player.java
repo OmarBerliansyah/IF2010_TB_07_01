@@ -35,7 +35,7 @@ public class Player extends Entity {
     public String location;    
     public ArrayList<InventoryItem> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
-    public Entity equippedItem;
+    public Player.InventoryItem equippedInventoryItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -125,7 +125,7 @@ public class Player extends Entity {
     public void getPlayerTillingImage(){
         tillingUp = setup("player/PlayerUpHoe", gp.tileSize, gp.tileSize);
         tillingDown = setup("player/PlayerDownHoe", gp.tileSize, gp.tileSize);
-        tillingLeft = setup("player/PlayerLeftPickAxe",gp.tileSize, gp.tileSize);
+        tillingLeft = setup("player/PlayerLeftHoe",gp.tileSize, gp.tileSize);
         tillingRight = setup("player/PlayerRightHoe",gp.tileSize, gp.tileSize);
     }
 
@@ -135,84 +135,108 @@ public class Player extends Entity {
 
     public void equipItem(int inventoryIndex) {
         if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
-            equippedItem = inventory.get(inventoryIndex).item;
+            equippedInventoryItem = inventory.get(inventoryIndex);
+            if(equippedInventoryItem != null && equippedInventoryItem.item != null) {
+                gp.ui.addMessage("Equipped " + equippedInventoryItem.item.name + "!");
+            }
+            else{
+                unEquipItem();
+                gp.ui.addMessage("No item to equip!");
+            }
+        }
+        else{
+            unEquipItem();
+            gp.ui.addMessage("No item to equip!");
         }
     }
 
     public void unEquipItem() {
-        equippedItem = null;
+        equippedInventoryItem = null;
     }
 
     public void update(){
+        if(tilling){
+            tilling();
+            return;
+        }
+        if(planting){
+            planting();
+            return;
+        }
+        if(moving){
+            handleMovement();
+        }
+        else{
+            handleInput();
+        }
+    }
 
-        if(keyH.tillingPressed){
-            if(energy >= 5){
-                tilling = true;
-                keyH.tillingPressed = false; // Reset the tillingPressed flag
-                tilling();
-            }
-            else{
-                gp.ui.addMessage("Need more energy to till this soil!");
+    public void handleMovement(){
+        //CHECK TILE COLLISION
+        collisionOn = false;
+        gp.cChecker.checkTile(this);
+
+        // CHECK OBJECT COLLISION
+        int objIndex = gp.cChecker.checkObject(this, true);
+        pickUpObject(objIndex);
+
+        // CHECK NPC COLLISION
+        int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+        interactNPC(npcIndex);
+
+        // CHECK EVENT
+        gp.eHandler.checkEvent();
+        gp.keyH.enterPressed = false;
+
+        // IF COLLISION IS FALSE, PLAYER CAN MOVE
+        if(collisionOn == false && keyH.enterPressed == false){
+            switch(direction){
+                case "up": worldY -= speed; break;
+                case "down": worldY += speed; break;
+                case "left": worldX -= speed;break;
+                case "right": worldX += speed; break;
             }
         }
-
-        else if(keyH.plantingPressed){
-            if(energy >= 5){
-                planting = true;
-                planting();
+            
+        spriteCounter++;
+        if(spriteCounter > 12){
+            if(spriteNum == 1){
+                spriteNum = 2;
             }
-            else{
-                gp.ui.addMessage("Need more energy to plant this seed!");
+            else if (spriteNum == 2){
+                spriteNum = 1;
             }
-            keyH.plantingPressed = false; // Reset the plantingPressed flag
+            spriteCounter = 0;
         }
 
-        if(moving == false){
-            boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
-            if(movementKeyPressed || keyH.enterPressed ) {
-                if (keyH.upPressed == true) {
-                    direction = "up";
-                } else if (keyH.downPressed == true) {
-                    direction = "down";
-                } else if (keyH.leftPressed == true) {
-                    direction = "left";
-                } else if (keyH.rightPressed == true) {
-                    direction = "right";
-                }
+        pixelCounter += speed;
 
-                //CHECK TILE COLLISION
-                collisionOn = false;
-                gp.cChecker.checkTile(this);
+        if(pixelCounter == 48){
+            moving = false;
+            pixelCounter = 0;
+        }
+    }
 
-                // CHECK OBJECT COLLISION
-                int objIndex = gp.cChecker.checkObject(this, true);
-                pickUpObject(objIndex);
+    public void handleInput(){
+        boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
-                // CHECK NPC COLLISION
-                int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
-                interactNPC(npcIndex);
-
-                // CHECK EVENT
-                gp.eHandler.checkEvent();
-
-                if(movementKeyPressed) {
-                    moving = true;
-                }
-
-                gp.keyH.enterPressed = false;
-                gp.keyH.tillingPressed = false;
-                gp.keyH.plantingPressed = false;
-            }
-            else{
-                standCounter++;
-                if(standCounter == 20){
-                    spriteNum = 1;
-                    standCounter = 0;
-                }
-            }
+        if(keyH.useToolPressed && equippedInventoryItem != null) {
+            useTool();
+            keyH.useToolPressed = false; // Reset the useToolPressed flag
+            return;
         }
 
-        if(moving == true){
+        if(movementKeyPressed || keyH.enterPressed) {
+            if (keyH.upPressed == true) {
+                direction = "up";
+            } else if (keyH.downPressed == true) {
+                direction = "down";
+            } else if (keyH.leftPressed == true) {
+                direction = "left";
+            } else if (keyH.rightPressed == true) {
+                direction = "right";
+            }
+
             //CHECK TILE COLLISION
             collisionOn = false;
             gp.cChecker.checkTile(this);
@@ -227,39 +251,100 @@ public class Player extends Entity {
 
             // CHECK EVENT
             gp.eHandler.checkEvent();
+
+            if(movementKeyPressed) {
+                moving = true;
+                standCounter = 0; // Reset the stand counter when moving
+            }
             gp.keyH.enterPressed = false;
-            gp.keyH.tillingPressed = false;
-            gp.keyH.plantingPressed = false;
-        
-
-            // IF COLLISION IS FALSE, PLAYER CAN MOVE
-            if(collisionOn == false && keyH.enterPressed == false){
-                switch(direction){
-                    case "up": worldY -= speed; break;
-                    case "down": worldY += speed; break;
-                    case "left": worldX -= speed;break;
-                    case "right": worldX += speed; break;
-                }
-            }
-            
-            spriteCounter++;
-            if(spriteCounter > 12){
-                if(spriteNum == 1){
-                    spriteNum = 2;
-                }
-                else if (spriteNum == 2){
-                    spriteNum = 1;
-                }
-                spriteCounter = 0;
-            }
-
-            pixelCounter += speed;
-
-            if(pixelCounter == 48){
-                moving = false;
-                pixelCounter = 0;
+        }
+        else{
+            standCounter++;
+            if(standCounter == 20){
+                spriteNum = 1;
+                standCounter = 0;
             }
         }
+    }
+
+    public void useTool(){
+        Entity currentTool = equippedInventoryItem.item;
+        if (currentTool instanceof OBJ_Hoe) {
+            tilling = true;
+            if(this.energy >= 5){
+                int col = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                int row = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+
+                int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
+                if (gp.tileM.tile[tileNum].tileType == TileType.TILLABLE) {
+                    tilling = true;
+                    energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
+                } 
+                else {
+                    gp.ui.addMessage("Cannot till this tile!");
+                }
+            } 
+            else {
+                gp.ui.addMessage("Not enough energy to use the hoe!");
+            }
+        }
+        else if (currentTool instanceof OBJ_ParsnipSeeds) {
+            planting = true;
+            if(equippedInventoryItem.count > 0){
+                if(canPlant()){
+                    if(energy >= 5){
+                        planting = true;
+                        energy -= 5;
+                    }
+                    else{
+                        gp.ui.addMessage("Not enough energy to plant!");
+                    }
+                }
+                else{
+                    gp.ui.addMessage("Cannot plant here!"); // Pes
+                }
+            }
+            else{
+                gp.ui.addMessage("You don't have any seeds to plant!");
+            }
+        }
+        else{
+            gp.ui.addMessage("No tool equipped!");
+        }
+    }
+
+    public boolean canPlant(){
+        int targetCol = 0;
+        int targetRow = 0;
+
+        switch (direction) {
+            case "up":
+                targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                break;
+            case "down":
+                targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                break;
+            case "left":
+                targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                break;
+            case "right":
+                targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                break;
+        }
+
+        if (targetCol >= 0 && targetRow >= 0 &&
+            targetCol < gp.tileM.mapCols[gp.currentMap] &&
+            targetRow < gp.tileM.mapRows[gp.currentMap]) {
+
+            int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
+            return (gp.tileM.tile[tileNum].tileType == TileType.TILLED);
+        }
+
+        return false;
     }
 
     //KALO MAU PICKUP OBJECT
@@ -328,7 +413,6 @@ public class Player extends Entity {
                 if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                     gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
                     // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    energy -= 5;
                     // gp.playSE(indeksSuaraCangkul);
                 }
             }
@@ -379,7 +463,6 @@ public class Player extends Entity {
                 if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
                     gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
                     // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    energy -= 5;
                     // gp.playSE(indeksSuaraCangkul);
                 }
             }
