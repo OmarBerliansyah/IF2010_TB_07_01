@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
 import com.SpakborHills.objects.OBJ_FishingRod;
@@ -11,11 +12,7 @@ import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
-import com.SpakborHills.objects.OBJ_Wood;
-import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
-import com.SpakborHills.tile.Tile;
-import com.SpakborHills.tile.TileManager;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -35,6 +32,7 @@ public class Player extends Entity {
     public String location;    
     public ArrayList<InventoryItem> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
+    public Entity equippedItem;
 
 
     public Player(GamePanel gp, KeyHandler keyH){
@@ -228,34 +226,48 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-        if (i != 999 && gp.obj[i] != null) {
-            if (gp.obj[i].isPickable) {
-                if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
-                    boolean itemAlreadyInInventory = false;
-                    for (InventoryItem invItem : inventory) {
-                        if (invItem.item.name.equals(gp.obj[i].name)) {
-                            invItem.count++;
-                            itemAlreadyInInventory = true;
-                            break;
-                        }
+        if(i != 999){
+            String text; 
+            Entity[] currentMapObjects = gp.getCurrentMapObjects();
+            if(currentMapObjects[i].isPickable){
+                boolean itemAlreadyInInventory = false;
+                for (InventoryItem invItem : inventory) {
+                    if (invItem.item.name.equals(currentMapObjects[i].name)) {
+                        invItem.count++;
+                        itemAlreadyInInventory = true;
+                        break;
                     }
-                    // klo item belum ada, tambahin ke inventory
-                    if (!itemAlreadyInInventory) {
-                        inventory.add(new InventoryItem(gp.obj[i], 1));
-                    }
-                    gp.playSE(1);
-                    gp.ui.addMessage("Got a " + gp.obj[i].name + "!");
-                    gp.obj[i] = null;
-                } else {
-                    gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
-    
+                // klo item belum ada, tambahin ke inventory
+                if (!itemAlreadyInInventory) {
+                    inventory.add(new InventoryItem(currentMapObjects[i], 1));
+                }
+                gp.playSE(1);
+                text = "Got a " + currentMapObjects[i].name + "!";
+            } else {
+                text = "You cannot carry any more!";
             }
+            gp.ui.addMessage(text);
+            currentMapObjects[i] = null;
+
+            /*String objectName = gp.obj[i].name;
+            switch (objectName){
+                case "Wood":
+                    gp.playSE(1);
+                    hasWood++;
+                    gp.obj[i]=null;
+                    gp.ui.showMessage("You got a wood!");//video 10
+                    break; */
+//                case "Key":
+//                    if(hasKey > 0){
+//                        gp.obj[i] = null;
+//                        hasKey --;
+//                    }
+//                    break;
             }
         }
 
     public void tilling(){
-        boolean messagedone = false;
         spriteCounter++;
         if(spriteCounter <= 5){
             spriteNum = 1;
@@ -289,17 +301,14 @@ public class Player extends Entity {
                     break;
             }
 
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
                 int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                 if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
                     gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
                     // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    energy -= 5;
+                    // energy--;
                     // gp.playSE(indeksSuaraCangkul);
                 }
-            }
-            else{
-                gp.ui.addMessage("Need more energy to till this soil!");
             }
         }
         if(spriteCounter > 25){
