@@ -26,6 +26,9 @@ public class Player extends Entity {
     int standCounter = 0;
     boolean moving = false;
     int pixelCounter  = 0;
+    // player attributes
+    public int energy;
+    public int gold;
     public String gender;
     public String farmName;
     public Entity partner;
@@ -261,6 +264,7 @@ public class Player extends Entity {
         }
 
     public void tilling(){
+        boolean messagedone = false;
         spriteCounter++;
         if(spriteCounter <= 5){
             spriteNum = 1;
@@ -294,14 +298,17 @@ public class Player extends Entity {
                     break;
             }
 
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
                 int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                 if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
                     gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
                     // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    // energy--;
+                    energy -= 5;
                     // gp.playSE(indeksSuaraCangkul);
                 }
+            }
+            else{
+                gp.ui.addMessage("Need more energy to till this soil!");
             }
         }
         if(spriteCounter > 25){
