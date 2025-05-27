@@ -18,6 +18,7 @@ public class Entity {
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
     public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
+    public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
     public BufferedImage blueberrySeeds;
     public String direction = "down";
 
@@ -40,6 +41,7 @@ public class Entity {
     boolean tilling = false;
     boolean planting = false;
     boolean watering = false;
+    boolean recoverLand = false;
 
     public boolean isPickable = true;
 
