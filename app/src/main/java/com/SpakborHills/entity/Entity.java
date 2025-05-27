@@ -17,6 +17,7 @@ public class Entity {
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
+    public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
     public BufferedImage blueberrySeeds;
     public String direction = "down";
 
@@ -38,6 +39,7 @@ public class Entity {
     public boolean collision = false;
     boolean tilling = false;
     boolean planting = false;
+    boolean watering = false;
 
     public boolean isPickable = true;
 
@@ -71,6 +73,7 @@ public class Entity {
                 break;
         }
     }
+
     public void update(){
         setAction();
 
@@ -101,6 +104,7 @@ public class Entity {
             spriteCounter = 0;
         }
     }
+
     public void draw(Graphics2D g2){
         BufferedImage image = null;
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
