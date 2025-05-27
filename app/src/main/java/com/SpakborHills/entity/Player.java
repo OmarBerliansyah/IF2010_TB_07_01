@@ -4,14 +4,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_FishingRod;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
-import com.SpakborHills.objects.OBJ_Wood;
 import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
 import com.SpakborHills.tile.Tile;
@@ -33,9 +28,8 @@ public class Player extends Entity {
     public String farmName;
     public Entity partner;
     public String location;    
-    public ArrayList<InventoryItem> inventory = new ArrayList<>();
-    public final int maxInventorySize = 20;
-    public Entity equippedItem;
+    public Inventory inventory;
+    private Entity equippedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -58,8 +52,8 @@ public class Player extends Entity {
         setDefaultValues();
         getPlayerImage();
         getPlayerTillingImage();
-        setItems(); 
         getPlayerSeedsImage();
+        inventory = new Inventory(gp, this);
     }
 
     public void setDefaultValues(){
@@ -92,25 +86,6 @@ public class Player extends Entity {
         return location;
     }
 
-
-    public void setItems(){
-        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
-        inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
-    }
-
-    public class InventoryItem {
-        public Entity item;
-        public int count;
-
-        public InventoryItem(Entity item, int count) {
-            this.item = item;
-            this.count = count;
-        }
-    }
-
     public void getPlayerImage(){
         up1 = setup("player/PlayerUp1", gp.tileSize, gp.tileSize);
         up2 = setup("player/PlayerUp2", gp.tileSize, gp.tileSize);
@@ -131,16 +106,6 @@ public class Player extends Entity {
 
     public void getPlayerSeedsImage(){
         blueberrySeeds = setup("player/PlayerBlueberrySeeds", gp.tileSize, gp.tileSize);
-    }
-
-    public void equipItem(int inventoryIndex) {
-        if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
-            equippedItem = inventory.get(inventoryIndex).item;
-        }
-    }
-
-    public void unEquipItem() {
-        equippedItem = null;
     }
 
     public void update(){
@@ -263,12 +228,12 @@ public class Player extends Entity {
     }
 
     //KALO MAU PICKUP OBJECT
-    public void pickUpObject(int i){
+    public void pickUpObject(int i) {
         if (i != 999 && gp.obj[i] != null) {
             if (gp.obj[i].isPickable) {
-                if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
+                if (inventory.getInventory().size() < inventory.getMaxInventorySize()) { // periksa inventorynya penuh ga
                     boolean itemAlreadyInInventory = false;
-                    for (InventoryItem invItem : inventory) {
+                    for (Inventory.InventoryItem invItem : inventory.getInventory()) { // Perbaiki akses ke InventoryItem
                         if (invItem.item.name.equals(gp.obj[i].name)) {
                             invItem.count++;
                             itemAlreadyInInventory = true;
@@ -277,7 +242,7 @@ public class Player extends Entity {
                     }
                     // klo item belum ada, tambahin ke inventory
                     if (!itemAlreadyInInventory) {
-                        inventory.add(new InventoryItem(gp.obj[i], 1));
+                        inventory.getInventory().add(new Inventory.InventoryItem(gp.obj[i], 1)); // Perbaiki cara menambahkan item
                     }
                     gp.playSE(1);
                     gp.ui.addMessage("Got a " + gp.obj[i].name + "!");
@@ -285,10 +250,9 @@ public class Player extends Entity {
                 } else {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
-    
-            }
             }
         }
+    }
     
     public void planting(){
         spriteCounter++;
@@ -338,6 +302,20 @@ public class Player extends Entity {
             spriteCounter = 0;
             planting = false;
         }
+    }
+
+    public void equipItem(int inventoryIndex) {
+        if (inventoryIndex >= 0 && inventoryIndex < inventory.getInventory().size()) {
+            equippedItem = inventory.getInventory().get(inventoryIndex).item;
+        }
+    }
+    
+    public void unEquipItem() {
+        equippedItem = null;
+    }
+
+    public Entity getEquippedItem() {
+        return equippedItem;
     }
 
     public void tilling(){

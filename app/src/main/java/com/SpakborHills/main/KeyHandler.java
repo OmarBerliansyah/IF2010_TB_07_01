@@ -252,16 +252,16 @@ public class KeyHandler implements KeyListener {
             plantingPressed = false;
         }
         if (gp.gameState == gp.characterState) {
-            if (code == KeyEvent.VK_E) { 
+            if (code == KeyEvent.VK_E) {
                 int selectedIndex = gp.ui.getItemIndexOnSLot();
-                if (selectedIndex < gp.player.inventory.size()) {
-                    if (gp.player.equippedItem == gp.player.inventory.get(selectedIndex).item) {
-                        gp.player.unEquipItem(); 
+                if (selectedIndex >= 0 && selectedIndex < gp.player.inventory.getInventory().size()) {
+                    if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(selectedIndex).item) {
+                        gp.player.unEquipItem();
                     } else {
-                        gp.player.equipItem(selectedIndex); 
+                        gp.player.equipItem(selectedIndex);
                     }
                 }
             }
         }
-    }
+}
 }
