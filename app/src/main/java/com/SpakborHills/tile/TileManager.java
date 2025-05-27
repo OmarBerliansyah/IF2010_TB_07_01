@@ -24,8 +24,8 @@ public class TileManager {
         tile = new Tile[100];
         mapCols[0] = gp.maxWorldCol;
         mapRows[0] = gp.maxWorldRow;
-        mapCols[1] = gp.maxWorldCol;
-        mapRows[1] = gp.maxWorldRow;
+        mapCols[1] = 24;
+        mapRows[1] = 24;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
         mapCols[3] = gp.maxWorldCol;
@@ -48,7 +48,7 @@ public class TileManager {
 
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
-        loadMap("maps/OceanMap.txt",1);
+        loadMap("maps/OceanMap.txt", 1);
         loadMap("maps/HouseMap.txt", 2);
         loadMap("maps/ForestMap.txt", 3);
         loadMap("maps/npcMap.txt", 4);

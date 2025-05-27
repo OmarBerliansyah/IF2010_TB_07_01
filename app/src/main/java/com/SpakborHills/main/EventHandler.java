@@ -63,13 +63,11 @@ public class EventHandler {
 
             // TELEPORT TO OCEAN
             if (hit(0, 13, 31, "any") == true) {
-                teleport(1, 10, 5);
-                if(gp.currentMap == 1) {
-                }
+                teleport(1, 5, 5);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
-            else if (hit(1, 10, 1, "any") == true) {
+            else if (hit(1, 5, 5, "any") == true) {
                 teleport(0, 13, 31);
             }
 
