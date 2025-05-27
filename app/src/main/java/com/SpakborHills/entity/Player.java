@@ -15,6 +15,7 @@ import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.objects.OBJ_Wood;
 import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
+import com.SpakborHills.main.Inventory;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -387,12 +388,13 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-        if (i != 999 && gp.obj[i] != null) {
-            if (gp.obj[i].isPickable) {
+        Entity[] currentMapObjects = gp.getCurrentMapObjects();
+        if (i != 999 && currentMapObjects[i] != null) {
+            if (currentMapObjects[i].isPickable) {
                 if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
                     boolean itemAlreadyInInventory = false;
                     for (InventoryItem invItem : inventory) {
-                        if (invItem.item.name.equals(gp.obj[i].name)) {
+                        if (invItem.item.name.equals(currentMapObjects[i].name)) {
                             invItem.count++;
                             itemAlreadyInInventory = true;
                             break;
@@ -400,7 +402,7 @@ public class Player extends Entity {
                     }
                     // klo item belum ada, tambahin ke inventory
                     if (!itemAlreadyInInventory) {
-                        inventory.add(new InventoryItem(gp.obj[i], 1));
+                        inventory.add(new InventoryItem(currentMapObjects[i], 1));
                     }
                     gp.playSE(1);
                     gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");
