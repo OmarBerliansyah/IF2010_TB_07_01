@@ -9,7 +9,7 @@ public class OBJ_Pickaxe extends Entity {
         super(gp);
         name = "Pickaxe";
         down1 = setup("objects/pickaxe", gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nini Pickaxe"; 
+        description = "[" + name + "]\ndigunakan untuk \nrecover land."; 
         isPickable = true;
     }
 }

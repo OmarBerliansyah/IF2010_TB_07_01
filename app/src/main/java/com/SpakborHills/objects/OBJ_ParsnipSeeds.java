@@ -9,7 +9,7 @@ public class OBJ_ParsnipSeeds extends Entity {
         super(gp);
         name = "Parsnip Seeds";
         down1 = setup("objects/ParsnipSeeds",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nini Parsnip Seeds"; 
+        description = "[" + name + "]\nBenih yang dapat\nditanam pada saat\nspring."; 
         isPickable = true;
     }
 }

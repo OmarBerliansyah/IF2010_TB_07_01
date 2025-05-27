@@ -9,7 +9,7 @@ public class OBJ_FishingRod extends Entity {
         super(gp);
         name = "Fishing Rod";
         down1 = setup("objects/fishingrod", gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nini Fishing Rod"; 
+        description = "[" + name + "]\nDigunakan untuk \nmemancing."; 
         isPickable = true;
     }
 }
