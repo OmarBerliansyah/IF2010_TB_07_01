@@ -6,10 +6,14 @@ import java.util.Random;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.NPC_1;
+import com.SpakborHills.objects.OBJ_AbigailHouse;
+import com.SpakborHills.objects.OBJ_CarolineHouse;
+import com.SpakborHills.objects.OBJ_DascoHouse;
+import com.SpakborHills.objects.OBJ_EmilyHouse;
 import com.SpakborHills.objects.OBJ_House;
-import com.SpakborHills.objects.OBJ_HouseNPC1;
-import com.SpakborHills.objects.OBJ_HouseNPC2;
 import com.SpakborHills.objects.OBJ_Keset;
+import com.SpakborHills.objects.OBJ_MayorHouse;
+import com.SpakborHills.objects.OBJ_PerryHouse;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
@@ -236,32 +240,53 @@ public class AssetSetter {
         }
     }
      private void setHousesForNPCMapPermanent(int mapIndex) {
-        int[][] houseNPC1Positions = {{1, 1}, {1, 22}, {12, 12}};
-        int[][] houseNPC2Positions = {{1, 12}, {12, 1}, {12, 22}};
-
-        for (int i = 0; i < houseNPC1Positions.length; i++) {
-            int col = houseNPC1Positions[i][0];
-            int row = houseNPC1Positions[i][1];
-
-            int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
-            if (objIndex != -1) {
-                gp.mapObjects[mapIndex][objIndex] = new OBJ_HouseNPC1(gp);
-                gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
-                gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
-            }
-        }
-
-        for (int i = 0; i < houseNPC2Positions.length; i++) {
-            int col = houseNPC2Positions[i][0];
-            int row = houseNPC2Positions[i][1];
-
-            int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
-            if (objIndex != -1) {
-                gp.mapObjects[mapIndex][objIndex] = new OBJ_HouseNPC2(gp);
-                gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
-                gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
-            }
-        }
+        // Mayor House
+    int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_MayorHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 1 * gp.tileSize;
+    }
+    
+    // Perry House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_PerryHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
+    }
+    
+    // Abigail House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_AbigailHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 12 * gp.tileSize;
+    }
+    
+    // Caroline House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_CarolineHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 12 * gp.tileSize;
+    }
+    
+    // Emily House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_EmilyHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 1 * gp.tileSize;
+    }
+    
+    // Dasco House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_DascoHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
+    }
     }
 
     public int getDoorCol() {

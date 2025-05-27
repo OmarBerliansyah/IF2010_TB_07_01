@@ -4,11 +4,11 @@ import java.awt.Graphics2D;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
-public class OBJ_HouseNPC1 extends Entity {
-    public OBJ_HouseNPC1(GamePanel gp){
+public class OBJ_AbigailHouse extends Entity {
+    public OBJ_AbigailHouse(GamePanel gp){
         super(gp);
-        name = "House";
-        down1 = setup("objects/rumahNPC1", gp.tileSize, gp.tileSize); // Your house sprite file
+        name = "AbigailHouse";
+        down1 = setup("objects/AbigailHouse", gp.tileSize, gp.tileSize); // Your house sprite file
         collision = true;
 
         solidArea.x = 0;
