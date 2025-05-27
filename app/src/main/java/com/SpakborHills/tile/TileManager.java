@@ -15,8 +15,8 @@ public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][][];
-    public int mapCols[] = new int[10];
-    public int mapRows[] = new int[10];
+    public int mapCols[] = new int[20];
+    public int mapRows[] = new int[20];
 
     public TileManager(GamePanel gp){
         this.gp = gp;
@@ -30,6 +30,20 @@ public class TileManager {
         mapRows[2] = 24; 
         mapCols[3] = gp.maxWorldCol;
         mapRows[3] = gp.maxWorldRow;
+        mapCols[4] = gp.maxWorldCol;
+        mapRows[4] = gp.maxWorldRow;
+        mapCols[5] = 24;
+        mapRows[5] = 24;
+        mapCols[6] = 24;
+        mapRows[6] = 24;
+        mapCols[7] = 24;
+        mapRows[7] = 24;
+        mapCols[8] = 24;
+        mapRows[8] = 24;
+        mapCols[9] = 24;
+        mapRows[9] = 24;
+        mapCols[10] = 24;
+        mapRows[10] = 24;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
@@ -37,6 +51,14 @@ public class TileManager {
         loadMap("maps/OceanMap.txt",1);
         loadMap("maps/HouseMap.txt", 2);
         loadMap("maps/ForestMap.txt", 3);
+        loadMap("maps/npcMap.txt", 4);
+        loadMap("maps/HouseMap.txt", 5);
+        loadMap("maps/HouseMap.txt", 6);
+        loadMap("maps/HouseMap.txt", 7);
+        loadMap("maps/HouseMap.txt", 8);
+        loadMap("maps/HouseMap.txt", 9);
+        loadMap("maps/HouseMap.txt", 10);
+        
     }
 
     public void getTileImage() {

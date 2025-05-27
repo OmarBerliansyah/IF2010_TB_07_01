@@ -17,6 +17,11 @@ public class Entity {
 
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
+    public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
+    public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
+    public BufferedImage parsnipSeeds, cauliflowerSeeds, potatoSeeds, wheatSeeds;
+    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds;
+    public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
 
     public int spriteCounter = 0;
@@ -36,6 +41,9 @@ public class Entity {
     public String name;
     public boolean collision = false;
     boolean tilling = false;
+    boolean planting = false;
+    boolean watering = false;
+    boolean recoverLand = false;
 
     public boolean isPickable = true;
 
@@ -69,6 +77,7 @@ public class Entity {
                 break;
         }
     }
+
     public void update(){
         setAction();
 
@@ -99,6 +108,7 @@ public class Entity {
             spriteCounter = 0;
         }
     }
+
     public void draw(Graphics2D g2){
         BufferedImage image = null;
         int screenX = worldX - gp.player.worldX + gp.player.screenX;

@@ -149,10 +149,15 @@ public class Lighting {
     }
 
     public void draw(Graphics2D g2){
-        float clampedAlpha = Math.max(0f, Math.min(1f, filterAlpha));
-       g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, filterAlpha)); //error??????
+        float clampedAlpha = filterAlpha;
+        if (Float.isNaN(filterAlpha)) {
+            clampedAlpha = 1f; // fallback default value
+        } else {
+            clampedAlpha = Math.max(0f, Math.min(1f, filterAlpha));
+        }
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, clampedAlpha));
         g2.drawImage(darknessFilter, 0, 0, null);
-       g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 
         // Draw the time
         String timeText = String.format("Time: %02d:%02d", hour, minute);
