@@ -18,6 +18,7 @@ import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
+import com.SpakborHills.objects.OBJ_QueenBed;
 
 
 public class AssetSetter {
@@ -131,12 +132,18 @@ public class AssetSetter {
     
      private void initializeHouseMap(int mapIndex) {
         // Place keset permanently
-        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
-        if(objIndex != -1) {
-            gp.mapObjects[mapIndex][objIndex] = new OBJ_Keset(gp);
-            gp.mapObjects[mapIndex][objIndex].worldX = 11 * gp.tileSize;
-            gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
-            System.out.println("House map: Keset placed permanently");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 11 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 22 * gp.tileSize;
+        }
+        // ini aja di copy ya
+        int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex2 != -1) {
+            gp.mapObjects[mapIndex][objIndex2] = new OBJ_QueenBed(gp);
+            gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {
