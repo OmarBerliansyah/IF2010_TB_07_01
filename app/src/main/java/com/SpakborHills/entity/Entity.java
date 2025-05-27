@@ -18,7 +18,10 @@ public class Entity {
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
     public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
-    public BufferedImage blueberrySeeds;
+    public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
+    public BufferedImage parsnipSeeds, cauliflowerSeeds, potatoSeeds, wheatSeeds;
+    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds;
+    public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
 
     public int spriteCounter = 0;
@@ -40,6 +43,7 @@ public class Entity {
     boolean tilling = false;
     boolean planting = false;
     boolean watering = false;
+    boolean recoverLand = false;
 
     public boolean isPickable = true;
 

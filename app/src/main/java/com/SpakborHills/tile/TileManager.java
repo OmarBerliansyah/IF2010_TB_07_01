@@ -127,6 +127,21 @@ public class TileManager {
         setup(62, "GrassSoilTengahKiri4", false, TileType.NONE);
         setup(63, "GrassSoilKAEdge3", false, TileType.NONE);
         setup(64, "GrassSoilKAEdge4", false, TileType.NONE);
+        setup(65, "LautTerangGelap", true, TileType.NONE);
+        setup(66, "kakiDermaga", true, TileType.NONE);
+        setup(67, "tileDermaga", false, TileType.NONE);
+        setup(68, "DermagaTerang", true, TileType.NONE);
+        setup(69, "DermagaGelap", true, TileType.NONE);
+        setup(70, "DermagaTerangKanan", true, TileType.NONE);
+        setup(71, "LautTerangTerang", true, TileType.NONE);
+        setup(72, "LautPasir", false, TileType.NONE);
+        setup(73, "RumputLautTengah", true, TileType.NONE);
+        setup(74, "RumputLautBawah", true, TileType.NONE);
+        setup(75, "RumputLautKanan", true, TileType.NONE);
+        setup(76, "RumputLautKiri", true, TileType.NONE);
+        setup(77, "RumputLautEdgeKiri", true, TileType.NONE);
+        setup(78, "RumputLautEdgeKanan", true, TileType.NONE);
+
     }
 
 

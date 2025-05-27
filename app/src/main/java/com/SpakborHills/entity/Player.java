@@ -58,6 +58,7 @@ public class Player extends Entity {
         setItems(); 
         getPlayerSeedsImage();
         getPlayerWateringImage();
+        getPlayerPickAxeImage();
     }
 
     public void setDefaultValues(){
@@ -135,7 +136,24 @@ public class Player extends Entity {
     }
 
     public void getPlayerSeedsImage(){
+        parsnipSeeds = setup("player/PlayerParsnipSeed", gp.tileSize, gp.tileSize);
+        cauliflowerSeeds = setup("player/PlayerCauliflowerSeeds", gp.tileSize, gp.tileSize);
+        potatoSeeds = setup("player/PlayerPotatoSeeds", gp.tileSize, gp.tileSize);
+        wheatSeeds = setup("player/PlayerWheatSeeds", gp.tileSize, gp.tileSize);
         blueberrySeeds = setup("player/PlayerBlueberrySeeds", gp.tileSize, gp.tileSize);
+        tomatoSeeds = setup("player/PlayerTomatoSeeds", gp.tileSize, gp.tileSize);
+        hotPepperSeeds = setup("player/PlayerHotPepperSeeds", gp.tileSize, gp.tileSize);
+        melonSeeds = setup("player/PlayerMelonSeeds", gp.tileSize, gp.tileSize);
+        cranberrySeeds = setup("player/PlayerCranberrySeeds", gp.tileSize, gp.tileSize);
+        pumpkinSeeds = setup("player/PlayerPumpkinSeeds", gp.tileSize, gp.tileSize);
+        grapeSeeds = setup("player/PlayerGrapeSeeds", gp.tileSize, gp.tileSize);
+    }
+
+    public void getPlayerPickAxeImage(){
+        recoverLandUp = setup("player/PlayerLeftPickAxe", gp.tileSize, gp.tileSize);
+        recoverLandDown = setup("player/PlayerRightPickAxe", gp.tileSize, gp.tileSize);
+        recoverLandLeft = setup("player/PlayerLeftPickAxe", gp.tileSize, gp.tileSize);
+        recoverLandRight = setup("player/PlayerRightPickAxe", gp.tileSize, gp.tileSize);
     }
 
     public void equipItem(int inventoryIndex) {
@@ -170,6 +188,10 @@ public class Player extends Entity {
         }
         if(watering){
             watering();
+            return;
+        }
+        if(recoverLand){
+            recoverLand();
             return;
         }
         if(moving){
@@ -334,6 +356,25 @@ public class Player extends Entity {
             } 
             else {
                 gp.ui.addMessage("Not enough energy to use the watering can!");
+            }
+        }
+        else if (currentTool instanceof OBJ_Pickaxe) {
+            recoverLand = true;
+            if(this.energy >= 5){
+                int col = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                int row = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+
+                int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
+                if (gp.tileM.tile[tileNum].tileType == TileType.TILLED) {
+                    recoverLand = true;
+                    energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
+                } 
+                else {
+                    gp.ui.addMessage("Cannot recover this tile!");
+                }
+            } 
+            else {
+                gp.ui.addMessage("Not enough energy to use the hoe!");
             }
         }
         else{
@@ -503,6 +544,56 @@ public class Player extends Entity {
         
     }
 
+    public void recoverLand(){
+        spriteCounter++;
+        if(spriteCounter <= 5){
+            spriteNum = 1;
+        }
+        if(spriteCounter > 5 && spriteCounter <= 25){
+            spriteNum = 2;
+            // Tentukan tile yang akan diolah berdasarkan arah pemain
+            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
+            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
+
+            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
+                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 0; // 0 = soil
+                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                    // gp.playSE(indeksSuaraRecoverLand);
+                }
+            }
+        }
+        if(spriteCounter > 25){
+            spriteNum = 1;
+            spriteCounter = 0;
+            recoverLand = false;
+        }
+    }
+
     public void watering(){
         spriteCounter++;
         if(spriteCounter <= 5){
@@ -590,7 +681,7 @@ public class Player extends Entity {
                         image = up1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
@@ -599,6 +690,14 @@ public class Player extends Entity {
                     }
                     if(spriteNum == 2){
                         image = wateringUp;
+                    }
+                }
+                if(recoverLand == true){
+                    if(spriteNum == 1){
+                        image = up1;
+                    }
+                    if(spriteNum == 2){
+                        image = recoverLandUp;
                     }
                 }
                 break;
@@ -621,18 +720,26 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = down1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = down1;
                     }
                     if(spriteNum == 2){
                         image = wateringDown;
+                    }
+                }
+                if(recoverLand == true){
+                    if(spriteNum == 1){
+                        image = down1;
+                    }
+                    if(spriteNum == 2){
+                        image = recoverLandDown;
                     }
                 }
                 break;
@@ -655,18 +762,26 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = left1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = left1;
                     }
                     if(spriteNum == 2){
                         image = wateringLeft;
+                    }
+                }
+                if(recoverLand == true){
+                    if(spriteNum == 1){
+                        image = left1;
+                    }
+                    if(spriteNum == 2){
+                        image = recoverLandLeft;
                     }
                 }
                 break;
@@ -689,18 +804,26 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = right1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = right1;
                     }
                     if(spriteNum == 2){
                         image = wateringRight;
+                    }
+                }
+                if(recoverLand == true){
+                    if(spriteNum == 1){
+                        image = right1;
+                    }
+                    if(spriteNum == 2){
+                        image = recoverLandRight;
                     }
                 }
                 break;
