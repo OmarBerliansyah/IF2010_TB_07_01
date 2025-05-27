@@ -12,6 +12,8 @@ import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.OBJ_Wood;
+import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
 
 public class Player extends Entity {
@@ -32,7 +34,7 @@ public class Player extends Entity {
     public String location;    
     public ArrayList<InventoryItem> inventory = new ArrayList<>();
     public final int maxInventorySize = 20;
-    public Player.InventoryItem equippedInventoryItem;
+    public Entity equippedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -55,10 +57,7 @@ public class Player extends Entity {
         setDefaultValues();
         getPlayerImage();
         getPlayerTillingImage();
-        setItems(); 
         getPlayerSeedsImage();
-        getPlayerWateringImage();
-        getPlayerPickAxeImage();
     }
 
     public void setDefaultValues(){
@@ -89,25 +88,6 @@ public class Player extends Entity {
     }
     public String getCurrentLocation() {
         return location;
-    }
-
-
-    public void setItems(){
-        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
-        inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
-    }
-
-    public class InventoryItem {
-        public Entity item;
-        public int count;
-
-        public InventoryItem(Entity item, int count) {
-            this.item = item;
-            this.count = count;
-        }
     }
 
     public void getPlayerImage(){
@@ -158,23 +138,12 @@ public class Player extends Entity {
 
     public void equipItem(int inventoryIndex) {
         if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
-            equippedInventoryItem = inventory.get(inventoryIndex);
-            if(equippedInventoryItem != null && equippedInventoryItem.item != null) {
-                gp.ui.addMessage("Equipped " + equippedInventoryItem.item.name + "!");
-            }
-            else{
-                unEquipItem();
-                gp.ui.addMessage("No item to equip!");
-            }
-        }
-        else{
-            unEquipItem();
-            gp.ui.addMessage("No item to equip!");
+            equippedItem = inventory.get(inventoryIndex).item;
         }
     }
 
     public void unEquipItem() {
-        equippedInventoryItem = null;
+        equippedItem = null;
     }
 
     public void update(){
@@ -418,13 +387,12 @@ public class Player extends Entity {
 
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
-         Entity[] currentMapObjects = gp.getCurrentMapObjects();
-        if (i != 999 && currentMapObjects[i] != null) {
-            if (currentMapObjects[i].isPickable) {
+        if (i != 999 && gp.obj[i] != null) {
+            if (gp.obj[i].isPickable) {
                 if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
                     boolean itemAlreadyInInventory = false;
                     for (InventoryItem invItem : inventory) {
-                        if (invItem.item.name.equals(currentMapObjects[i].name)) {
+                        if (invItem.item.name.equals(gp.obj[i].name)) {
                             invItem.count++;
                             itemAlreadyInInventory = true;
                             break;
@@ -432,7 +400,7 @@ public class Player extends Entity {
                     }
                     // klo item belum ada, tambahin ke inventory
                     if (!itemAlreadyInInventory) {
-                        inventory.add(new InventoryItem(currentMapObjects[i], 1));
+                        inventory.add(new InventoryItem(gp.obj[i], 1));
                     }
                     gp.playSE(1);
                     gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");
@@ -441,9 +409,9 @@ public class Player extends Entity {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
             }
+            }
         }
-    }
-
+    
     public void planting(){
         spriteCounter++;
         if(spriteCounter <= 5){
@@ -491,7 +459,7 @@ public class Player extends Entity {
             spriteCounter = 0;
             planting = false;
         }
-    }    
+    }
 
     public void tilling(){
         spriteCounter++;
