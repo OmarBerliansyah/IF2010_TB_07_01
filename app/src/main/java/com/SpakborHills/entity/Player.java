@@ -3,19 +3,15 @@ package com.SpakborHills.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_FishingRod;
 import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
-import com.SpakborHills.objects.OBJ_Wood;
-import com.SpakborHills.main.UtilityTool;
 import com.SpakborHills.tile.TileType;
-import com.SpakborHills.main.Inventory;
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -33,8 +29,7 @@ public class Player extends Entity {
     public String farmName;
     public Entity partner;
     public String location;    
-    public ArrayList<InventoryItem> inventory = new ArrayList<>();
-    public final int maxInventorySize = 20;
+    public Inventory inventory;
     public Entity equippedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
@@ -59,6 +54,7 @@ public class Player extends Entity {
         getPlayerImage();
         getPlayerTillingImage();
         getPlayerSeedsImage();
+        inventory = new Inventory(gp, this);
     }
 
     public void setDefaultValues(){
@@ -138,15 +134,28 @@ public class Player extends Entity {
     }
 
     public void equipItem(int inventoryIndex) {
-        if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
-            equippedItem = inventory.get(inventoryIndex).item;
+        if (inventoryIndex >= 0 && inventoryIndex < inventory.getInventory().size()) {
+            equippedItem = inventory.getInventory().get(inventoryIndex).item;
         }
     }
-
+    
     public void unEquipItem() {
         equippedItem = null;
     }
 
+    public Entity getEquippedItem() {
+        return equippedItem;
+    }
+    public Inventory.InventoryItem getEquippedInventoryItem() {
+    if (equippedItem == null) return null;
+    
+    for (Inventory.InventoryItem item : inventory.getInventory()) {
+        if (item.item == equippedItem) {
+            return item;
+            }
+        }
+        return null;
+    }
     public void update(){
         if(tilling){
             tilling();
@@ -221,7 +230,7 @@ public class Player extends Entity {
     public void handleInput(){
         boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
-        if(keyH.useToolPressed && equippedInventoryItem != null) {
+        if(keyH.useToolPressed && equippedItem != null) {
             useTool();
             keyH.useToolPressed = false; // Reset the useToolPressed flag
             return;
@@ -269,7 +278,7 @@ public class Player extends Entity {
     }
 
     public void useTool(){
-        Entity currentTool = equippedInventoryItem.item;
+        Entity currentTool = equippedItem;
         if (currentTool instanceof OBJ_Hoe) {
             tilling = true;
             if(this.energy >= 5){
@@ -291,7 +300,8 @@ public class Player extends Entity {
         }
         else if (currentTool instanceof OBJ_ParsnipSeeds) {
             planting = true;
-            if(equippedInventoryItem.count > 0){
+            Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
+            if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
                 if(canPlant()){
                     if(energy >= 5){
                         planting = true;
@@ -391,9 +401,9 @@ public class Player extends Entity {
         Entity[] currentMapObjects = gp.getCurrentMapObjects();
         if (i != 999 && currentMapObjects[i] != null) {
             if (currentMapObjects[i].isPickable) {
-                if (inventory.size() < maxInventorySize) { // periksa inventorynya penuh ga
+                if (inventory.getInventory().size() < inventory.getMaxInventorySize()) { // periksa inventorynya penuh ga
                     boolean itemAlreadyInInventory = false;
-                    for (InventoryItem invItem : inventory) {
+                   for (Inventory.InventoryItem invItem : inventory.getInventory()) { // Perbaiki akses ke InventoryItem{
                         if (invItem.item.name.equals(currentMapObjects[i].name)) {
                             invItem.count++;
                             itemAlreadyInInventory = true;
@@ -402,7 +412,7 @@ public class Player extends Entity {
                     }
                     // klo item belum ada, tambahin ke inventory
                     if (!itemAlreadyInInventory) {
-                        inventory.add(new InventoryItem(currentMapObjects[i], 1));
+                       inventory.getInventory().add(new Inventory.InventoryItem(currentMapObjects[i], 1));
                     }
                     gp.playSE(1);
                     gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");

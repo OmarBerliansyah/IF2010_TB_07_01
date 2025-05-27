@@ -11,10 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.util.Iterator;
-import com.SpakborHills.entity.*;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -505,7 +501,7 @@ public class UI {
             g2.drawImage(gp.player.inventory.getInventory().get(i).item.down1, slotX, slotY, null);
 
             // EQUIP CURSOR 
-            if (gp.player.equippedItem == gp.player.inventory.get(i).item) {
+            if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(i).item) {
                 g2.setColor(new Color(240, 190, 90, 200));
                 g2.fillRoundRect(slotX + 2, slotY + 2, gp.tileSize - 4, gp.tileSize - 4, 8, 8);
             }
