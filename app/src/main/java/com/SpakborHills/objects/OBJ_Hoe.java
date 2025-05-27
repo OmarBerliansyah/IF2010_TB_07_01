@@ -9,7 +9,7 @@ public class OBJ_Hoe extends Entity {
         super(gp);
         name = "Hoe";
         down1 = setup("objects/Hoe",gp.tileSize, gp.tileSize );
-        description = "[" + name + "]\nini Hoe"; 
+        description = "[" + name + "]\nDigunakan untuk \nmengolah tanah untuk \nkeperluan pertanian."; 
         isPickable = true;
     }
 }
