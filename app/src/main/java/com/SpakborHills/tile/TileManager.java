@@ -141,6 +141,9 @@ public class TileManager {
         setup(76, "RumputLautKiri", true, TileType.NONE);
         setup(77, "RumputLautEdgeKiri", true, TileType.NONE);
         setup(78, "RumputLautEdgeKanan", true, TileType.NONE);
+        setup(79, "PerahuKiri", true, TileType.NONE);
+        setup(80, "PerahuKanan", true, TileType.NONE);
+        setup(81, "SandRumput", false, TileType.NONE);
 
     }
 
