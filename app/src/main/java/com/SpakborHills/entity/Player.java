@@ -136,7 +136,17 @@ public class Player extends Entity {
     }
 
     public void getPlayerSeedsImage(){
+        parsnipSeeds = setup("player/PlayerParsnipSeed", gp.tileSize, gp.tileSize);
+        cauliflowerSeeds = setup("player/PlayerCauliflowerSeeds", gp.tileSize, gp.tileSize);
+        potatoSeeds = setup("player/PlayerPotatoSeeds", gp.tileSize, gp.tileSize);
+        wheatSeeds = setup("player/PlayerWheatSeeds", gp.tileSize, gp.tileSize);
         blueberrySeeds = setup("player/PlayerBlueberrySeeds", gp.tileSize, gp.tileSize);
+        tomatoSeeds = setup("player/PlayerTomatoSeeds", gp.tileSize, gp.tileSize);
+        hotPepperSeeds = setup("player/PlayerHotPepperSeeds", gp.tileSize, gp.tileSize);
+        melonSeeds = setup("player/PlayerMelonSeeds", gp.tileSize, gp.tileSize);
+        cranberrySeeds = setup("player/PlayerCranberrySeeds", gp.tileSize, gp.tileSize);
+        pumpkinSeeds = setup("player/PlayerPumpkinSeeds", gp.tileSize, gp.tileSize);
+        grapeSeeds = setup("player/PlayerGrapeSeeds", gp.tileSize, gp.tileSize);
     }
 
     public void getPlayerPickAxeImage(){
@@ -671,7 +681,7 @@ public class Player extends Entity {
                         image = up1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
@@ -710,15 +720,15 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = down1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = down1;
                     }
                     if(spriteNum == 2){
                         image = wateringDown;
@@ -726,7 +736,7 @@ public class Player extends Entity {
                 }
                 if(recoverLand == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = down1;
                     }
                     if(spriteNum == 2){
                         image = recoverLandDown;
@@ -752,15 +762,15 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = left1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = left1;
                     }
                     if(spriteNum == 2){
                         image = wateringLeft;
@@ -768,7 +778,7 @@ public class Player extends Entity {
                 }
                 if(recoverLand == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = left1;
                     }
                     if(spriteNum == 2){
                         image = recoverLandLeft;
@@ -794,15 +804,15 @@ public class Player extends Entity {
                 }
                 if(planting == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = right1;
                     }
                     if(spriteNum == 2){
-                        image = blueberrySeeds;
+                        image = parsnipSeeds;
                     }
                 }
                 if(watering == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = right1;
                     }
                     if(spriteNum == 2){
                         image = wateringRight;
@@ -810,7 +820,7 @@ public class Player extends Entity {
                 }
                 if(recoverLand == true){
                     if(spriteNum == 1){
-                        image = up1;
+                        image = right1;
                     }
                     if(spriteNum == 2){
                         image = recoverLandRight;

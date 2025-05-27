@@ -19,7 +19,9 @@ public class Entity {
     public BufferedImage tillingUp, tillingDown, tillingLeft, tillingRight;
     public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
     public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
-    public BufferedImage blueberrySeeds;
+    public BufferedImage parsnipSeeds, cauliflowerSeeds, potatoSeeds, wheatSeeds;
+    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds;
+    public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
 
     public int spriteCounter = 0;
