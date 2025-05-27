@@ -101,8 +101,50 @@ public class EventHandler {
                 teleport(0,0,16);
             
             }
-            
+            // TELEPORT FROM NPCMAP TO Mayor HOUSE
+            else if (hit(4, 3, 7, "any") == true) {
+                teleport(9, 11, 22);
+            }
+            // teleport back to infront of mayor house
+            else if(hit(9,12,22, "any") == true){
+                teleport(4,4,7);
+            }
+            // teleport to emily house
+            else if (hit(4, 15,7, "any")==true){
+                teleport(5, 11, 22);
+            }
+            else if(hit(5,12,22, "any") == true){
+                teleport(4,16,7);
+            }
+            // TELEPORT KE RUMAH CAROLINE
+            else if (hit(4, 3,18, "any")== true){
+                teleport(10, 11, 22);
+            }
+            else if(hit(10,12,22, "any") == true){
+                teleport(4,4,18);
+            }
+            // TELEPORT KE RUMAH ABIGAIL
+            else if (hit(4, 14,18, "any")==true){
+                teleport(8, 11, 22);
+            }
+            else if(hit(8,12,22, "any") == true){
+                teleport(4,15,18);
+            }
+            // TELEPORT KE RUMAH PERRY
+            else if (hit(4, 3, 28, "any") == true) {
+                teleport(6, 11, 22);
+            }
+            else if (hit(6, 12, 22, "any") == true) {
+                teleport(4, 4, 28);  // Balik ke koordinat (4,26)
+            }
 
+            // TELEPORT KE RUMAH DASCO  
+            else if (hit(4, 14, 28, "any") == true) {
+                teleport(7, 11, 22);
+            }
+            else if (hit(7, 12, 22, "any") == true) {
+                teleport(4, 15, 28);  // Balik ke koordinat (15,26)
+} 
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
             //     speak(gp.npc[1][0]);

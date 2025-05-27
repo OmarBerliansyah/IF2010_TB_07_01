@@ -76,6 +76,24 @@ public class AssetSetter {
             case 4: // NPC Map
                 initializeNPCMap(mapIndex);
                 break;
+            case 5:
+                initializeEmilyMap(mapIndex);
+                break;
+            case 6:
+                initializePerryMap(mapIndex);
+                break;
+            case 7:
+                initializeDascoMap(mapIndex);
+                break;
+            case 8: 
+                initializeAbigailMap(mapIndex);
+                break;
+            case 9:
+                initializeMayorMap(mapIndex);
+                break;
+            case 10:
+                initializeCarolineMap(mapIndex);
+                break;
         }
         
         System.out.println("=== MAP " + mapIndex + " INITIALIZED ===");
@@ -128,6 +146,30 @@ public class AssetSetter {
     private void initializeNPCMap(int mapIndex) {
         setTreesForNPCMapPermanent(mapIndex);
         setHousesForNPCMapPermanent(mapIndex);
+    }
+     private void initializeEmilyMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Emily map initialized");
+    }
+     private void initializePerryMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Perry map initialized");
+    }
+     private void initializeDascoMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Dasco map initialized");
+    }
+     private void initializeAbigailMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Abigail map initialized");
+    }
+     private void initializeMayorMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Mayor map initialized");
+    }
+     private void initializeCarolineMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Caroline map initialized");
     }
 // Method untuk menempatkan objek di map tertentu
     private void placeHouseForMap(int mapIndex, int col, int row) {

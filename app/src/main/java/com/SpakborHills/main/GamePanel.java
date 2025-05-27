@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable {
     // WORLD SEtTINGS
     public final int maxWorldCol = 32;
     public final int maxWorldRow = 32;
-    public final int maxMap = 10; // bisa bikin sampai 10 map
+    public final int maxMap = 20; // bisa bikin sampai 10 map
     public int currentMap = 0;
 
     // FULL SCREEN

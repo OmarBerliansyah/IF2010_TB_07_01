@@ -52,12 +52,12 @@ public class TileManager {
         loadMap("maps/HouseMap.txt", 2);
         loadMap("maps/ForestMap.txt", 3);
         loadMap("maps/npcMap.txt", 4);
-        loadMap("maps/HouseMap.txt", 5);
-        loadMap("maps/HouseMap.txt", 6);
-        loadMap("maps/HouseMap.txt", 7);
-        loadMap("maps/HouseMap.txt", 8);
-        loadMap("maps/HouseMap.txt", 9);
-        loadMap("maps/HouseMap.txt", 10);
+        loadMap("maps/EmilyMap.txt", 5);// emily house
+        loadMap("maps/PerryMap.txt", 6);// perry house
+        loadMap("maps/DascoMap.txt", 7);// dasco house
+        loadMap("maps/AbigailMap.txt", 8);// abigail house
+        loadMap("maps/MayorMap.txt", 9);//mayor house
+        loadMap("maps/CarolineMap.txt", 10);// caroline house
         
     }
 
@@ -136,7 +136,7 @@ public class TileManager {
         setup(71, "LautTerangTerang", true, TileType.NONE);
         setup(72, "LautPasir", false, TileType.NONE);
         setup(73, "RumputLautTengah", true, TileType.NONE);
-        //setup(74, "RumputLautBawah", true, TileType.NONE);
+        setup(74, "RumputLautBawah", true, TileType.NONE);
         setup(75, "RumputLautKanan", true, TileType.NONE);
         setup(76, "RumputLautKiri", true, TileType.NONE);
         setup(77, "RumputLautEdgeKiri", true, TileType.NONE);
