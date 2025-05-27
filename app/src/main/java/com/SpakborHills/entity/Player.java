@@ -177,18 +177,18 @@ public class Player extends Entity {
             sleeping();
             return;
         }
-        if (watching){
-            watching();
-            return;
-        }
-        if (proposing){
-            proposing();
-            return;
-        }
-        if (marry){
-            marry();
-            return;
-        }
+        // if (watching){
+        //     watching();
+        //     return;
+        // }
+        // if (proposing){
+        //     proposing();
+        //     return;
+        // }
+        // if (marry){
+        //     marry();
+        //     return;
+        // }
         if(moving){
             handleMovement();
         }

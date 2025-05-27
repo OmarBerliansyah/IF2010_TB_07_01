@@ -44,6 +44,11 @@ public class Entity {
     boolean planting = false;
     boolean watering = false;
     boolean recoverLand = false;
+    boolean sleeping = false;
+    boolean watching = false;
+    boolean proposing = false;
+    boolean marry = false;
+
 
     public boolean isPickable = true;
 
