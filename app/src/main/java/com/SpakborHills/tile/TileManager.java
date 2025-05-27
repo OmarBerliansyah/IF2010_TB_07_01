@@ -136,11 +136,14 @@ public class TileManager {
         setup(71, "LautTerangTerang", true, TileType.NONE);
         setup(72, "LautPasir", false, TileType.NONE);
         setup(73, "RumputLautTengah", true, TileType.NONE);
-        //setup(74, "RumputLautBawah", true, TileType.NONE);
+        setup(74, "RumputLautBawah", true, TileType.NONE);
         setup(75, "RumputLautKanan", true, TileType.NONE);
         setup(76, "RumputLautKiri", true, TileType.NONE);
         setup(77, "RumputLautEdgeKiri", true, TileType.NONE);
         setup(78, "RumputLautEdgeKanan", true, TileType.NONE);
+        setup(79, "PerahuKiri", true, TileType.NONE);
+        setup(80, "PerahuKanan", true, TileType.NONE);
+        setup(81, "SandRumput", false, TileType.NONE);
 
     }
 
