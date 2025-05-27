@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter aSetter = new AssetSetter(this);
     public UI ui = new UI(this, keyH);
     public EventHandler eHandler = new EventHandler(this);
-    EnvironmentManager eManager = new EnvironmentManager(this);
+    public EnvironmentManager eManager = new EnvironmentManager(this);
     Thread gameThread; // Thread for the game loop
 
     //ENTITY AND OBJECT

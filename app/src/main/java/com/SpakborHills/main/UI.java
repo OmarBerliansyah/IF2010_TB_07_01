@@ -165,6 +165,11 @@ public class UI {
         }
     }
 
+    public void drawBlackScreen() {
+        g2.setColor(Color.black);
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+    }
+
     public void drawTitleScreen(){
         if (titleScreenState == 0) {
             // 1. GAMBAR BACKGROUND

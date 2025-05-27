@@ -132,6 +132,14 @@ public class Lighting {
         }
     }
 
+    public int getHour(){
+        return this.hour;
+    }
+
+    public int getMinute(){
+        return this.minute;
+    }
+
     public void nextDay(int currentDayInSeason){
         if(currentDayInSeason >= 30){
             rainyDayCount = 0;

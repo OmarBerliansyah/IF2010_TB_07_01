@@ -13,8 +13,8 @@ public class OBJ_ShippingBin extends Entity {
         // Shipping bin is 3x2 tiles
         solidArea.x = 0;
         solidArea.y = 0;
-        solidArea.width = 3 * gp.tileSize;
-        solidArea.height = 2 * gp.tileSize;
+        solidArea.width = 2 * gp.tileSize;
+        solidArea.height = 3 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;

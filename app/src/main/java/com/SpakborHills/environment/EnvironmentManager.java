@@ -22,6 +22,10 @@ public class EnvironmentManager {
         lighting.update();
     }
 
+    public void setTime(int hour, int minute){
+        lighting.setTime(hour, minute);
+    }
+
     public void draw(Graphics2D g2){
         lighting.draw(g2);
     }
