@@ -1,11 +1,19 @@
 package com.SpakborHills.main;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
+import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.NPC_1;
+import com.SpakborHills.objects.OBJ_AbigailHouse;
+import com.SpakborHills.objects.OBJ_CarolineHouse;
+import com.SpakborHills.objects.OBJ_DascoHouse;
+import com.SpakborHills.objects.OBJ_EmilyHouse;
 import com.SpakborHills.objects.OBJ_House;
 import com.SpakborHills.objects.OBJ_Keset;
+import com.SpakborHills.objects.OBJ_MayorHouse;
+import com.SpakborHills.objects.OBJ_PerryHouse;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
@@ -15,139 +23,170 @@ import com.SpakborHills.objects.OBJ_Tree2;
 public class AssetSetter {
     GamePanel gp;
     Random random;
-    ArrayList<Rectangle> occupiedAreas;
-    int houseCol, houseRow;
-    private boolean houseAlreadyPlaced = false;
-    private int savedHouseCol, savedHouseRow;
-    int houseIndex = 0;
+    // Simpan occupied areas dan house positions per map
+    HashMap<Integer, ArrayList<Rectangle>> mapOccupiedAreas;
+    HashMap<Integer, int[]> mapHousePositions; // [col, row, houseIndex]
+    HashMap<Integer, Boolean> mapInitialized;
 
     public AssetSetter(GamePanel gp) {
         this.gp = gp;
         this.random = new Random();
-        this.occupiedAreas = new ArrayList<>();
+        this.mapOccupiedAreas = new HashMap<>();
+        this.mapHousePositions = new HashMap<>();
+        this.mapInitialized = new HashMap<>();
+        // Initialize hashmaps untuk semua map
+        for(int i = 0; i < gp.maxMap; i++) {
+            mapOccupiedAreas.put(i, new ArrayList<>());
+            mapInitialized.put(i, false);
+        }
     }
     
     public void setObject() {
-        occupiedAreas.clear();
-        for(int i = 0; i < gp.obj.length; i++) {
-        gp.obj[i] = null;
+        if(!mapInitialized.get(gp.currentMap)) {
+            initializeMap(gp.currentMap);
+            mapInitialized.put(gp.currentMap, true);
         }
-        if (gp.currentMap == 0) {
-            placeFixedPonds();
-            if (!houseAlreadyPlaced) {
-                int[][] possibleHouseLocations = {
+        
+        System.out.println("Objects loaded for map " + gp.currentMap);
+    }
+
+    private void initializeMap(int mapIndex) {
+        System.out.println("=== INITIALIZING MAP " + mapIndex + " ===");
+        // Clear objects untuk map ini
+        Entity[] mapObjects = gp.mapObjects[mapIndex];
+        for(int i = 0; i < mapObjects.length; i++) {
+            mapObjects[i] = null;
+        }
+        mapOccupiedAreas.get(mapIndex).clear();
+        
+        // Setup objects berdasarkan map
+        switch(mapIndex) {
+            case 0: // Farm Map
+                initializeFarmMap(mapIndex);
+                break;
+            case 1: // Ocean Map
+                initializeOceanMap(mapIndex);
+                break;
+            case 2: // House Map
+                initializeHouseMap(mapIndex);
+                break;
+            case 3: // Forest Map
+                initializeForestMap(mapIndex);
+                break;
+            case 4: // NPC Map
+                initializeNPCMap(mapIndex);
+                break;
+        }
+        
+        System.out.println("=== MAP " + mapIndex + " INITIALIZED ===");
+    }
+    
+    private void initializeFarmMap(int mapIndex) {
+        // Place fixed ponds
+        placePondForMap(mapIndex, 28, 25);
+        
+        // Generate dan simpan house position jika belum ada
+        if(!mapHousePositions.containsKey(mapIndex)) {
+            int[][] possibleHouseLocations = {
                 {14,0}, {21,0}, {2,24}, {16,24}
             };
-            houseIndex = random.nextInt(possibleHouseLocations.length); // houseIndex harusnya field di class
-            this.houseCol = possibleHouseLocations[houseIndex][0];
-            this.houseRow = possibleHouseLocations[houseIndex][1];
-            savedHouseCol = this.houseCol;
-            savedHouseRow = this.houseRow;
-            houseAlreadyPlaced = true; // Tandai bahwa rumah sudah ditempatkan
-            System.out.println("Initial house placement at (" + this.houseCol + "," + this.houseRow + ")");
-            } else {
-                houseCol = savedHouseCol;
-                houseRow = savedHouseRow;
-                System.out.println("Restoring house at saved position (" + this.houseCol + "," + this.houseRow + ")");
-            }
-            placeHouse(this.houseCol, this.houseRow);
-            int binCol = this.houseCol + 6 + 1;
-            int binRow = this.houseRow + 2;
-            placeShippingBin(binCol, binRow); 
-            setTreesFromMap();
-            setTrees2FromMap();
-        }else if (gp.currentMap == 1){
-            //map 1 objects
+            int houseIndex = random.nextInt(possibleHouseLocations.length);
+            int[] housePos = possibleHouseLocations[houseIndex];
+            mapHousePositions.put(mapIndex, new int[]{housePos[0], housePos[1], houseIndex});
+            System.out.println("Farm house permanently placed at (" + housePos[0] + "," + housePos[1] + ")");
         }
-        else if (gp.currentMap == 2){
-            int objIndex = getNextAvailableObjectIndex();
-            gp.obj[objIndex] = new OBJ_Keset(gp);
-            gp.obj[objIndex].worldX = 11 * gp.tileSize;
-            gp.obj[objIndex].worldY = 22 * gp.tileSize;//map 2 objects
-        }
+        
+        int[] savedHouseData = mapHousePositions.get(mapIndex);
+        int houseCol = savedHouseData[0];
+        int houseRow = savedHouseData[1];
+        int houseIndex = savedHouseData[2];
+        
+        placeHouseForMap(mapIndex, houseCol, houseRow);
+        placeShippingBinForMap(mapIndex, houseCol + 7, houseRow + 2);
+        setTreesForMap(mapIndex);
+        setTrees2ForMap(mapIndex, houseIndex);
+    }
+     private void initializeOceanMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Ocean map initialized");
     }
     
-    public void placeFixedPonds() {
-        int col = 28, row = 25;
-        placePond(col, row);
-        occupiedAreas.add(new Rectangle(col, row, 3, 4));
-    }
-    
-    private void placeHouse(int col, int row) {
-        int objIndex = getNextAvailableObjectIndex();
+     private void initializeHouseMap(int mapIndex) {
+        // Place keset permanently
+        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex != -1) {
-            gp.obj[objIndex] = new OBJ_House(gp);
-            gp.obj[objIndex].worldX = col * gp.tileSize;
-            gp.obj[objIndex].worldY = row * gp.tileSize;
-            occupiedAreas.add(new Rectangle(col, row, 6, 6)); 
+            gp.mapObjects[mapIndex][objIndex] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex].worldX = 11 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
+            System.out.println("House map: Keset placed permanently");
         }
     }
-    
-    private void placeShippingBin(int col, int row) {
-        // Create shipping bin object
-        int objIndex = getNextAvailableObjectIndex();
+    private void initializeForestMap(int mapIndex) {
+        // Forest map objects 
+        System.out.println("Forest map initialized");
+    }
+    private void initializeNPCMap(int mapIndex) {
+        setTreesForNPCMapPermanent(mapIndex);
+        setHousesForNPCMapPermanent(mapIndex);
+    }
+// Method untuk menempatkan objek di map tertentu
+    private void placeHouseForMap(int mapIndex, int col, int row) {
+        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex != -1) {
-            gp.obj[objIndex] = new OBJ_ShippingBin(gp);
-            gp.obj[objIndex].worldX = col * gp.tileSize;
-            gp.obj[objIndex].worldY = row * gp.tileSize;
-            occupiedAreas.add(new Rectangle(col, row, 3, 2));
+            gp.mapObjects[mapIndex][objIndex] = new OBJ_House(gp);
+            gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+            mapOccupiedAreas.get(mapIndex).add(new Rectangle(col, row, 6, 6));
         }
     }
-    
-    private void placePond(int col, int row) {
-        // Create pond object
-        int objIndex = getNextAvailableObjectIndex();
+     private void placeShippingBinForMap(int mapIndex, int col, int row) {
+        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex != -1) {
-            gp.obj[objIndex] = new OBJ_Pond(gp);
-            gp.obj[objIndex].worldX = col * gp.tileSize;
-            gp.obj[objIndex].worldY = row * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex] = new OBJ_ShippingBin(gp);
+            gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+            mapOccupiedAreas.get(mapIndex).add(new Rectangle(col, row, 3, 2));
         }
     }
-    
-    private int getNextAvailableObjectIndex() {
-        for(int i = 0; i < gp.obj.length; i++) {
-            if(gp.obj[i] == null) {
+    private void placePondForMap(int mapIndex, int col, int row) {
+        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex != -1) {
+            gp.mapObjects[mapIndex][objIndex] = new OBJ_Pond(gp);
+            gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+            mapOccupiedAreas.get(mapIndex).add(new Rectangle(col, row, 3, 4));
+        }
+    }
+     private int getNextAvailableObjectIndexForMap(int mapIndex) {
+        Entity[] mapObjects = gp.mapObjects[mapIndex];
+        for(int i = 0; i < mapObjects.length; i++) {
+            if(mapObjects[i] == null) {
                 return i;
             }
         }
         return -1;
     }
-    
-    public void setTreesFromMap() {
+    private void setTreesForMap(int mapIndex) {
         int[][] treePositions = {
-            {1,0},  
-            {3,0},   
-            {5,0},  
-            {7,0},  
-            {9,0}, 
-            {1,3},   
-            {3,3}, 
-            {1,5},  
-            {3,5}, 
-            {1,7},  
-            {3,7},  
-            {11,0}, 
+            {1,0}, {3,0}, {5,0}, {7,0}, {9,0}, 
+            {1,3}, {3,3}, {1,5}, {3,5}, {1,7}, {3,7}, {11,0}
         };
+        
         for(int i = 0; i < treePositions.length; i++) {
             int col = treePositions[i][0];
             int row = treePositions[i][1];
             
-            int objIndex = getNextAvailableObjectIndex();
+            int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
             if(objIndex != -1) {
-                gp.obj[objIndex] = new OBJ_Tree(gp);
-                gp.obj[objIndex].worldX = col * gp.tileSize;
-                gp.obj[objIndex].worldY = row * gp.tileSize;
-                occupiedAreas.add(new Rectangle(col, row, 2, 3)); 
-                
-                System.out.println("Pohon " + (i+1) + " ditempatkan di (" + col + "," + row + ")");
-            } else {
-                System.out.println("Gagal menempatkan pohon #" + (i+1) + " - tidak ada slot");
+                gp.mapObjects[mapIndex][objIndex] = new OBJ_Tree(gp);
+                gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+                gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+                mapOccupiedAreas.get(mapIndex).add(new Rectangle(col, row, 2, 3));
             }
         }
-        
     }
-
-    public void setTrees2FromMap() { // different tree photo
+    
+     private void setTrees2ForMap(int mapIndex, int houseIndex) {
         int[][] treePositions2;
         treePositions2 = switch (houseIndex+1) {
             case 1 -> new int[][]{
@@ -171,30 +210,100 @@ public class AssetSetter {
             int col = treePositions2[i][0];
             int row = treePositions2[i][1];
             
-            int objIndex = getNextAvailableObjectIndex();
+            int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
             if(objIndex != -1) {
-                gp.obj[objIndex] = new OBJ_Tree2(gp);
-                gp.obj[objIndex].worldX = col * gp.tileSize;
-                gp.obj[objIndex].worldY = row * gp.tileSize;
-                occupiedAreas.add(new Rectangle(col, row, 2, 3)); 
-                
-                System.out.println("Pohon2 " + (i+1) + " ditempatkan di (" + col + "," + row + ")");
-            } else {
-                System.out.println("Gagal menempatkan pohon2 #" + (i+1) + " - tidak ada slot");
+                gp.mapObjects[mapIndex][objIndex] = new OBJ_Tree2(gp);
+                gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+                gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+                mapOccupiedAreas.get(mapIndex).add(new Rectangle(col, row, 2, 3));
             }
         }
+    }
+
+    private void setTreesForNPCMapPermanent(int mapIndex) {
+        int[][] treePositions = {
+            {28, 1}, {28, 4}, {28, 8}, {1, 8}, {3, 8}, {5, 8},
+            {12, 8}, {14, 8}, {16, 8}, {28, 10}, {28, 13}, 
+            {28, 22}, {28, 25}, {28, 28}
+        };
         
+        for(int i = 0; i < treePositions.length; i++) {
+            int col = treePositions[i][0];
+            int row = treePositions[i][1];
+            
+            int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+            if(objIndex != -1) {
+                gp.mapObjects[mapIndex][objIndex] = new OBJ_Tree(gp);
+                gp.mapObjects[mapIndex][objIndex].worldX = col * gp.tileSize;
+                gp.mapObjects[mapIndex][objIndex].worldY = row * gp.tileSize;
+            }
+        }
+    }
+     private void setHousesForNPCMapPermanent(int mapIndex) {
+        // Mayor House
+    int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_MayorHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 1 * gp.tileSize;
     }
     
+    // Perry House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_PerryHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
+    }
+    
+    // Abigail House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_AbigailHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 12 * gp.tileSize;
+    }
+    
+    // Caroline House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_CarolineHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 1 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 12 * gp.tileSize;
+    }
+    
+    // Emily House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_EmilyHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 1 * gp.tileSize;
+    }
+    
+    // Dasco House
+    objIndex = getNextAvailableObjectIndexForMap(mapIndex);
+    if (objIndex != -1) {
+        gp.mapObjects[mapIndex][objIndex] = new OBJ_DascoHouse(gp);
+        gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
+        gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
+    }
+    }
+
     public int getDoorCol() {
-        return houseCol + 2;
+        if(mapHousePositions.containsKey(0)) {
+            return mapHousePositions.get(0)[0] + 2;
+        }
+        return 16; // default misal error yak
     }
     
     public int getDoorRow() {
-        return houseRow + 6; 
+        if(mapHousePositions.containsKey(0)) {
+            return mapHousePositions.get(0)[1] + 6;
+        }
+        return 24; // default
     }
 
-    public void setNPC(){
+     public void setNPC(){
         gp.NPC[0] = new NPC_1(gp);
         gp.NPC[0].worldX = gp.tileSize*1;
         gp.NPC[0].worldY = gp.tileSize*21;

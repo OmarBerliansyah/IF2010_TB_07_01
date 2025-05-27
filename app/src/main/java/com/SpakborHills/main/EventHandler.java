@@ -63,46 +63,43 @@ public class EventHandler {
 
             // TELEPORT TO OCEAN
             if (hit(0, 13, 31, "any") == true) {
-                teleport(1, 10, 5);
-                if(gp.currentMap == 1) {
-                    gp.aSetter.setObject(); 
-                    gp.aSetter.setNPC();
-                }
+                teleport(1, 5, 5);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
-            else if (hit(1, 10, 1, "any") == true) {
+            else if (hit(1, 5, 5, "any") == true) {
                 teleport(0, 13, 31);
-                if (gp.currentMap ==0)gp.aSetter.setObject();
             }
 
             // TELEPORT TO HOUSE
             else if (hit(0, gp.aSetter.getDoorCol()+1+1, gp.aSetter.getDoorRow(), "any") == true) {
                 teleport(2, 11, 23);
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
             }
 
             // TELEPORT TO MAIN FROM HOUSE
             else if (hit(2, 11, 23, "any") == true) {
                 teleport(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow());
-                gp.aSetter.setObject(); 
-                gp.aSetter.setNPC();
+
             }
 
             // TELEPORT TO FOREST RIVER
             else if (hit(0, 18, 20, "any") == true) {
                 teleport(3, 31, 16);
-                if(gp.currentMap == 3) {
-                    gp.aSetter.setObject(); 
-                    gp.aSetter.setNPC();
-                }
             }
 
             // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
             else if (hit(3, 31, 16, "any") == true) {
                 teleport(0, 0, 16);
-                if (gp.currentMap ==0)gp.aSetter.setObject();
+            }
+
+            // TELEPORT TO NPC MAP
+            else if (hit(0, 0, 14, "any") == true) {
+                teleport(4, 31, 18);
+    
+            }
+            else if (hit(4, 31, 19, "any") == true) {
+                teleport(0,0,16);
+            
             }
             
 
@@ -146,6 +143,7 @@ public class EventHandler {
         previousEventX = gp.player.worldX;
         previousEventY = gp.player.worldY;
         canTouchEvent = false;
+        gp.aSetter.setObject();
         // tempMap = map;
         // tempCol = col;
         // tempRow = row;

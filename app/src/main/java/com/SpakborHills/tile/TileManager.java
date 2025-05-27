@@ -15,8 +15,8 @@ public class TileManager {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][][];
-    public int mapCols[] = new int[10];
-    public int mapRows[] = new int[10];
+    public int mapCols[] = new int[20];
+    public int mapRows[] = new int[20];
 
     public TileManager(GamePanel gp){
         this.gp = gp;
@@ -24,19 +24,41 @@ public class TileManager {
         tile = new Tile[100];
         mapCols[0] = gp.maxWorldCol;
         mapRows[0] = gp.maxWorldRow;
-        mapCols[1] = gp.maxWorldCol;
-        mapRows[1] = gp.maxWorldRow;
+        mapCols[1] = 24;
+        mapRows[1] = 24;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
         mapCols[3] = gp.maxWorldCol;
         mapRows[3] = gp.maxWorldRow;
+        mapCols[4] = gp.maxWorldCol;
+        mapRows[4] = gp.maxWorldRow;
+        mapCols[5] = 24;
+        mapRows[5] = 24;
+        mapCols[6] = 24;
+        mapRows[6] = 24;
+        mapCols[7] = 24;
+        mapRows[7] = 24;
+        mapCols[8] = 24;
+        mapRows[8] = 24;
+        mapCols[9] = 24;
+        mapRows[9] = 24;
+        mapCols[10] = 24;
+        mapRows[10] = 24;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
         loadMap("maps/WorldMap.txt",0);
-        loadMap("maps/OceanMap.txt",1);
+        loadMap("maps/OceanMap.txt", 1);
         loadMap("maps/HouseMap.txt", 2);
         loadMap("maps/ForestMap.txt", 3);
+        loadMap("maps/npcMap.txt", 4);
+        loadMap("maps/HouseMap.txt", 5);
+        loadMap("maps/HouseMap.txt", 6);
+        loadMap("maps/HouseMap.txt", 7);
+        loadMap("maps/HouseMap.txt", 8);
+        loadMap("maps/HouseMap.txt", 9);
+        loadMap("maps/HouseMap.txt", 10);
+        
     }
 
     public void getTileImage() {
@@ -83,7 +105,7 @@ public class TileManager {
         setup(40, "GrassSoilBawah", false, TileType.NONE);
         setup(41, "GressSoilKaBEdge", false, TileType.NONE);
         setup(42, "GressSoilKaAEdge", false, TileType.NONE);
-        setup(43, "Soilkeinjek", false, TileType.TILLABLE);
+        setup(43, "SoilKeinjek", false, TileType.TILLABLE);
         setup(44, "rumahataskanan", false, TileType.NONE);
         setup(45, "rumahataskiri", false, TileType.NONE);
         setup(46, "rumahatas", false, TileType.NONE);
@@ -105,6 +127,24 @@ public class TileManager {
         setup(62, "GrassSoilTengahKiri4", false, TileType.NONE);
         setup(63, "GrassSoilKAEdge3", false, TileType.NONE);
         setup(64, "GrassSoilKAEdge4", false, TileType.NONE);
+        setup(65, "LautTerangGelap", true, TileType.NONE);
+        setup(66, "kakiDermaga", true, TileType.NONE);
+        setup(67, "tileDermaga", false, TileType.NONE);
+        setup(68, "DermagaTerang", true, TileType.NONE);
+        setup(69, "DermagaGelap", true, TileType.NONE);
+        setup(70, "DermagaTerangKanan", true, TileType.NONE);
+        setup(71, "LautTerangTerang", true, TileType.NONE);
+        setup(72, "LautPasir", false, TileType.NONE);
+        setup(73, "RumputLautTengah", true, TileType.NONE);
+        setup(74, "RumputLautBawah", true, TileType.NONE);
+        setup(75, "RumputLautKanan", true, TileType.NONE);
+        setup(76, "RumputLautKiri", true, TileType.NONE);
+        setup(77, "RumputLautEdgeKiri", true, TileType.NONE);
+        setup(78, "RumputLautEdgeKanan", true, TileType.NONE);
+        setup(79, "PerahuKiri", true, TileType.NONE);
+        setup(80, "PerahuKanan", true, TileType.NONE);
+        setup(81, "SandRumput", false, TileType.NONE);
+
     }
 
 
@@ -115,7 +155,9 @@ public class TileManager {
         try{
 
             InputStream is = getClass().getClassLoader().getResourceAsStream(imagePath);
-
+            if (is == null) {
+                System.out.println("ERROR: Tidak menemukan file: " + imagePath);
+            }
             tile[index] = new Tile();
             tile[index].image = ImageIO.read(is);
             tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);

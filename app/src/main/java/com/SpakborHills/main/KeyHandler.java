@@ -5,7 +5,7 @@ import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, tillingPressed, plantingPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
     public KeyHandler(GamePanel gp){
@@ -163,11 +163,8 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.characterState;
                 characterPressed = true;
             }
-            if (code == KeyEvent.VK_Q && !tillingPressed) {
-                tillingPressed = true;
-            }
-            if (code == KeyEvent.VK_Y && !plantingPressed) {
-                plantingPressed = true;
+            if (code == KeyEvent.VK_SPACE && !useToolPressed) {
+               useToolPressed = true; // Set the useToolPressed flag to true
             }
         }
 
@@ -192,25 +189,25 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.playState;
                 characterPressed = true;
             }
-            if(code == KeyEvent.VK_W){
+            if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
                 if(gp.ui.slotRow != 0){
                     gp.ui.slotRow--;
                     gp.playSE(2);
                 }
             }
-            if(code == KeyEvent.VK_A){
+            if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT){
                 if(gp.ui.slotCol != 0){
                     gp.ui.slotCol--;
                     gp.playSE(2);
                 }
             }
-            if(code == KeyEvent.VK_S){
+            if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
                 if(gp.ui.slotRow != 3){
                     gp.ui.slotRow++;
                     gp.playSE(2);
                 }
             }
-            if(code == KeyEvent.VK_D){
+            if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
                 if(gp.ui.slotCol != 4){
                     gp.ui.slotCol++;
                     gp.playSE(2);
@@ -245,11 +242,8 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_ENTER){
             enterPressed = false;
         }
-        if(code == KeyEvent.VK_Q){
-            tillingPressed = false;
-        }
-        if(code == KeyEvent.VK_Y){
-            plantingPressed = false;
+        if(code == KeyEvent.VK_SPACE){
+            useToolPressed = false; // Reset the useToolPressed flag when the space key is released
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_E) {
