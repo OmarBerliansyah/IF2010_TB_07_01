@@ -99,7 +99,7 @@ public class EventHandler {
                 teleport(4, 31, 18);
     
             }
-            else if (hit(4, 31, 20, "any") == true) {
+            else if (hit(4, 31, 19, "any") == true) {
                 teleport(0,0,16);
             
             }
