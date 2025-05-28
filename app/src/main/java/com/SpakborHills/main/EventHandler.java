@@ -155,6 +155,16 @@ public class EventHandler {
             else if (hit(11, 8, 2, "any") == true) {
                 teleport(0, 26, 0);
             }
+
+            // Interact with Bed
+            else if (hit(2, 6, 11, "any") == true) {
+                if(!gp.ui.showingSleepConfirmDialog){
+                    canTouchEvent = false;
+                    gp.gameState = gp.dialogueState;
+                    gp.ui.showSleepConfirmationDialog();
+                    // teleport(2, 8, 10);
+                }
+            }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
             //     speak(gp.npc[1][0]);

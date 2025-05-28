@@ -13,8 +13,8 @@ public class OBJ_QueenBed extends Entity {
 
         solidArea.x = 0;
         solidArea.y = 0;
-        solidArea.width = 6 * gp.tileSize;
-        solidArea.height = 4 * gp.tileSize;
+        solidArea.width = 4 * gp.tileSize;
+        solidArea.height = 6 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
@@ -24,12 +24,12 @@ public class OBJ_QueenBed extends Entity {
         int screenX = worldX - gp.player.worldX + gp.player.screenX;
         int screenY = worldY - gp.player.worldY + gp.player.screenY;
         
-        if(worldX + (6 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
-           worldX - (6 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
-           worldY + (4 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
-           worldY - (4 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
+        if(worldX + (4 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
+           worldX - (4 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
+           worldY + (6 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
+           worldY - (6 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
             
-            g2.drawImage(down1, screenX, screenY, 6 * gp.tileSize, 4 * gp.tileSize, null);
+            g2.drawImage(down1, screenX, screenY, 4 * gp.tileSize, 6 * gp.tileSize, null);
         }
     }
 }

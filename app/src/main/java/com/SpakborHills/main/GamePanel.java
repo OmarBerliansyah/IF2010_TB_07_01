@@ -130,9 +130,14 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
     public void update() {
+        if (ui.showingSleepConfirmDialog) {
+            ui.processSleepConfirmationInput();
+        }
         // // Update game logic here
         if(gameState == playState){
-            player.update(); // Update the player entity
+            if(!ui.showingSleepConfirmDialog) {
+                player.update(); // Update the player entity 
+            }
             //NPC
             for(int i = 0; i < NPC.length ; i++){
                 if(NPC[i] != null){
@@ -146,10 +151,12 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             eManager.update();
+            if (ui.showingSleepConfirmDialog) {
+                ui.processSleepConfirmationInput();                                             // Pastikan player.update() di atas tidak memproses gerakan jika dialog aktif
+            }
         }
-        if (gameState == pauseState){
+        else if (gameState == pauseState){
         }
-
     }
 
     public void paintComponent(Graphics g) {

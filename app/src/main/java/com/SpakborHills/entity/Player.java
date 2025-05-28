@@ -173,10 +173,10 @@ public class Player extends Entity {
             recoverLand();
             return;
         }
-        if (sleeping){
-            sleeping();
-            return;
-        }
+        // if (sleeping){
+        //     sleeping();
+        //     return;
+        // }
         // if (watching){
         //     watching();
         //     return;
@@ -194,6 +194,9 @@ public class Player extends Entity {
         }
         else{
             handleInput();
+        }
+        if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
+            return;
         }
     }
 
@@ -437,8 +440,8 @@ public class Player extends Entity {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
             }
-            }
         }
+    }
     
     public void planting(){
         spriteCounter++;
@@ -640,17 +643,7 @@ public class Player extends Entity {
         }
     }
 
-    // public void interactWithFurniture(){
-    //     if (){
-    //         if (gp.keyH.enterPressed) {
-                
-    //             gp.keyH.enterPressed = false;
-    //         }
-    //     }
-    // }
-
     public void sleeping(){
-        gp.ui.drawBlackScreen();
         gp.ui.addMessage("You are sleeping...");
 
         if (energy < 10) {
@@ -680,6 +673,10 @@ public class Player extends Entity {
     }
 
     public void interactNPC(int i){
+        if(gp.ui.showingSleepConfirmDialog){
+            gp.keyH.enterPressed = false;
+            return; 
+        }
         if(gp.keyH.enterPressed) {
             if (i != 999) {
                 gp.gameState = gp.dialogueState;
