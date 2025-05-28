@@ -13,6 +13,7 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
 import com.SpakborHills.tile.TileManager;
+import com.SpakborHills.data.ItemManager;
 
 public class GamePanel extends JPanel implements Runnable {
     // SCREEN SETTINGGS
@@ -58,6 +59,8 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity mapObjects[][] = new Entity[maxMap][100];
     public Entity NPC[] = new Entity[10];
     ArrayList<Entity> entityList = new ArrayList<>();
+    public ItemManager itemManager = new ItemManager(this);
+
 
     //GAMESTATE
     public int gameState;
@@ -66,6 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int dialogueState = 3;
     public final int characterState = 4;
+    public final int shippingBinState = 5;
 
     public GamePanel(){
         this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight)); // Set the preferred size of the panel
@@ -157,6 +161,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if (gameState == pauseState){
         }
+        else if (gameState == shippingBinState) {
+            ui.processShippingBinInput();
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -225,6 +232,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             //UI
             ui.draw(g2);
+
+            if(gameState == shippingBinState) {
+                ui.drawShippingBinInterface(g2);
+            }
 
             g2.dispose();
         }

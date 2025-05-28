@@ -5,7 +5,7 @@ import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
     public KeyHandler(GamePanel gp){
@@ -223,9 +223,24 @@ public class KeyHandler implements KeyListener {
                     gp.playSE(2);
                 }
             }
-
         }
-    }
+
+                    
+        if (gp.gameState == gp.shippingBinState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                escPressed = true;
+            }
+            if (code == KeyEvent.VK_UP) {
+                upPressed = true;
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                downPressed = true;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
+        }
+}
 
     @Override
     public void keyReleased(KeyEvent e) {
@@ -256,13 +271,16 @@ public class KeyHandler implements KeyListener {
             useToolPressed = false; // Reset the useToolPressed flag when the space key is released
         }
          if (code == KeyEvent.VK_G) {
-        giftPressed = false;
+            giftPressed = false;
         }
         if (code == KeyEvent.VK_R) {
             proposePressed = false;
         }
         if (code == KeyEvent.VK_M) {
             marryPressed = false;
+        }
+        if (code == KeyEvent.VK_ESCAPE) {
+            escPressed = false;
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_E) {

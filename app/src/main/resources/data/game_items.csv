@@ -1,14 +1,54 @@
-ID,Name,Category,SellPrice,BuyPrice,Description,Attributes
-001,Parsnip Seeds,Seed,10,20,"Plant in spring. Takes 4 days to mature.",PLANTABLE;HARVEST_ID:101;STACKABLE:99;TYPE:Seed
-101,Parsnip,Crop,35,0,"A spring tuber closely related to the carrot.",EDIBLE;ENERGY:25;HEALTH:10;SELLABLE;STACKABLE:99;TYPE:Crop
-201,Wood,Material,2,0,"A sturdy piece of wood.",SELLABLE;STACKABLE:99;TYPE:Material
-010,Fishing Rod,Tool,0,500,"A basic fishing rod.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
-011,Hoe,Tool,0,0,"Used to till soil.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
-012,Watering Can,Tool,0,0,"Used to water crops.",TOOL;EQUIPPABLE;STACKABLE:1;CAPACITY:100;TYPE:Tool
-013,Pickaxe,Tool,0,0,"Used to chop wood.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
-700,Bed,Furniture,0,0,"Allows you to sleep and save the game.",INTERACTABLE;FURNITURE_TYPE:BED;TYPE:Furniture
-701,TV,Furniture,0,0,"Watch for weather and tips.",INTERACTABLE;FURNITURE_TYPE:TV;TYPE:Furniture
-702,Kitchen Stove,Furniture,0,1000,"Cook delicious meals here.",INTERACTABLE;FURNITURE_TYPE:KITCHEN;COOKING_STATION;TYPE:Furniture
-800,Mermaid Pendant,Special,0,5000,"A legendary pendant required for marriage proposal.",SELLABLE;STACKABLE:1;TYPE:Special
-401,Small Perch,Fish,25,0,"A small freshwater fish.",EDIBLE;ENERGY:15;HEALTH:5;SELLABLE;STACKABLE:99;TYPE:Fish
-301,Nasi Goreng,CookedDish,150,0,"A delicious fried rice.",EDIBLE;ENERGY:100;HEALTH:40;SELLABLE;STACKABLE:1;TYPE:CookedDish
+id,name,category,sell_price,buy_price,description,attributes
+001,Parsnip Seeds,Seeds,10,20,"Basic parsnip seeds for planting","PLANTABLE;HARVEST_ID:002;STACKABLE:99;SELLABLE"
+002,Parsnip,Crops,35,50,"Fresh parsnip vegetable","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+003,Cauliflower Seeds,Seeds,40,80,"Cauliflower seeds for planting","PLANTABLE;HARVEST_ID:004;STACKABLE:99;SELLABLE"
+004,Cauliflower,Crops,150,200,"Fresh cauliflower","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+005,Potato Seeds,Seeds,25,50,"Potato seeds for planting","PLANTABLE;HARVEST_ID:006;STACKABLE:99;SELLABLE"
+006,Potato,Crops,80,0,"Fresh potato","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+007,Wheat Seeds,Seeds,30,60,"Wheat seeds for planting","PLANTABLE;HARVEST_ID:008;STACKABLE:99;SELLABLE"
+008,Wheat,Crops,30,50,"Fresh wheat","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+009,Blueberry Seeds,Seeds,40,80,"Blueberry seeds for planting","PLANTABLE;HARVEST_ID:010;STACKABLE:99;SELLABLE"
+010,Blueberry,Crops,40,150,"Fresh blueberry","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+011,Tomato Seeds,Seeds,25,50,"Tomato seeds for planting","PLANTABLE;HARVEST_ID:012;STACKABLE:99;SELLABLE"
+012,Tomato,Crops,60,90,"Fresh tomato","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+013,Hot Pepper Seeds,Seeds,20,40,"Hot pepper seeds for planting","PLANTABLE;HARVEST_ID:014;STACKABLE:99;SELLABLE"
+014,Hot Pepper,Crops,40,0,"Spicy hot pepper","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+015,Melon Seeds,Seeds,40,80,"Melon seeds for planting","PLANTABLE;HARVEST_ID:016;STACKABLE:99;SELLABLE"
+016,Melon,Crops,250,0,"Sweet melon","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+017,Cranberry Seeds,Seeds,50,100,"Cranberry seeds for planting","PLANTABLE;HARVEST_ID:018;STACKABLE:99;SELLABLE"
+018,Cranberry,Crops,25,0,"Tart cranberry","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+019,Pumpkin Seeds,Seeds,75,150,"Pumpkin seeds for planting","PLANTABLE;HARVEST_ID:020;STACKABLE:99;SELLABLE"
+020,Pumpkin,Crops,250,300,"Large pumpkin","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+021,Grape Seeds,Seeds,30,60,"Grape seeds for planting","PLANTABLE;HARVEST_ID:022;STACKABLE:99;SELLABLE"
+022,Grape,Crops,10,100,"Sweet grape","EDIBLE;ENERGY:3;SELLABLE;STACKABLE:99"
+023,Fish n' Chips,Food,135,150,"Delicious fish and chips","EDIBLE;ENERGY:50;SELLABLE;STACKABLE:10"
+024,Baguette,Food,80,100,"Fresh baguette","EDIBLE;ENERGY:25;SELLABLE;STACKABLE:10"
+025,Sashimi,Food,275,300,"Fresh sashimi","EDIBLE;ENERGY:70;SELLABLE;STACKABLE:10"
+026,Fugu,Food,135,0,"Dangerous fugu fish","EDIBLE;ENERGY:50;SELLABLE;STACKABLE:10"
+027,Wine,Food,90,100,"Fine wine","EDIBLE;ENERGY:20;SELLABLE;STACKABLE:10"
+028,Pumpkin Pie,Food,100,120,"Sweet pumpkin pie","EDIBLE;ENERGY:35;SELLABLE;STACKABLE:10"
+029,Veggie Soup,Food,120,140,"Healthy vegetable soup","EDIBLE;ENERGY:40;SELLABLE;STACKABLE:10"
+030,Fish Stew,Food,260,280,"Hearty fish stew","EDIBLE;ENERGY:70;SELLABLE;STACKABLE:10"
+031,Spakbor Salad,Food,250,0,"Special Spakbor salad","EDIBLE;ENERGY:70;SELLABLE;STACKABLE:10"
+032,Fish Sandwich,Food,180,200,"Tasty fish sandwich","EDIBLE;ENERGY:50;SELLABLE;STACKABLE:10"
+033,The Legends of Spakbor,Food,2000,0,"Legendary dish","EDIBLE;ENERGY:100;SELLABLE;STACKABLE:1"
+034,Cooked Pig's Head,Food,0,1000,"Cooked pig's head","EDIBLE;ENERGY:100;SELLABLE;STACKABLE:1"
+035,Egg,Misc,5,10,"Fresh egg","EDIBLE;ENERGY:2;SELLABLE;STACKABLE:50"
+036,Firewood,Misc,50,100,"Dry firewood for fuel","SELLABLE;STACKABLE:50"
+037,Coal,Misc,100,200,"Coal for fuel","SELLABLE;STACKABLE:50"
+038,Proposal Ring,Misc,0,3000,"Special ring for proposals","QUEST_ITEM;STACKABLE:1"
+039,Hoe,Equipment,0,0,"Tool for tilling soil","TOOL;EQUIPPABLE"
+040,Watering Can,Equipment,0,0,"Tool for watering plants","TOOL;EQUIPPABLE"
+041,Pickaxe,Equipment,0,0,"Tool for breaking things","TOOL;EQUIPPABLE"
+042,Fishing Rod,Equipment,0,0,"Tool for fishing","TOOL;EQUIPPABLE"
+043,Bullhead,Fish,15,0,"Common bullhead fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+044,Carp,Fish,20,0,"Common carp fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+045,Chub,Fish,18,0,"Common chub fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+046,Largemouth Bass,Fish,25,0,"Regular bass fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+047,Rainbow Trout,Fish,30,0,"Regular trout fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+048,Sturgeon,Fish,35,0,"Regular sturgeon fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:50"
+049,Angler,Fish,100,0,"Legendary angler fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
+050,Crimsonfish,Fish,120,0,"Legendary crimsonfish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
+051,Legend,Fish,150,0,"Legendary fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
+052,Furniture,Queen Bed,10000,null, "Luxury queen bed","FURNITURE;EQUIPPABLE;STACKABLE:1"
+054,Furniture,Stove,7500,null, "High-end stove","FURNITURE;EQUIPPABLE;STACKABLE:1"

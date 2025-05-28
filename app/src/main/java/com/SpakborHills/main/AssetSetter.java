@@ -133,6 +133,7 @@ public class AssetSetter {
         setTreesForMap(mapIndex);
         setTrees2ForMap(mapIndex, houseIndex);
     }
+    
      private void initializeOceanMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Ocean map initialized");

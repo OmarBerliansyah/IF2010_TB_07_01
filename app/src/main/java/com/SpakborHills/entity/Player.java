@@ -3,7 +3,10 @@ package com.SpakborHills.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
@@ -31,6 +34,8 @@ public class Player extends Entity {
     public String location;    
     public Inventory inventory;
     public Entity equippedItem;
+    private List<ShippingBinItem> shippingBinItems = new ArrayList<>();
+    private int maxShippingSlots = 16;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -195,9 +200,11 @@ public class Player extends Entity {
         else{
             handleInput();
         }
+
         if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
             return;
         }
+ 
     }
 
     public void handleMovement(){
@@ -697,6 +704,8 @@ public class Player extends Entity {
             energy = 100;
         }
 
+        processShippingBinSales();
+
         gp.eManager.setTime(6,0);
         gp.ui.addMessage("You have rested and regained energy!");
     }
@@ -1021,27 +1030,145 @@ public class Player extends Entity {
     }
     // Helper method untuk cek Proposal Ring
     public boolean hasProposalRing() {
-    for (Inventory.InventoryItem invItem : inventory.getInventory()) {
-        if (invItem.item.name.equals("Proposal Ring")) {
-            return true; // FOUND! Tapi JANGAN di-remove (reusable)
+        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+            if (invItem.item.name.equals("Proposal Ring")) {
+                return true; // FOUND! Tapi JANGAN di-remove (reusable)
+            }
         }
-    }
-    return false; // Not found
+        return false; // Not found
     }
     private boolean removeItemFromInventory(String itemName) {
-    // Akses inventory melalui player.inventory.getInventory()
-    for (int i = 0; i < inventory.getInventory().size(); i++) {
-        Inventory.InventoryItem invItem = inventory.getInventory().get(i);
-        if (invItem.item.name.equals(itemName)) {
-            if (invItem.count > 1) {
-                invItem.count--;
-            } else {
-                inventory.getInventory().remove(i);
+        // Akses inventory melalui player.inventory.getInventory()
+        for (int i = 0; i < inventory.getInventory().size(); i++) {
+            Inventory.InventoryItem invItem = inventory.getInventory().get(i);
+            if (invItem.item.name.equals(itemName)) {
+                if (invItem.count > 1) {
+                    invItem.count--;
+                } else {
+                    inventory.getInventory().remove(i);
+                }
+                return true;
             }
-            return true;
         }
+        return false;
     }
-    return false;
+
+    // Method untuk shipping bin
+    public void openShippingBin() {
+        if (energy < 5) {
+            gp.ui.addMessage("Not enough energy to use shipping bin!");
+            return;
+        }
+        
+        gp.gameState = gp.shippingBinState; // Tambahkan state baru
+        gp.ui.showShippingBinInterface(); 
+    }
+
+    public boolean addToShippingBin(String itemName, int quantity) {
+        // Cari item definition berdasarkan nama
+        ItemDefinition itemDef = gp.itemManager.getDefinitionByName(itemName);
+        if (itemDef == null || !itemDef.isSellable) {
+            gp.ui.addMessage("This item cannot be sold!");
+            return false;
+        }
+        
+        // Cek apakah masih ada slot
+        if (shippingBinItems.size() >= maxShippingSlots) {
+            gp.ui.addMessage("Shipping bin is full!");
+            return false;
+        }
+        
+        // Cek apakah player punya item tersebut
+        Inventory.InventoryItem playerItem = null;
+        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+            if (invItem.item.name.equals(itemName)) {
+                playerItem = invItem;
+                break;
+            }
+        }
+        
+        if (playerItem == null || playerItem.count < quantity) {
+            gp.ui.addMessage("You don't have enough " + itemName + "!");
+            return false;
+        }
+        
+        // Cek apakah item sudah ada di shipping bin
+        ShippingBinItem existingItem = null;
+        for (ShippingBinItem binItem : shippingBinItems) {
+            if (binItem.itemName.equals(itemName)) {
+                existingItem = binItem;
+                break;
+            }
+        }
+        
+        if (existingItem != null) {
+            existingItem.quantity += quantity;
+        } else {
+            shippingBinItems.add(new ShippingBinItem(
+                itemDef.id, 
+                itemName, 
+                quantity, 
+                itemDef.sellPrice
+            ));
+        }
+        
+        // Remove dari inventory
+        playerItem.count -= quantity;
+        if (playerItem.count <= 0) {
+            inventory.getInventory().remove(playerItem);
+        }
+        
+        energy -= 5; // Cost energy untuk menggunakan shipping bin
+        gp.ui.addMessage("Added " + quantity + " " + itemName + " to shipping bin!");
+        return true;
+    }
+
+
+    public void processShippingBinSales() {
+        if (shippingBinItems.isEmpty()) {
+            return;
+        }
+        
+        int totalEarnings = 0;
+        StringBuilder salesReport = new StringBuilder("Items sold:\n");
+        
+        for (ShippingBinItem item : shippingBinItems) {
+            int earnings = item.quantity * item.sellPrice;
+            totalEarnings += earnings;
+            salesReport.append("- ").append(item.quantity).append(" ")
+                    .append(item.itemName).append(" (")
+                    .append(earnings).append("g)\n");
+        }
+        
+        gold += totalEarnings;
+        shippingBinItems.clear();
+        
+        salesReport.append("Total earned: ").append(totalEarnings).append("g");
+        gp.ui.addMessage(salesReport.toString());
+    }
+
+    public List<ShippingBinItem> getShippingBinItems() {
+            return new ArrayList<>(shippingBinItems);
+        }
+
+        public List<Inventory.InventoryItem> getSellableItems() {
+        List<Inventory.InventoryItem> sellableItems = new ArrayList<>();
+        
+        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+            // Cari item definition berdasarkan nama
+            ItemDefinition itemDef = findItemDefinitionByName(invItem.item.name);
+            if (itemDef != null && itemDef.isSellable) {
+                sellableItems.add(invItem);
+            }
+        }
+        
+        return sellableItems;
+    }
+
+    private ItemDefinition findItemDefinitionByName(String itemName) {
+        // Method helper untuk mencari item definition berdasarkan nama
+        // Implementasi tergantung pada struktur ItemManager Anda
+        return gp.itemManager.getDefinitionByName(itemName);
     }
 }
 

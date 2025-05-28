@@ -73,4 +73,29 @@ public class ItemManager {
         }
         return itemDefinitions.get(id);
     }
+
+    public String getItem(String name){
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (Map.Entry<String, ItemDefinition> entry : itemDefinitions.entrySet()) {
+            if (entry.getValue().name.equals(name)) {
+                    return entry.getKey();
+                }
+            }
+
+        return null; 
+    }
+
+    public ItemDefinition getDefinitionByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+        for (ItemDefinition def : itemDefinitions.values()) {
+                if (def.name.equals(name)) {
+                    return def;
+                }
+            }
+        return null;
+    }
 }

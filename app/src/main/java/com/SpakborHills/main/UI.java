@@ -12,10 +12,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.entity.NPC;
+import com.SpakborHills.entity.ShippingBinItem;
 
 public class UI {
     GamePanel gp;
@@ -45,6 +48,9 @@ public class UI {
     public boolean isTyping = false;
     public boolean showingSleepConfirmDialog = false;
     public int sleepConfirmCommandNum = 0; // 0 = Yes, 1 = No
+    public boolean showingShippingBinInterface = false;
+    public int shippingBinSelectedIndex = 0;
+    public int shippingBinQuantity = 1;
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -151,6 +157,9 @@ public class UI {
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
+        }
+        if (gp.gameState == gp.shippingBinState) {
+            drawShippingBinInterface(g2);
         }
     }
     private boolean isInNPCHouse() {
@@ -297,6 +306,162 @@ public class UI {
             gp.keyH.enterPressed = false; // Konsumsi input enter
         }
     }
+
+    public void showShippingBinInterface() {
+        showingShippingBinInterface = true;
+        shippingBinSelectedIndex = 0;
+        shippingBinQuantity = 1;
+    }
+
+    public void closeShippingBinInterface() {
+        showingShippingBinInterface = false;
+        gp.gameState = gp.playState;
+    }
+
+    public void drawShippingBinInterface(Graphics2D g2) {
+        if (!showingShippingBinInterface) return;
+        
+        int windowWidth = gp.tileSize * 12;
+        int windowHeight = gp.tileSize * 8;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        // Title
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.WHITE);
+        String title = "Shipping Bin";
+        int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
+        g2.drawString(title, titleX, y + 40);
+        
+        // Instructions
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String instruction = "Select items to sell (ENTER to add, ESC to close)";
+        int instrX = getXforCenteredTextInWindow(instruction, x, windowWidth, g2, g2.getFont());
+        g2.drawString(instruction, instrX, y + 65);
+        
+        // Get sellable items
+        List<Inventory.InventoryItem> sellableItems = gp.player.getSellableItems();
+        
+        if (sellableItems.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+            g2.setColor(Color.GRAY);
+            String noItems = "No sellable items in inventory";
+            int noItemsX = getXforCenteredTextInWindow(noItems, x, windowWidth, g2, g2.getFont());
+            g2.drawString(noItems, noItemsX, y + windowHeight / 2);
+            return;
+        }
+        
+        // Draw sellable items list
+        int listStartY = y + 90;
+        int itemHeight = 25;
+        int maxVisibleItems = 8;
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+        
+        for (int i = 0; i < Math.min(sellableItems.size(), maxVisibleItems); i++) {
+            Inventory.InventoryItem item = sellableItems.get(i);
+            ItemDefinition itemDef = gp.itemManager.getDefinitionByName(item.item.name);
+            
+            int itemY = listStartY + (i * itemHeight);
+            
+            // Highlight selected item
+            if (i == shippingBinSelectedIndex) {
+                g2.setColor(new Color(255, 255, 0, 100));
+                g2.fillRect(x + 10, itemY - 15, windowWidth - 20, itemHeight - 2);
+                g2.setColor(Color.YELLOW);
+                g2.drawString(">", x + 15, itemY);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            
+            // Item info
+            String itemInfo = item.item.name + " x" + item.count;
+            if (itemDef != null) {
+                itemInfo += " (" + itemDef.sellPrice + "g each)";
+            }
+            g2.drawString(itemInfo, x + 35, itemY);
+        }
+        
+        // Current shipping bin contents
+        g2.setColor(Color.CYAN);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16F));
+        g2.drawString("In Shipping Bin:", x + 20, y + windowHeight - 120);
+        
+        List<ShippingBinItem> binItems = gp.player.getShippingBinItems();
+        if (binItems.isEmpty()) {
+            g2.setColor(Color.GRAY);
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+            g2.drawString("Empty", x + 20, y + windowHeight - 100);
+        } 
+        else {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+            int binY = y + windowHeight - 100;
+            int totalValue = 0;
+            
+            for (ShippingBinItem binItem : binItems) {
+                g2.setColor(Color.WHITE);
+                String binInfo = binItem.itemName + " x" + binItem.quantity + 
+                            " (" + (binItem.quantity * binItem.sellPrice) + "g)";
+                g2.drawString(binInfo, x + 20, binY);
+                binY += 15;
+                totalValue += binItem.quantity * binItem.sellPrice;
+            }
+            
+            g2.setColor(Color.YELLOW);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14F));
+            g2.drawString("Total Value: " + totalValue + "g", x + 20, binY + 10);
+        }
+    }
+
+    public void processShippingBinInput() {
+        if (!showingShippingBinInterface) return;
+        
+        List<Inventory.InventoryItem> sellableItems = gp.player.getSellableItems();
+        
+        if (sellableItems.isEmpty()) {
+            if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+                closeShippingBinInterface();
+                gp.keyH.enterPressed = false;
+                gp.keyH.escPressed = false;
+            }
+            return;
+        }
+        
+        if (gp.keyH.upPressed) {
+            shippingBinSelectedIndex--;
+            if (shippingBinSelectedIndex < 0) {
+                shippingBinSelectedIndex = sellableItems.size() - 1;
+            }
+            gp.keyH.upPressed = false;
+        }
+        
+        if (gp.keyH.downPressed) {
+            shippingBinSelectedIndex++;
+            if (shippingBinSelectedIndex >= sellableItems.size()) {
+                shippingBinSelectedIndex = 0;
+            }
+            gp.keyH.downPressed = false;
+        }
+        
+        if (gp.keyH.enterPressed) {
+            if (shippingBinSelectedIndex < sellableItems.size()) {
+                Inventory.InventoryItem selectedItem = sellableItems.get(shippingBinSelectedIndex);
+                
+                // PERBAIKI BAGIAN INI - GUNAKAN NAMA ITEM LANGSUNG
+                gp.player.addToShippingBin(selectedItem.item.name, 1);
+            }
+            gp.keyH.enterPressed = false;
+        }
+        
+        if (gp.keyH.escPressed) {
+            closeShippingBinInterface();
+            gp.keyH.escPressed = false;
+        }
+    }
+
 
     public void drawTitleScreen(){
         if (titleScreenState == 0) {
