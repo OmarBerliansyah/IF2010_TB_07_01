@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.objects.OBJ_BullHead;
+import com.SpakborHills.objects.OBJ_CookedPigHead;
 import com.SpakborHills.objects.OBJ_FishingRod;
 import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_Parsnip;
@@ -44,6 +45,7 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_CookedPigHead(gp), 1));
     }
 
     public void addItem(Entity item) {

@@ -10,7 +10,7 @@ public class OBJ_TheLegendsOfSpakbor extends Entity {
         super(gp);
         name = "TheLegendsOfSpakbor ";
         down1 = setup("objects/TheLegendsOfSpakbor",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak" + plusEnergy; 
+        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 100; 
         salePrice = 2000;

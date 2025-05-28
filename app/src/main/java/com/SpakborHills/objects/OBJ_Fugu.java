@@ -10,7 +10,7 @@ public class OBJ_Fugu extends Entity {
         super(gp);
         name = "Fugu ";
         down1 = setup("objects/Fugu",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak" + plusEnergy; 
+        description = "[" + name + "]\nDapat memulihkan energi\n sebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 50; 
         salePrice = 135;

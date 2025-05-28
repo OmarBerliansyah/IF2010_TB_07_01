@@ -10,7 +10,7 @@ public class OBJ_CookedPigHead extends Entity {
         super(gp);
         name = "CookedPigHead ";
         down1 = setup("objects/CookedPigHead",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak" + plusEnergy; 
+        description = "[" + name + "]\nDapat memulihkan energi\n sebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 100; 
         buyPrice = 1000;
