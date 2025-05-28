@@ -5,7 +5,7 @@ import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
     public KeyHandler(GamePanel gp){
@@ -166,6 +166,16 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_SPACE && !useToolPressed) {
                useToolPressed = true; // Set the useToolPressed flag to true
             }
+            // NEW NPC INTERACTION KEYS
+            if (code == KeyEvent.VK_G && !giftPressed) {
+                giftPressed = true;
+            }
+            if (code == KeyEvent.VK_R && !proposePressed) { // R for pRopose
+                proposePressed = true;
+            }
+            if (code == KeyEvent.VK_M && !marryPressed) {
+                marryPressed = true;
+            }
         }
 
         //PAUSE STATE
@@ -244,6 +254,15 @@ public class KeyHandler implements KeyListener {
         }
         if(code == KeyEvent.VK_SPACE){
             useToolPressed = false; // Reset the useToolPressed flag when the space key is released
+        }
+         if (code == KeyEvent.VK_G) {
+        giftPressed = false;
+        }
+        if (code == KeyEvent.VK_R) {
+            proposePressed = false;
+        }
+        if (code == KeyEvent.VK_M) {
+            marryPressed = false;
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_E) {

@@ -251,6 +251,47 @@ public class Player extends Entity {
             keyH.useToolPressed = false; // Reset the useToolPressed flag
             return;
         }
+        // NPC INTERACTIONS
+        if (keyH.enterPressed) {
+            // Chat dengan NPC
+            int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+            if (npcIndex != 999) {
+                interactNPC(npcIndex);
+            } else {
+                // Check events jika tidak ada NPC
+                gp.eHandler.checkEvent();
+            }
+            return;
+        }
+        if (keyH.giftPressed) {
+            // Gift ke NPC
+            int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+             if (npcIndex != 999) {
+                giftToNPC(npcIndex);
+            }
+        }
+        if (keyH.proposePressed) {
+        // Propose ke NPC
+        int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+        if (npcIndex != 999) {
+            proposeToNPC(npcIndex);
+        } else {
+            gp.ui.addMessage("No NPC nearby to propose to!");
+        }
+        keyH.proposePressed = false;
+        return;
+    }
+    if (keyH.marryPressed) {
+        // Marry NPC
+        int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
+        if (npcIndex != 999) {
+            marryNPC(npcIndex);
+        } else {
+            gp.ui.addMessage("No NPC nearby to marry!");
+        }
+        keyH.marryPressed = false;
+        return;
+    }
 
         if(movementKeyPressed || keyH.enterPressed) {
             if (keyH.upPressed == true) {
@@ -680,14 +721,48 @@ public class Player extends Entity {
     }
 
     public void interactNPC(int i){
-        if(gp.keyH.enterPressed) {
-            if (i != 999) {
+       if (gp.keyH.enterPressed && i != 999) {
+            if (gp.NPC[i] instanceof NPC) {
+                NPC currentNPC = (NPC) gp.NPC[i];
+                 // DEBUG: Log current state
+                System.out.println("=== INTERACTION DEBUG ===");
+                System.out.println("Current energy: " + energy);
+                System.out.println("NPC: " + currentNPC.name);
+                System.out.println("Current dialogueIndex: " + currentNPC.dialogueIndex);
+            
+                // Check if this is start of new conversation
+                boolean isNewConversation = (currentNPC.dialogueIndex == 0);
+                System.out.println("Is new conversation: " + isNewConversation);
+                // If it's a new conversation, check if player has enough energy
+                if (isNewConversation && energy < 10) {
+                    gp.ui.addMessage("You're too tired to start a new conversation! (Need 10 energy)");
+                    gp.keyH.enterPressed = false;
+                    System.out.println("Not enough energy for new conversation!");
+                    return; // Exit without starting conversation
+                }
+                 // SAFETY CHECK: Make sure NPC has dialogue set up
+                if (currentNPC.dialogue == null || currentNPC.dialogue.length == 0) {
+                    System.out.println("ERROR: " + currentNPC.name + " has no dialogue!");
+                    gp.ui.addMessage(currentNPC.name + " has nothing to say...");
+                    gp.keyH.enterPressed = false;
+                    return;
+                }
+                // Call chat method
+                currentNPC.chat();
+                
+                // Set dialogue state
                 gp.gameState = gp.dialogueState;
-                gp.NPC[i].speak();
+                // Only deduct energy and show messages for NEW conversations
+                if (isNewConversation) {
+                    energy -= 10;  // Only deduct energy for new conversations
+                    gp.ui.addMessage("You chatted with " + currentNPC.name + " (+10 heart points, -10 energy)");
+                    gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
+                    gp.ui.addMessage("Energy: " + energy );
+                }
             }
-            gp.keyH.enterPressed = false;
+        }  
+        gp.keyH.enterPressed = false;
         }
-    }
 
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
@@ -865,4 +940,115 @@ public class Player extends Entity {
         }
         g2.drawImage(image, screenX, screenY, null);
     }
+    public void proposeToNPC(int npcIndex){
+        if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
+            NPC currentNPC = (NPC) gp.NPC[npcIndex];
+            if (hasProposalRing()) {
+                boolean accepted = currentNPC.propose();
+                if (accepted) {
+                    // LAMARAN DITERIMA
+                    energy -= 10; // -10 energi sesuai spesifikasi
+                    partner = currentNPC; // Set partner player
+                    
+                    gp.ui.addMessage("Congratulations! You are now engaged to " + currentNPC.name + "!");
+                    gp.ui.addMessage("Energy: -10");
+                    } else {
+                    // LAMARAN DITOLAK
+                    energy -= 20; // -20 energi sesuai spesifikasi
+                    
+                    gp.ui.addMessage("Your proposal was rejected...");
+                    gp.ui.addMessage("Energy: -20");
+                    
+                    if (currentNPC.getHeartPoints() < 150) {
+                        gp.ui.addMessage("You need " + (150 - currentNPC.getHeartPoints()) + " more heart points.");
+                    }
+                }
+            }
+        }
+    }
+    public void marryNPC(int npcIndex) {
+        if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
+            NPC currentNPC = (NPC) gp.NPC[npcIndex];
+            
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE) {
+                boolean married = currentNPC.marry();
+                
+                if (married) {
+                    energy -= 80; // -80 energi sesuai spesifikasi
+                    partner = currentNPC;
+                    
+                    gp.ui.addMessage("You married " + currentNPC.name + "! Congratulations!");
+                    gp.ui.addMessage("Energy: -80");
+                }
+            } else if (!hasProposalRing()) {
+                gp.ui.addMessage("You need a Proposal Ring to marry!");
+            } else if (currentNPC.getRelationshipStatus() != NPC.RelationshipStatus.FIANCE) {
+                gp.ui.addMessage("You can only marry your fiance! Propose first.");
+            }
+        }
+    }
+    public void giftToNPC(int npcIndex) {
+        if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
+            NPC currentNPC = (NPC) gp.NPC[npcIndex];
+            if (inventory.getInventory().isEmpty()) {
+                gp.ui.addMessage("You have no items to give!");
+                return;
+            }
+            // Get the equipped item, or first item if nothing equipped
+            String itemToGive = null;
+            if (equippedItem != null) {
+                itemToGive = equippedItem.name;
+            } else {
+                itemToGive = inventory.getInventory().get(0).item.name;
+            }
+            boolean hasItem = false;
+            for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+                if (invItem.item.name.equals(itemToGive) && invItem.count > 0) {
+                    hasItem = true;
+                    break;
+                }
+            }
+            if (hasItem) {
+                // Remove item from inventory first
+                boolean removed = removeItemFromInventory(itemToGive);
+                if (removed) {
+                    currentNPC.giveGift(itemToGive);
+                    energy -= 5;
+                    
+                    // Show feedback
+                    gp.ui.addMessage("You gave " + itemToGive + " to " + currentNPC.name + " (-5 energy)");
+                    gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
+                } else {
+                    gp.ui.addMessage("Failed to give item!");
+                }
+            } else {
+                gp.ui.addMessage("You don't have " + itemToGive + " to give!");
+            }
+        }
+    }
+    // Helper method untuk cek Proposal Ring
+    public boolean hasProposalRing() {
+    for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+        if (invItem.item.name.equals("Proposal Ring")) {
+            return true; // FOUND! Tapi JANGAN di-remove (reusable)
+        }
+    }
+    return false; // Not found
+    }
+    private boolean removeItemFromInventory(String itemName) {
+    // Akses inventory melalui player.inventory.getInventory()
+    for (int i = 0; i < inventory.getInventory().size(); i++) {
+        Inventory.InventoryItem invItem = inventory.getInventory().get(i);
+        if (invItem.item.name.equals(itemName)) {
+            if (invItem.count > 1) {
+                invItem.count--;
+            } else {
+                inventory.getInventory().remove(i);
+            }
+            return true;
+        }
+    }
+    return false;
+    }
 }
+

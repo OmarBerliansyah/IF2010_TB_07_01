@@ -21,15 +21,15 @@ public class TileManager {
     public TileManager(GamePanel gp){
         this.gp = gp;
 
-        tile = new Tile[100];
+        tile = new Tile[150];
         mapCols[0] = gp.maxWorldCol;
         mapRows[0] = gp.maxWorldRow;
         mapCols[1] = 24;
         mapRows[1] = 24;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
-        mapCols[3] = gp.maxWorldCol;
-        mapRows[3] = gp.maxWorldRow;
+        mapCols[3] = 17;
+        mapRows[3] = 12;
         mapCols[4] = gp.maxWorldCol;
         mapRows[4] = gp.maxWorldRow;
         mapCols[5] = 24;
@@ -44,6 +44,8 @@ public class TileManager {
         mapRows[9] = 24;
         mapCols[10] = 24;
         mapRows[10] = 24;
+        mapCols[11] = 16;
+        mapRows[11] = 12;
         mapTileNum = new int[gp.maxMap][gp.maxWorldCol][gp.maxWorldRow];
 
         getTileImage();
@@ -58,6 +60,7 @@ public class TileManager {
         loadMap("maps/AbigailMap.txt", 8);// abigail house
         loadMap("maps/MayorMap.txt", 9);//mayor house
         loadMap("maps/CarolineMap.txt", 10);// caroline house
+        loadMap("maps/MountainLake.txt", 11);
         
     }
 
@@ -134,7 +137,7 @@ public class TileManager {
         setup(69, "DermagaGelap", true, TileType.NONE);
         setup(70, "DermagaTerangKanan", true, TileType.NONE);
         setup(71, "LautTerangTerang", true, TileType.NONE);
-        setup(72, "LautPasir", false, TileType.NONE);
+        setup(72, "LautPasir", true, TileType.NONE);
         setup(73, "RumputLautTengah", true, TileType.NONE);
         setup(74, "RumputLautBawah", true, TileType.NONE);
         setup(75, "RumputLautKanan", true, TileType.NONE);
@@ -144,7 +147,57 @@ public class TileManager {
         setup(79, "PerahuKiri", true, TileType.NONE);
         setup(80, "PerahuKanan", true, TileType.NONE);
         setup(81, "SandRumput", false, TileType.NONE);
-
+        setup(82, "Batuantengah", true, TileType.NONE);
+        setup(83, "BatuLake", true, TileType.NONE);
+        setup(84, "Batuanbawah", false, TileType.NONE);
+        setup(85, "BatuanKanan", true, TileType.NONE);
+        setup(86, "BatuanEdge", true, TileType.NONE);
+        setup(87, "GrassLake", false, TileType.NONE);
+        setup(88, "GrassLakePinggirBatu", true, TileType.NONE);
+        setup(89, "GrassTanahPinggir", false, TileType.NONE);
+        setup(90, "GrassTanahPinggirTengah", false, TileType.NONE);
+        setup(91, "GrassBatuAtas", true, TileType.NONE);
+        setup(92, "SoilGelap", false, TileType.NONE);
+        setup(93, "LakeTile", true, TileType.NONE);
+        setup(94, "GrassMepetBatu", false, TileType.NONE);
+        setup(95, "BatuTanahBawah", false, TileType.NONE);
+        setup(96, "GrassBatuAtas", true, TileType.NONE);
+        setup(97, "BatuGrassAtasEdge", false, TileType.NONE);
+        setup(98, "BatuMiring", true, TileType.NONE);
+        setup(99, "RumputMiring", true, TileType.NONE);
+        setup(100, "BatuTanahBawahMiring", false, TileType.NONE);
+        setup(101, "GoaKiA", true, TileType.NONE);
+        setup(102, "GoaKiB", false, TileType.NONE);
+        setup(103, "GoaKaA", true, TileType.NONE);
+        setup(104, "GoaKaB", false, TileType.NONE);
+        setup(105, "RumputTanahBawah", false, TileType.NONE);
+        setup(106, "RumputEdge", false, TileType.NONE);
+        setup(107, "RumputUjung", false, TileType.NONE);
+        setup(108, "BatuLake", false, TileType.NONE);
+        setup(109, "JemKiri", false, TileType.NONE);
+        setup(110, "JemTengah", false, TileType.NONE);
+        setup(111, "JemKanan", false, TileType.NONE);
+        setup(112, "LakeSandKiri", true, TileType.NONE);
+        setup(113, "LakeSandKanan", false, TileType.NONE);
+        setup(114, "LakeSandBawah", false, TileType.NONE);
+        setup(115, "BatuLake2", false, TileType.NONE);
+        setup(116, "RiverLandPinggir", false, TileType.NONE);
+        setup(117, "RumputTanahKiri", false, TileType.NONE);
+        setup(118, "RumputTanahEdgeBawah", false, TileType.NONE);
+        setup(119, "RumputTanahEdgeAtas", false, TileType.NONE);
+        setup(120, "RumputTanahBawahBGT", false, TileType.NONE);
+        setup(121, "RumputTanahAtas", false, TileType.NONE);
+        setup(122, "TanahGelap", true, TileType.NONE);
+        setup(123, "JembatanAtas", false, TileType.NONE);
+        setup(124, "JembatanTengah", false, TileType.NONE);
+        setup(125, "JembatanBawah", true, TileType.NONE);
+        setup(126, "BatuTanahGelapBawah", false, TileType.NONE);
+        setup(127, "BatuJembatanTanah", false, TileType.NONE);
+        setup(128, "UjungJembatanBawah", false, TileType.NONE);
+        setup(129, "UjungJurangBawah", false, TileType.NONE);
+        setup(130, "UjungJurangAtas", false, TileType.NONE);
+        setup(131, "UjungJembatanAtas", false, TileType.NONE);
+        setup(132, "UjungPantai", false, TileType.NONE);
     }
 
 
