@@ -28,8 +28,8 @@ public class TileManager {
         mapRows[1] = 24;
         mapCols[2] = 24; 
         mapRows[2] = 24; 
-        mapCols[3] = gp.maxWorldCol;
-        mapRows[3] = gp.maxWorldRow;
+        mapCols[3] = 17;
+        mapRows[3] = 12;
         mapCols[4] = gp.maxWorldCol;
         mapRows[4] = gp.maxWorldRow;
         mapCols[5] = 24;
@@ -181,6 +181,23 @@ public class TileManager {
         setup(113, "LakeSandKanan", false, TileType.NONE);
         setup(114, "LakeSandBawah", false, TileType.NONE);
         setup(115, "BatuLake2", false, TileType.NONE);
+        setup(116, "RiverLandPinggir", false, TileType.NONE);
+        setup(117, "RumputTanahKiri", false, TileType.NONE);
+        setup(118, "RumputTanahEdgeBawah", false, TileType.NONE);
+        setup(119, "RumputTanahEdgeAtas", false, TileType.NONE);
+        setup(120, "RumputTanahBawahBGT", false, TileType.NONE);
+        setup(121, "RumputTanahAtas", false, TileType.NONE);
+        setup(122, "TanahGelap", true, TileType.NONE);
+        setup(123, "JembatanAtas", false, TileType.NONE);
+        setup(124, "JembatanTengah", false, TileType.NONE);
+        setup(125, "JembatanBawah", true, TileType.NONE);
+        setup(126, "BatuTanahGelapBawah", false, TileType.NONE);
+        setup(127, "BatuJembatanTanah", false, TileType.NONE);
+        setup(128, "UjungJembatanBawah", false, TileType.NONE);
+        setup(129, "UjungJurangBawah", false, TileType.NONE);
+        setup(130, "UjungJurangAtas", false, TileType.NONE);
+        setup(131, "UjungJembatanAtas", false, TileType.NONE);
+        setup(132, "UjungPantai", false, TileType.NONE);
     }
 
 
