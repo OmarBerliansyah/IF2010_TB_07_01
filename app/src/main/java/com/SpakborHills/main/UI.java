@@ -25,6 +25,7 @@ public class UI {
     Font menuFont;
     Font selectorFont; 
     Font inputFont;
+    Font confirmationFont;
 
     public boolean messageOn = false;
     public ArrayList<String> message = new ArrayList<>(); 
@@ -42,6 +43,8 @@ public class UI {
     public String inputGender = "Male"; // Default Male
     public int inputState = 0; // 0 = name, 1 = farm name, 2 = gender, 3 = done
     public boolean isTyping = false;
+    public boolean showingSleepConfirmDialog = false;
+    public int sleepConfirmCommandNum = 0; // 0 = Yes, 1 = No
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -60,7 +63,8 @@ public class UI {
                 
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
-                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);
+                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
 
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
@@ -73,7 +77,8 @@ public class UI {
             menuFont = new Font(Font.SANS_SERIF, Font.BOLD, 48); // Fallback untuk menuFont
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
             inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
-        }          
+            confirmationFont = new Font(Font.SANS_SERIF, Font.PLAIN, 36);
+        }
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
         try {
@@ -125,12 +130,20 @@ public class UI {
             if (isInNPCHouse()) {
                 drawNPCInteractionInfo();
             }
+            if(showingSleepConfirmDialog){
+                drawSleepConfirmationDialog(g2);
+            }
         }
         if(gp.gameState == gp.pauseState){
             drawPauseScreen();
         }
         if(gp.gameState == gp.dialogueState){
-            drawDialogueScreen();
+            if(showingSleepConfirmDialog){
+                drawSleepConfirmationDialog(g2);
+            }
+            else{
+                drawDialogueScreen();
+            }
             if (isInNPCHouse()) {
                 drawNPCInteractionInfo();
             }
@@ -175,9 +188,114 @@ public class UI {
         }
     }
 
-    public void drawBlackScreen() {
-        g2.setColor(Color.black);
-        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+    public void showSleepConfirmationDialog(){
+        this.showingSleepConfirmDialog = true;
+        this.sleepConfirmCommandNum = 0; // Reset command number to 0 (Yes)
+        gp.keyH.enterPressed = false; // Reset enter key state
+    }
+
+    public void closeSleepConfirmationDialog(){
+        this.showingSleepConfirmDialog = false;
+        gp.eHandler.canTouchEvent = true;
+        if (gp.gameState == gp.dialogueState) { 
+            boolean otherDialogueStillActive = false;
+            if (!otherDialogueStillActive) {
+                    gp.gameState = gp.playState;
+            }
+        }
+    }
+
+    public void drawSleepConfirmationDialog(Graphics2D g2) {
+        if (!showingSleepConfirmDialog) return;
+        int windowWidth = gp.tileSize * 9;    // Sesuaikan lebar
+        int windowHeight = gp.tileSize * 4;   // Sesuaikan tinggi
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        // 4. Gambar teks pertanyaan
+        g2.setFont(confirmationFont); // Gunakan font yang sudah disiapkan
+        g2.setColor(Color.white);
+        String question = "Want to sleep for the night?";
+        int qx = getXforCenteredTextInWindow(question, x, windowWidth, g2, confirmationFont);
+        int qy = y + gp.tileSize + (gp.tileSize/2); // Posisi Y pertanyaan
+
+        g2.drawString(question, qx, qy);
+
+        // 5. Gambar opsi "Yes" dan "No"
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F)); // Sedikit lebih besar untuk opsi
+
+        String yesText = "Yes";
+        String noText = "No";
+
+        // Posisi untuk "Yes" (kiri)
+        int yesX = x + windowWidth / 4 - getHalfTextWidth(yesText, g2, g2.getFont()) ;
+        int optionY = qy + gp.tileSize + (gp.tileSize/2) ;
+
+        // Posisi untuk "No" (kanan)
+        int noX = x + (windowWidth / 4 * 3) - getHalfTextWidth(noText, g2, g2.getFont());
+
+
+        // Gambar "Yes" dengan selector jika terpilih
+        if (sleepConfirmCommandNum == 0) {
+            g2.setColor(Color.YELLOW); // Warna highlight
+            g2.drawString(">", yesX - gp.tileSize / 2, optionY);
+        } else {
+            g2.setColor(Color.white);
+        }
+        g2.drawString(yesText, yesX, optionY);
+
+        // Gambar "No" dengan selector jika terpilih
+        if (sleepConfirmCommandNum == 1) {
+            g2.setColor(Color.YELLOW); // Warna highlight
+            g2.drawString(">", noX - gp.tileSize / 2, optionY);
+        } else {
+            g2.setColor(Color.white);
+        }
+        g2.drawString(noText, noX, optionY);
+    }
+
+     // Helper untuk mendapatkan posisi X agar teks terpusat di dalam area window
+    private int getXforCenteredTextInWindow(String text, int windowX, int windowWidth, Graphics2D g2, Font font) {
+        FontMetrics fm = g2.getFontMetrics(font);
+        int textWidth = fm.stringWidth(text);
+        return windowX + (windowWidth - textWidth) / 2;
+    }
+
+    // Helper untuk mendapatkan setengah lebar teks (untuk centering manual jika diperlukan)
+    private int getHalfTextWidth(String text, Graphics2D g2, Font font) {
+        FontMetrics fm = g2.getFontMetrics(font);
+        return fm.stringWidth(text) / 2;
+    }
+
+
+    public void processSleepConfirmationInput() {
+        if (!showingSleepConfirmDialog) return; // Hanya proses jika dialog aktif
+
+        if (gp.keyH.leftPressed || (gp.keyH.upPressed && sleepConfirmCommandNum == 1) ) { // Pindah ke kiri (atau atas dari No ke Yes)
+            sleepConfirmCommandNum = 0; // Pilih Yes
+            gp.keyH.leftPressed = false;
+            gp.keyH.upPressed = false;
+            gp.keyH.enterPressed = false;
+        } else if (gp.keyH.rightPressed || (gp.keyH.downPressed && sleepConfirmCommandNum == 0) ) { // Pindah ke kanan (atau bawah dari Yes ke No)
+            sleepConfirmCommandNum = 1; // Pilih No
+            gp.keyH.rightPressed = false;
+            gp.keyH.downPressed = false;
+            gp.keyH.enterPressed = false;
+        }
+
+        if (gp.keyH.enterPressed) {
+            if (sleepConfirmCommandNum == 0) { // Jika "Yes" dipilih
+                closeSleepConfirmationDialog(); // Tutup dialog dulu
+                gp.player.sleeping();
+                gp.eHandler.canTouchEvent = false; // Nonaktifkan input sementara
+            } else { // Jika "No" dipilih
+                closeSleepConfirmationDialog();
+                gp.eHandler.canTouchEvent = false; // Nonaktifkan input sementara
+                // gp.player.canMove = true; // Pastikan player bisa gerak lagi jika di-disable
+                // gp.canTouchEvent = true; // Aktifkan kembali jika ini yang kamu gunakan
+            }
+            gp.keyH.enterPressed = false; // Konsumsi input enter
+        }
     }
 
     public void drawTitleScreen(){
