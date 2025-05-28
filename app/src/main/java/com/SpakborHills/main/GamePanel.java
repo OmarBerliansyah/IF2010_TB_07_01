@@ -157,6 +157,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if (gameState == pauseState){
         }
+        else if(gameState == dialogueState){
+            if(ui.showingSleepConfirmDialog){
+                ui.processSleepConfirmationInput();
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {

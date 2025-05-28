@@ -157,6 +157,9 @@ public class Player extends Entity {
         return null;
     }
     public void update(){
+        if(gp.ui.showingSleepConfirmDialog) {
+            return;
+        }
         if(tilling){
             tilling();
             return;
@@ -194,9 +197,6 @@ public class Player extends Entity {
         }
         else{
             handleInput();
-        }
-        if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
-            return;
         }
     }
 
@@ -685,7 +685,50 @@ public class Player extends Entity {
     }
 
     public void sleeping(){
-        gp.ui.addMessage("You are sleeping...");
+        gp.ui.setForceBlackScreen(true);
+
+        if(gp instanceof javax.swing.JPanel){
+            gp.repaint();
+        }
+        try {
+            Thread.sleep(50); // Delay 50 milliseconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        sleepLogic();
+
+        try{
+            Thread.sleep(1000); // Delay 1 second to simulate sleep transition
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        gp.ui.setForceBlackScreen(false);
+        if (gp.gameState != gp.playState && gp.gameState != gp.dialogueState) {
+            gp.gameState = gp.playState;
+        } else if (gp.gameState != gp.dialogueState) { 
+            gp.gameState = gp.playState;
+        }
+
+        gp.ui.addMessage("You wake up feeling refreshed!");
+        gp.ui.showingSleepConfirmDialog = false;
+
+        if (gp instanceof javax.swing.JPanel) {
+            gp.repaint();
+        }
+    }
+
+    public void sleepLogic(){
+        
+        boolean isPassOut = (gp.eManager.getHour() >= 2 && gp.eManager.getHour() < 6) && !gp.ui.showingSleepConfirmDialog;
+
+        if(isPassOut){
+            gp.ui.addMessage("Sudah terlalu larut! Kamu pingsan....");
+        }
+        else{
+            gp.ui.addMessage("You are sleeping...");
+        }
 
         if (energy < 10) {
             energy += 50;
@@ -697,8 +740,12 @@ public class Player extends Entity {
             energy = 100;
         }
 
+        gp.eManager.incrementDayAndAdvanceWeather();
         gp.eManager.setTime(6,0);
-        gp.ui.addMessage("You have rested and regained energy!");
+
+        if (gp.ui.showingSleepConfirmDialog) {
+            gp.ui.closeSleepConfirmationDialog(); 
+        }
     }
 
     public void watching(){
