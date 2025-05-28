@@ -10,10 +10,10 @@ public class OBJ_VeggieSoup extends Entity {
         super(gp);
         name = "VeggieSoup ";
         down1 = setup("objects/VeggieSoup",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 40; 
         buyPrice = 140;
         salePrice = 120;
+        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

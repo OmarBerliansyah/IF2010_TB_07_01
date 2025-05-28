@@ -10,10 +10,10 @@ public class OBJ_PumpkinPie extends Entity {
         super(gp);
         name = "PumpkinPie ";
         down1 = setup("objects/PumpkinPie",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 35; 
         buyPrice = 120;
         salePrice = 100;
+        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

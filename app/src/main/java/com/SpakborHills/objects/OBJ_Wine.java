@@ -10,10 +10,10 @@ public class OBJ_Wine extends Entity {
         super(gp);
         name = "Wine ";
         down1 = setup("objects/Wine",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 20; 
         buyPrice = 100;
         salePrice = 90;
+        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

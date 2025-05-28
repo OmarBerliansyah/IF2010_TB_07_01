@@ -10,10 +10,10 @@ public class OBJ_Baguette extends Entity {
         super(gp);
         name = "Baguette ";
         down1 = setup("objects/Baguette",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
         isPickable = true;
         plusEnergy = 25; 
         buyPrice = 100;
         salePrice = 80;
+        description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }
