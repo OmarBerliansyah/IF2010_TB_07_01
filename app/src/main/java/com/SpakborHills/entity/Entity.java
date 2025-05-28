@@ -49,6 +49,7 @@ public class Entity {
 
     // ITEM ATTRIBUTES 
     public String description = "";
+    private boolean dialogueInProgress;
 
     public Entity(GamePanel gp){
         this.gp = gp;
@@ -57,7 +58,9 @@ public class Entity {
     public void setAction(){}
     public void speak(){
         if(dialogue[dialogueIndex]==null){
+            System.out.println("DIALOGUE FINISHED - RESETTING FLAGS");
             dialogueIndex = 0;
+            dialogueInProgress = false;
         }
         gp.ui.currentDialogue = dialogue[dialogueIndex];
         dialogueIndex++;

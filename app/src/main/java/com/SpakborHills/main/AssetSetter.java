@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import com.SpakborHills.entity.Abigail;
+import com.SpakborHills.entity.Caroline;
+import com.SpakborHills.entity.Dasco;
+import com.SpakborHills.entity.Emily;
 import com.SpakborHills.entity.Entity;
-import com.SpakborHills.entity.NPC_1;
+import com.SpakborHills.entity.Mayor;
+import com.SpakborHills.entity.Perry;
 import com.SpakborHills.objects.OBJ_AbigailHouse;
 import com.SpakborHills.objects.OBJ_CarolineHouse;
 import com.SpakborHills.objects.OBJ_DascoHouse;
@@ -346,17 +351,59 @@ public class AssetSetter {
     }
 
      public void setNPC(){
-        gp.NPC[0] = new NPC_1(gp);
-        gp.NPC[0].worldX = gp.tileSize*1;
-        gp.NPC[0].worldY = gp.tileSize*21;
-
-        gp.NPC[1] = new NPC_1(gp);
-        gp.NPC[1].worldX = gp.tileSize*10;
-        gp.NPC[1].worldY = gp.tileSize*21;
-
-        gp.NPC[2] = new NPC_1(gp);
-        gp.NPC[2].worldX = gp.tileSize*8;
-        gp.NPC[2].worldY = gp.tileSize*21;
+        // Clear all NPCs first
+    for (int i = 0; i < gp.NPC.length; i++) {
+        gp.NPC[i] = null;
     }
-
+    
+    // Spawn NPC based on current map
+        switch (gp.currentMap) {
+            case 5: // Emily's House
+                gp.NPC[0] = new Emily(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Emily spawned at house map");
+                break;
+                
+            case 6: // Perry's House
+                gp.NPC[0] = new Perry(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Perry spawned at house map");
+                break;
+                
+            case 7: // Dasco's House
+                gp.NPC[0] = new Dasco(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Dasco spawned at house map");
+                break;
+                
+            case 8: // Abigail's House
+                gp.NPC[0] = new Abigail(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Abigail spawned at house map");
+                break;
+                
+            case 9: // Mayor's House
+                gp.NPC[0] = new Mayor(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Mayor Tedi spawned at house map");
+                break;
+                
+            case 10: // Caroline's House
+                gp.NPC[0] = new Caroline(gp);
+                gp.NPC[0].worldX = gp.tileSize * 12;
+                gp.NPC[0].worldY = gp.tileSize * 12;
+                System.out.println("Caroline spawned at house map");
+                break;
+                
+            default:
+                // For other maps, no NPCs or set different NPCs
+                System.out.println("No NPCs for map " + gp.currentMap);
+                break;
+        }
+    }
 }

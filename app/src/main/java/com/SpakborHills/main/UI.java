@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import com.SpakborHills.entity.NPC;
+
 public class UI {
     GamePanel gp;
     KeyHandler keyH;
@@ -120,19 +122,27 @@ public class UI {
         }
         if(gp.gameState == gp.playState){
             drawMessage();
+            if (isInNPCHouse()) {
+                drawNPCInteractionInfo();
+            }
         }
         if(gp.gameState == gp.pauseState){
             drawPauseScreen();
         }
         if(gp.gameState == gp.dialogueState){
             drawDialogueScreen();
+            if (isInNPCHouse()) {
+                drawNPCInteractionInfo();
+            }
         }
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
         }
     }
-
+    private boolean isInNPCHouse() {
+        return gp.currentMap >= 5 && gp.currentMap <= 10;
+    }
     public void addMessage(String text) {
         message.add(text);
         messageCounter.add(0);
@@ -522,7 +532,6 @@ public class UI {
                 slotY += slotSize; 
             }
         }
-
         // CURSOR
         int cursorX = slotXstart + (slotSize * slotCol);
         int cursorY = slotYstart + (slotSize * slotRow);
@@ -560,4 +569,126 @@ public class UI {
         int itemIndex = slotCol + (slotRow*5);
         return itemIndex;
     }
+    public void drawNPCInteractionInfo() {
+        // Always show NPC info when in NPC house (maps 5-10)
+        if (!isInNPCHouse()) {
+            return; // Exit if not in NPC house
+        }
+        
+        // Find the NPC in current house
+        NPC houseNPC = null;
+        for (int i = 0; i < gp.NPC.length; i++) {
+            if (gp.NPC[i] instanceof NPC) {
+                houseNPC = (NPC) gp.NPC[i];
+                break; // Found the NPC in this house
+            }
+        }
+        
+        if (houseNPC == null) {
+            return; // No NPC found in this house
+        }
+        
+        // Check if player is nearby for distance-based actions
+        int npcIndex = gp.cChecker.checkEntity(gp.player, gp.NPC);
+        boolean isNearby = (npcIndex != 999);
+        
+        g2.setFont(g2.getFont().deriveFont(16F));
+        int x = 20; // Kiri atas
+        int y = 50; // Sedikit dari atas
+        
+        // Background
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRoundRect(x - 10, y - 20, 260, 220, 10, 10);
+        
+        // NPC Info Header
+        g2.setColor(Color.YELLOW);
+        g2.drawString("=== " + houseNPC.name + " ===", x, y);
+        y += 25;
+        
+        // Current Stats (Always Updated)
+        g2.setColor(Color.WHITE);
+        g2.drawString("Heart Points: " + houseNPC.getHeartPoints() + "/150", x, y);
+        y += 20;
+        g2.drawString("Status: " + houseNPC.getRelationshipStatus(), x, y);
+        y += 20;
+        g2.drawString("Chat Count: " + houseNPC.getChattingFrequency(), x, y);
+        y += 20;
+        g2.drawString("Gift Count: " + houseNPC.getGiftingFrequency(), x, y);
+        y += 25;
+        
+        // Available Actions Header
+        g2.setColor(Color.CYAN);
+        g2.drawString("ACTIONS:", x, y);
+        y += 20;
+        
+        if (isNearby) {
+            // Show available actions when nearby
+            g2.setColor(Color.WHITE);
+            
+            // Chat action
+            if (gp.player.energy >= 10) {
+                g2.setColor(Color.GREEN);
+            } else {
+                g2.setColor(Color.RED);
+            }
+            g2.drawString("ENTER: Chat (+10♥, -10⚡)", x, y);
+            y += 15;
+            
+            // Gift action
+            if (gp.player.equippedItem != null) {
+                String giftEffect = getGiftEffect(houseNPC, gp.player.equippedItem.name);
+                g2.setColor(Color.WHITE);
+                g2.drawString("G: Gift " + gp.player.equippedItem.name, x, y);
+                y += 12;
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.drawString("   " + giftEffect, x, y);
+                y += 15;
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("G: No item equipped", x, y);
+                y += 15;
+            }
+            
+            // Propose action
+            if (gp.player.hasProposalRing()) {
+                if (houseNPC.getHeartPoints() >= 150 && 
+                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.SINGLE) {
+                    g2.setColor(Color.GREEN);
+                    g2.drawString("R: Propose (Ready!)", x, y);
+                } else {
+                    g2.setColor(Color.YELLOW);
+                    g2.drawString("R: Propose (Need 150♥)", x, y);
+                }
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("R: Propose (Need ring)", x, y);
+            }
+            y += 15;
+            
+            // Marry action
+            if (houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE) {
+                g2.setColor(Color.PINK);
+                g2.drawString("M: Marry your fiance!", x, y);
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("M: Marry (Need fiance)", x, y);
+            }
+        } else {
+            // Show "Get closer" message when not nearby
+            g2.setColor(Color.GRAY);
+            g2.drawString("Get closer to interact!", x, y);
+        }
+    }
+    private String getGiftEffect(NPC npc, String itemName) {
+        if (npc.getLovedItems().contains(itemName)) {
+            return "(+25♥, -5⚡) LOVES IT!";
+        } else if (npc.getLikedItems().contains(itemName)) {
+            return "(+20♥, -5⚡) Likes it";
+        } else if (npc.getHatedItems().contains(itemName)) {
+            return "(-25♥, -5⚡) HATES IT!";
+        } else {
+            return "(+0♥, -5⚡) Neutral";
+        }
+    }
+
 }

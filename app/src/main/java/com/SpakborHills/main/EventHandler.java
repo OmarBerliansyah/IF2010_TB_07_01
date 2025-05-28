@@ -186,6 +186,7 @@ public class EventHandler {
         previousEventY = gp.player.worldY;
         canTouchEvent = false;
         gp.aSetter.setObject();
+        gp.aSetter.setNPC();
         // tempMap = map;
         // tempCol = col;
         // tempRow = row;
