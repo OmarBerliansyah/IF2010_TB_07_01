@@ -18,6 +18,7 @@ import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
+import com.SpakborHills.objects.OBJ_QueenBed;
 
 
 public class AssetSetter {
@@ -76,6 +77,24 @@ public class AssetSetter {
             case 4: // NPC Map
                 initializeNPCMap(mapIndex);
                 break;
+            case 5:
+                initializeEmilyMap(mapIndex);
+                break;
+            case 6:
+                initializePerryMap(mapIndex);
+                break;
+            case 7:
+                initializeDascoMap(mapIndex);
+                break;
+            case 8: 
+                initializeAbigailMap(mapIndex);
+                break;
+            case 9:
+                initializeMayorMap(mapIndex);
+                break;
+            case 10:
+                initializeCarolineMap(mapIndex);
+                break;
             case 11: // Mountain Map
                 initializeMountainMap(mapIndex);
                 break;
@@ -116,12 +135,18 @@ public class AssetSetter {
     
      private void initializeHouseMap(int mapIndex) {
         // Place keset permanently
-        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
-        if(objIndex != -1) {
-            gp.mapObjects[mapIndex][objIndex] = new OBJ_Keset(gp);
-            gp.mapObjects[mapIndex][objIndex].worldX = 11 * gp.tileSize;
-            gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
-            System.out.println("House map: Keset placed permanently");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 11 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 22 * gp.tileSize;
+        }
+        // ini aja di copy ya
+        int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex2 != -1) {
+            gp.mapObjects[mapIndex][objIndex2] = new OBJ_QueenBed(gp);
+            gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {
@@ -136,6 +161,30 @@ public class AssetSetter {
     private void initializeNPCMap(int mapIndex) {
         setTreesForNPCMapPermanent(mapIndex);
         setHousesForNPCMapPermanent(mapIndex);
+    }
+     private void initializeEmilyMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Emily map initialized");
+    }
+     private void initializePerryMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Perry map initialized");
+    }
+     private void initializeDascoMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Dasco map initialized");
+    }
+     private void initializeAbigailMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Abigail map initialized");
+    }
+     private void initializeMayorMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Mayor map initialized");
+    }
+     private void initializeCarolineMap(int mapIndex) {
+        // Ocean map objects jika ada
+        System.out.println("Caroline map initialized");
     }
 // Method untuk menempatkan objek di map tertentu
     private void placeHouseForMap(int mapIndex, int col, int row) {

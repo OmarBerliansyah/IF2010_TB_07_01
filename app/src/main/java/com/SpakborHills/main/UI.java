@@ -11,10 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.util.Iterator;
-import com.SpakborHills.entity.*;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -167,6 +163,11 @@ public class UI {
                 }
             }
         }
+    }
+
+    public void drawBlackScreen() {
+        g2.setColor(Color.black);
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
     }
 
     public void drawTitleScreen(){
@@ -501,20 +502,20 @@ public class UI {
         int slotSize = gp.tileSize+3;
 
         // DRAW PLAYER'S ITEMS
-        for(int i = 0; i < gp.player.inventory.size(); i++){
-            g2.drawImage(gp.player.inventory.get(i).item.down1, slotX, slotY, null);
+        for(int i = 0; i < gp.player.inventory.getInventory().size(); i++){
+            g2.drawImage(gp.player.inventory.getInventory().get(i).item.down1, slotX, slotY, null);
 
             // EQUIP CURSOR 
-            if (gp.player.equippedInventoryItem == gp.player.inventory.get(i)) {
+            if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(i).item) {
                 g2.setColor(new Color(240, 190, 90, 200));
                 g2.fillRoundRect(slotX + 2, slotY + 2, gp.tileSize - 4, gp.tileSize - 4, 8, 8);
             }
-            g2.drawImage(gp.player.inventory.get(i).item.down1, slotX, slotY, null);
+            g2.drawImage(gp.player.inventory.getInventory().get(i).item.down1, slotX, slotY, null);
 
             // nambahin jumlah item di pojok kanan bawah
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
             g2.setColor(Color.WHITE);
-            String itemCount = String.valueOf(gp.player.inventory.get(i).count);
+            String itemCount = String.valueOf(gp.player.inventory.getInventory().get(i).count);            
             int textX = slotX + gp.tileSize - g2.getFontMetrics().stringWidth(itemCount) - 2;
             int textY = slotY + gp.tileSize - 2;
             g2.drawString(itemCount, textX, textY);
@@ -546,9 +547,9 @@ public class UI {
 
         int itemIndex = getItemIndexOnSLot();
 
-        if(itemIndex < gp.player.inventory.size()){
+        if(itemIndex < gp.player.inventory.getInventory().size()){
             drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight); 
-            for(String line : gp.player.inventory.get(itemIndex).item.description.split("\n")){
+            for(String line : gp.player.inventory.getInventory().get(itemIndex).item.description.split("\n")){
                 g2.drawString(line, textX, textY);
                 textY += 32;
             }

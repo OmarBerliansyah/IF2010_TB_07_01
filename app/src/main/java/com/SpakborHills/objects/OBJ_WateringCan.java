@@ -9,7 +9,7 @@ public class OBJ_WateringCan extends Entity {
         super(gp);
         name = "Watering Can";
         down1 = setup("objects/wateringcan", gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nini Watering Can"; 
+        description = "[" + name + "]\nAlat yang digunakan \nuntuk menyiram tanaman."; 
         isPickable = true;
     }
 }

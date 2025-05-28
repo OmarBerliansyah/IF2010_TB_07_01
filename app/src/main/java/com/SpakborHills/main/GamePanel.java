@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable {
     // WORLD SEtTINGS
     public final int maxWorldCol = 32;
     public final int maxWorldRow = 32;
-    public final int maxMap = 15; // bisa bikin sampai 10 map
+    public final int maxMap = 20; // bisa bikin sampai 10 map
     public int currentMap = 0;
 
     // FULL SCREEN
@@ -50,7 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
     public AssetSetter aSetter = new AssetSetter(this);
     public UI ui = new UI(this, keyH);
     public EventHandler eHandler = new EventHandler(this);
-    EnvironmentManager eManager = new EnvironmentManager(this);
+    public EnvironmentManager eManager = new EnvironmentManager(this);
     Thread gameThread; // Thread for the game loop
 
     //ENTITY AND OBJECT
