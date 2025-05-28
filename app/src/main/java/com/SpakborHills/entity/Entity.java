@@ -39,6 +39,10 @@ public class Entity {
 
     public BufferedImage image;
     public String name;
+    public int daysToHarvest; 
+    public int buyPrice; 
+    public int salePrice;
+    public int cropCount; //Jumlah Crop per Panen
     public boolean collision = false;
     boolean tilling = false;
     boolean planting = false;
