@@ -8,7 +8,7 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.environment.*;
 
-public class OBJ_BullHead extends Entity {
+public class OBJ_RainbowTrout extends Entity {
 
     public EnumSet<Season> availableSeasons;
     public EnumSet<Weather> availableWeathers;
@@ -17,19 +17,19 @@ public class OBJ_BullHead extends Entity {
     public EnumSet<Location> availableLocations;
     public String category; //Common, Regular, Legendary
 
-    public OBJ_BullHead(GamePanel gp){
+    public OBJ_RainbowTrout(GamePanel gp){
         super(gp);
-        name = "BullHead";
-        down1 = setup("objects/BullHead",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nJenis Common Fish hanya\ndapat ditangkap di\nMountain Lake.";
+        name = "RainbowTrout";
+        down1 = setup("objects/RainbowTrout",gp.tileSize, gp.tileSize);
+        description = "[" + name + "]\nMemiliki jenis Regular Fish.";
         isPickable = true;
-        availableSeasons = EnumSet.allOf(Season.class);
-        availableWeathers = EnumSet.allOf(Weather.class); 
-        availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE);
+        availableSeasons = EnumSet.of(Season.SUMMER);
+        availableWeathers = EnumSet.of(Weather.SUNNY); 
+        availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE, Location.FOREST_RIVER);
         availableStartTimes = new ArrayList<>();
         availableEndTimes = new ArrayList<>();
-        availableStartTimes.add(0);
-        availableEndTimes.add(24);
-        category = "Common"; 
+        availableStartTimes.add(6);
+        availableEndTimes.add(18);
+        category = "Regular";
     }
 }
