@@ -308,14 +308,13 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 12));
                 g2.drawString("Draw Time: " + passed + " ns", 10, screenHeight - 10);
                 // System.out.println("Draw Time: "+passed); // Hindari print di game loop jika memungkinkan
-            }
-        }
         // g2.dispose(); // Umumnya tidak perlu di paintComponent Swing, karena Graphics g dikelola Swing.
                        // Jika Anda membuat salinan g (misal g.create()), maka salinannya yang di-dispose.
                        // Untuk g2 = (Graphics2D) g;, biarkan Swing yang urus.
                 g2.setColor(Color.white);
                 g2.drawString("Draw Time: "+passed, 10, 400);
                 System.out.println("Draw Time: "+passed);
+            }
             }
 
             //UI
@@ -327,7 +326,6 @@ public class GamePanel extends JPanel implements Runnable {
 
             g2.dispose();
         }
-    }
 
     public void playMusic(int i) {
         music.setFile(i);
