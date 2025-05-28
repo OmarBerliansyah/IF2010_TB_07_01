@@ -198,6 +198,7 @@ public class TileManager {
         setup(130, "UjungJurangAtas", false, TileType.NONE);
         setup(131, "UjungJembatanAtas", false, TileType.NONE);
         setup(132, "UjungPantai", false, TileType.NONE);
+        setup(133, "GrassCollision", true, TileType.NONE);
     }
 
 
@@ -216,6 +217,7 @@ public class TileManager {
             tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
             tile[index].collision = collision;
             tile[index].tileType = type;
+            is.close();
         }
         catch(IOException e){
             e.printStackTrace();
@@ -229,26 +231,35 @@ public class TileManager {
 
             int col = 0;
             int row = 0;
-            int maxCol = mapCols[map];
-            int maxRow = mapRows[map];
+            int currentMapCols = mapCols[map];
+            int currentMapRows = mapRows[map];
 
-            while(col < maxCol && row < maxRow){
+            while(row < currentMapRows){
                 String line = br.readLine();
                 if (line == null) {
                 break;
                 }
-                while(col < maxCol){
-                    String numbers[] = line.split(" ");
 
-                    int num = Integer.parseInt(numbers[col]);
+                String numbers[] = line.split(" ");
+                if (numbers.length < currentMapCols) {
+                     System.err.println("ERROR TILEMANAGER: Map file " + mapFile + " pada baris " + row + " memiliki " + numbers.length + " kolom, diharapkan " + currentMapCols);
+                }
 
-                    mapTileNum[map][col][row] = num;
-                    col++;
+                for (col = 0; col < currentMapCols; col++) {
+                    if (col < numbers.length) {
+                        try {
+                            int num = Integer.parseInt(numbers[col]);
+                            mapTileNum[map][col][row] = num;
+                        } catch (NumberFormatException e) {
+                            System.err.println("ERROR TILEMANAGER: Invalid number " + numbers[col] + " di map " + mapFile + " posisi (" + col + "," + row + ")");
+                            mapTileNum[map][col][row] = 0; // Default ke tile 0 jika ada error
+                        }
+                    } else {
+                        // Jika baris lebih pendek dari yang diharapkan, isi dengan tile default
+                        mapTileNum[map][col][row] = 0; 
+                    }
                 }
-                if(col >= maxCol){
-                    col = 0;
-                    row++;
-                }
+                row++;
             }
             br.close();
         }
@@ -257,31 +268,63 @@ public class TileManager {
         }
     }
 
-    public void draw(Graphics2D g2){
+
+        public void draw(Graphics2D g2, int cameraX, int cameraY) { // Tambahkan parameter cameraX, cameraY
         int worldCol = 0;
         int worldRow = 0;
-        int currentMap = gp.currentMap;
-        int maxCol = mapCols[currentMap];
-        int maxRow = mapRows[currentMap];
+        int currentMapIndex = gp.currentMap; // Ambil currentMap dari GamePanel
 
-        while(worldCol < maxCol && worldRow < maxRow){
+        // Gunakan dimensi spesifik dari peta saat ini
+        int maxMapCol = mapCols[currentMapIndex];
+        int maxMapRow = mapRows[currentMapIndex];
 
-            int tileNum = mapTileNum[currentMap][worldCol][worldRow];
+        while (worldCol < maxMapCol && worldRow < maxMapRow) {
+            int tileNum = -1;
+            // Pencegahan OutOfBounds jika mapTileNum tidak cukup besar untuk maxMapCol/maxMapRow
+            // Meskipun seharusnya sudah dihandle oleh loadMap dan dimensi mapCols/mapRows
+            if (worldCol < mapTileNum[currentMapIndex].length && worldRow < mapTileNum[currentMapIndex][worldCol].length) {
+                 tileNum = mapTileNum[currentMapIndex][worldCol][worldRow];
+            } else {
+                // Seharusnya tidak terjadi jika mapCols/mapRows dan loadMap sudah benar
+                System.err.println("Warning: Akses di luar batas mapTileNum untuk peta " + currentMapIndex + " di (" + worldCol + "," + worldRow + ")");
+                worldCol++;
+                if (worldCol >= maxMapCol) {
+                    worldCol = 0;
+                    worldRow++;
+                }
+                continue;
+            }
 
-            int worldX = worldCol * gp.tileSize;
-            int worldY = worldRow * gp.tileSize;
 
-            int screenX = worldX - gp.player.worldX + gp.player.screenX;
-            int screenY = worldY - gp.player.worldY + gp.player.screenY;
+            // Pastikan tileNum valid dan tile serta image-nya ada
+            if (tileNum < 0 || tileNum >= tile.length || tile[tileNum] == null || tile[tileNum].image == null) {
+                // System.err.println("Warning: Tile index " + tileNum + " tidak valid atau gambar null di ("+worldCol+","+worldRow+")");
+                // Anda bisa menggambar tile placeholder atau skip
+                worldCol++;
+                if (worldCol >= maxMapCol) {
+                    worldCol = 0;
+                    worldRow++;
+                }
+                continue; // Lanjut ke tile berikutnya
+            }
 
-            if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-                    worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
-                    worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
-                    worldY - gp.tileSize < gp.player.worldY + gp.player.screenY){
+            int tileWorldX = worldCol * gp.tileSize;
+            int tileWorldY = worldRow * gp.tileSize;
+
+            // Hitung posisi layar relatif terhadap KAMERA YANG SUDAH DI-CLAMP
+            int screenX = tileWorldX - cameraX;
+            int screenY = tileWorldY - cameraY;
+
+            // Culling: Hanya gambar tile yang terlihat di layar
+            if (screenX + gp.tileSize > 0 &&   // Tepi kanan tile > tepi kiri layar
+                screenX < gp.screenWidth &&    // Tepi kiri tile < tepi kanan layar
+                screenY + gp.tileSize > 0 &&   // Tepi bawah tile > tepi atas layar
+                screenY < gp.screenHeight) {   // Tepi atas tile < tepi bawah layar
                 g2.drawImage(tile[tileNum].image, screenX, screenY, null);
             }
+
             worldCol++;
-            if(worldCol == maxCol){
+            if (worldCol >= maxMapCol) { // Gunakan maxMapCol yang spesifik untuk peta ini
                 worldCol = 0;
                 worldRow++;
             }
