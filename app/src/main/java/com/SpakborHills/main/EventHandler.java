@@ -83,12 +83,12 @@ public class EventHandler {
             }
 
             // TELEPORT TO FOREST RIVER
-            else if (hit(0, 18, 20, "any") == true) {
-                teleport(3, 31, 16);
+            else if (hit(0, 0, 17, "any") == true) {
+                teleport(3, 15, 5);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
-            else if (hit(3, 31, 16, "any") == true) {
+            else if (hit(3, 15, 6, "any") == true) {
                 teleport(0, 0, 16);
             }
 
@@ -98,7 +98,7 @@ public class EventHandler {
     
             }
             else if (hit(4, 31, 19, "any") == true) {
-                teleport(0,0,16);
+                teleport(0,0,13);
             
             }
             // TELEPORT FROM NPCMAP TO Mayor HOUSE
