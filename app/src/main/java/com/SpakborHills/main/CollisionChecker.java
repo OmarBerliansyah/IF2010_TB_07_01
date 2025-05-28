@@ -22,25 +22,23 @@ public class CollisionChecker {
         int entityBottomRow = entityBottomWorldY/gp.tileSize;
 
         int tileNum1, tileNum2;
-        int maxCol , maxRow ;
-        if(gp.currentMap == 2) { // House map
-            maxCol = 24;
-            maxRow = 24;
-        } else { // Other maps
-            maxCol = gp.maxWorldCol;
-            maxRow = gp.maxWorldRow;
-        }
-        entityLeftCol = Math.max(0, Math.min(entityLeftCol, maxCol - 1));
-        entityRightCol = Math.max(0, Math.min(entityRightCol, maxCol - 1));
-        entityTopRow = Math.max(0, Math.min(entityTopRow, maxRow - 1));
-        entityBottomRow = Math.max(0, Math.min(entityBottomRow, maxRow - 1));
+        
+        int currentMap = gp.currentMap;
+        int maxCol = gp.tileM.mapCols[currentMap];
+        int maxRow = gp.tileM.mapRows[currentMap];
+
+
+        int checkLeftCol = Math.max(0, Math.min(entityLeftCol, maxCol - 1));
+        int checkRightCol = Math.max(0, Math.min(entityRightCol, maxCol - 1));
+        int checkTopRow = Math.max(0, Math.min(entityTopRow, maxRow - 1));
+        int checkBottomRow = Math.max(0, Math.min(entityBottomRow, maxRow - 1));
 
         switch(entity.direction){
             case "up":
                 entityTopRow = (entityTopWorldY - entity.speed)/gp.tileSize;
-                entityTopRow = Math.max(0, Math.min(entityTopRow, maxRow-1));
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
+                checkTopRow = Math.max(0, Math.min(entityTopRow, maxRow-1));
+                tileNum1 = gp.tileM.mapTileNum[currentMap][checkLeftCol][checkTopRow];
+                tileNum2 = gp.tileM.mapTileNum[currentMap][checkRightCol][checkTopRow];
 
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
@@ -48,9 +46,9 @@ public class CollisionChecker {
                 break;
             case "down":
                 entityBottomRow = (entityBottomWorldY + entity.speed)/gp.tileSize;
-                entityBottomRow = Math.max(0, Math.min(entityBottomRow, maxRow-1));
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
+                checkBottomRow = Math.max(0, Math.min(entityBottomRow, maxRow-1));
+                tileNum1 = gp.tileM.mapTileNum[currentMap][checkLeftCol][checkBottomRow];
+                tileNum2 = gp.tileM.mapTileNum[currentMap][checkRightCol][checkBottomRow];
 
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
@@ -58,9 +56,9 @@ public class CollisionChecker {
                 break;
             case "left":
                 entityLeftCol = (entityLeftWorldX - entity.speed)/gp.tileSize;
-                entityLeftCol = Math.max(0, Math.min(entityLeftCol, maxCol-1));
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
+                checkLeftCol = Math.max(0, Math.min(entityLeftCol, maxCol-1));
+                tileNum1 = gp.tileM.mapTileNum[currentMap][checkLeftCol][checkTopRow];
+                tileNum2 = gp.tileM.mapTileNum[currentMap][checkLeftCol][checkBottomRow];
 
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
@@ -68,9 +66,9 @@ public class CollisionChecker {
                 break;
             case "right":
                 entityRightCol = (entityRightWorldX + entity.speed)/gp.tileSize;
-                entityRightCol = Math.max(0, Math.min(entityRightCol, maxCol-1));
-                tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
-                tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
+                checkRightCol = Math.max(0, Math.min(entityRightCol, maxCol-1));
+                tileNum1 = gp.tileM.mapTileNum[currentMap][checkRightCol][checkTopRow];
+                tileNum2 = gp.tileM.mapTileNum[currentMap][checkRightCol][checkBottomRow];
 
                 if(gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true){
                     entity.collisionOn = true;
@@ -151,7 +149,7 @@ public class CollisionChecker {
         int index = 999;
 
         for(int i =0; i< target.length; i++){
-            if(target[i] != null){
+            if(target[i] != null && target[i] != entity){
                 //get entity's solid area position
                 entity.solidArea.x = entity.worldX + entity.solidArea.x;
                 entity.solidArea.y = entity.worldY + entity.solidArea.y;

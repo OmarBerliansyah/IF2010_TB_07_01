@@ -39,20 +39,24 @@ public class Player extends Entity {
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
 
-        solidArea = new Rectangle();
+        // solidArea = new Rectangle();
 
-        solidArea.x = 1;
-        solidArea.y = 1;
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
+
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
-        solidArea.width = 46;
-        solidArea.height = 46;
-        tillingArea.width = 36;
-        tillingArea.height = 36;
+
+        // tillingArea.width = 36;
+        // tillingArea.height = 36;
 
         setDefaultValues();
         getPlayerImage();
         getPlayerTillingImage();
+        getPlayerWateringImage(); 
+        getPlayerPickAxeImage();
         getPlayerSeedsImage();
         inventory = new Inventory(gp, this);
     }
@@ -79,7 +83,25 @@ public class Player extends Entity {
             location = "Ocean";
         } else if (gp.currentMap == 2) {
             location = "House";
-        } else {
+        }  else if (gp.currentMap == 3) {
+            location = "Forest";
+        }  else if (gp.currentMap == 4) {
+            location = "npcMap";
+        }  else if (gp.currentMap == 5) {
+            location = "EmilyMap";
+        }  else if (gp.currentMap == 6) {
+            location = "PerryMap";
+        }  else if (gp.currentMap == 7) {
+            location = "DascoMap";
+        }  else if (gp.currentMap == 8) {
+            location = "AbigailMap";
+        }  else if (gp.currentMap == 9) {
+            location = "MayorMap";
+        }  else if (gp.currentMap == 10) {
+            location = "CarolineMap";
+        } else if (gp.currentMap == 11) {
+            location = "MountainLake";
+        }else {
             location = "Unknown Area";
         }
     }
@@ -157,6 +179,9 @@ public class Player extends Entity {
         return null;
     }
     public void update(){
+        if(gp.ui.showingSleepConfirmDialog) {
+            return;
+        }
         if(tilling){
             tilling();
             return;
@@ -195,9 +220,6 @@ public class Player extends Entity {
         else{
             handleInput();
         }
-        if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
-            return;
-        }
     }
 
     public void handleMovement(){
@@ -226,7 +248,23 @@ public class Player extends Entity {
                 case "right": worldX += speed; break;
             }
         }
-            
+        int currentMap = gp.currentMap;
+        int currentMapWorldWidth = gp.tileM.mapCols[currentMap] * gp.tileSize;
+        int currentMapWorldHeight = gp.tileM.mapRows[currentMap] * gp.tileSize;
+
+         if (this.worldX + this.solidArea.x < 0) { // Jika tepi kiri solidArea akan keluar ke kiri peta
+            this.worldX = -this.solidArea.x;      // Posisikan worldX agar tepi kiri solidArea tepat di 0
+        } else if (this.worldX + this.solidArea.x + this.solidArea.width > currentMapWorldWidth) { // Jika tepi kanan solidArea akan keluar ke kanan peta
+            this.worldX = currentMapWorldWidth - this.solidArea.width - this.solidArea.x; // Posisikan worldX agar tepi kanan solidArea tepat di batas kanan peta
+        }
+
+        if (this.worldY + this.solidArea.y < 0) { // Jika tepi atas solidArea akan keluar ke atas peta
+            this.worldY = -this.solidArea.y;      // Posisikan worldY agar tepi atas solidArea tepat di 0
+        } else if (this.worldY + this.solidArea.y + this.solidArea.height > currentMapWorldHeight) { // Jika tepi bawah solidArea akan keluar ke bawah peta
+            this.worldY = currentMapWorldHeight - this.solidArea.height - this.solidArea.y; // Posisikan worldY agar tepi bawah solidArea tepat di batas bawah peta
+        }
+
+
         spriteCounter++;
         if(spriteCounter > 12){
             if(spriteNum == 1){
@@ -240,7 +278,7 @@ public class Player extends Entity {
 
         pixelCounter += speed;
 
-        if(pixelCounter == 48){
+        if(pixelCounter == gp.tileSize){
             moving = false;
             pixelCounter = 0;
         }
@@ -685,7 +723,50 @@ public class Player extends Entity {
     }
 
     public void sleeping(){
-        gp.ui.addMessage("You are sleeping...");
+        gp.ui.setForceBlackScreen(true);
+
+        if(gp instanceof javax.swing.JPanel){
+            gp.repaint();
+        }
+        try {
+            Thread.sleep(50); // Delay 50 milliseconds
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        sleepLogic();
+
+        try{
+            Thread.sleep(1000); // Delay 1 second to simulate sleep transition
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        gp.ui.setForceBlackScreen(false);
+        if (gp.gameState != gp.playState && gp.gameState != gp.dialogueState) {
+            gp.gameState = gp.playState;
+        } else if (gp.gameState != gp.dialogueState) { 
+            gp.gameState = gp.playState;
+        }
+
+        gp.ui.addMessage("You wake up feeling refreshed!");
+        gp.ui.showingSleepConfirmDialog = false;
+
+        if (gp instanceof javax.swing.JPanel) {
+            gp.repaint();
+        }
+    }
+
+    public void sleepLogic(){
+        
+        boolean isPassOut = (gp.eManager.getHour() >= 2 && gp.eManager.getHour() < 6) && !gp.ui.showingSleepConfirmDialog;
+
+        if(isPassOut){
+            gp.ui.addMessage("Sudah terlalu larut! Kamu pingsan....");
+        }
+        else{
+            gp.ui.addMessage("You are sleeping...");
+        }
 
         if (energy < 10) {
             energy += 50;
@@ -697,8 +778,12 @@ public class Player extends Entity {
             energy = 100;
         }
 
+        gp.eManager.incrementDayAndAdvanceWeather();
         gp.eManager.setTime(6,0);
-        gp.ui.addMessage("You have rested and regained energy!");
+
+        if (gp.ui.showingSleepConfirmDialog) {
+            gp.ui.closeSleepConfirmationDialog(); 
+        }
     }
 
     public void watching(){
@@ -760,178 +845,124 @@ public class Player extends Entity {
     public void draw(Graphics2D g2){
 //        g2.setColor(Color.white);
 //        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
-        BufferedImage image = null;
+        BufferedImage imageToDraw = null;
+        int playerDrawScreenX = worldX - gp.clampedCameraX;
+        int playerDrawScreenY = worldY - gp.clampedCameraY;
         switch (direction){
             case "up":
-                if(tilling == false){
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = up2;
-                    }
-                }
-                if(tilling == true){
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = tillingUp;
-                    }
-                }
-                if(planting == true){
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = parsnipSeeds;
-                    }
-                }
-                if(watering == true){
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = wateringUp;
-                    }
-                }
-                if(recoverLand == true){
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = recoverLandUp;
-                    }
+                if (!tilling && !planting && !watering && !recoverLand) { // Kondisi normal
+                    if (spriteNum == 1) imageToDraw = up1;
+                    if (spriteNum == 2) imageToDraw = up2;
+                } else if (tilling) {
+                    if (spriteNum == 1) imageToDraw = up1; // Atau sprite idle sebelum aksi
+                    if (spriteNum == 2) imageToDraw = tillingUp; // Sprite aksi
+                } else if (planting) {
+                    // ... (logika sprite untuk planting)
+                    if (spriteNum == 1) imageToDraw = up1;
+                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.up1 : up1; // Ganti parsnipSeeds dengan image dari equippedItem jika ada
+                } else if (watering) {
+                    // ... (logika sprite untuk watering)
+                    if (spriteNum == 1) imageToDraw = up1;
+                    if (spriteNum == 2) imageToDraw = wateringUp;
+                } else if (recoverLand) {
+                    // ... (logika sprite untuk recoverLand)
+                    if (spriteNum == 1) imageToDraw = up1;
+                    if (spriteNum == 2) imageToDraw = recoverLandUp;
                 }
                 break;
             case "down":
-                if(tilling == false){
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = down2;
-                    }
-                }
-                if(tilling == true){
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = tillingDown;
-                    }
-                }
-                if(planting == true){
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = parsnipSeeds;
-                    }
-                }
-                if(watering == true){
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = wateringDown;
-                    }
-                }
-                if(recoverLand == true){
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = recoverLandDown;
-                    }
+                // ... (logika serupa untuk arah "down") ...
+                 if (!tilling && !planting && !watering && !recoverLand) {
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = down2;
+                } else if (tilling) {
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = tillingDown;
+                } else if (planting) {
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.down1 : down1;
+                } else if (watering) {
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = wateringDown;
+                } else if (recoverLand) {
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = recoverLandDown;
                 }
                 break;
             case "left":
-                if(tilling == false){
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = left2;
-                    }
-                }
-                if(tilling == true){
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = tillingLeft;
-                    }
-                }
-                if(planting == true){
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = parsnipSeeds;
-                    }
-                }
-                if(watering == true){
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = wateringLeft;
-                    }
-                }
-                if(recoverLand == true){
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = recoverLandLeft;
-                    }
+                // ... (logika serupa untuk arah "left") ...
+                 if (!tilling && !planting && !watering && !recoverLand) {
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = left2;
+                } else if (tilling) {
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = tillingLeft;
+                } else if (planting) {
+                     if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.left1 : left1;
+                } else if (watering) {
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = wateringLeft;
+                } else if (recoverLand) {
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = recoverLandLeft;
                 }
                 break;
             case "right":
-                if(tilling == false){
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = right2;
-                    }
-                }
-                if(tilling == true){
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = tillingRight;
-                    }
-                }
-                if(planting == true){
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = parsnipSeeds;
-                    }
-                }
-                if(watering == true){
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = wateringRight;
-                    }
-                }
-                if(recoverLand == true){
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = recoverLandRight;
-                    }
+                // ... (logika serupa untuk arah "right") ...
+                 if (!tilling && !planting && !watering && !recoverLand) {
+                    if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = right2;
+                } else if (tilling) {
+                    if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = tillingRight;
+                } else if (planting) {
+                     if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.right1 : right1;
+                } else if (watering) {
+                    if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = wateringRight;
+                } else if (recoverLand) {
+                    if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = recoverLandRight;
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY, null);
+        
+        // Jika tidak ada aksi khusus, dan tidak bergerak, kembali ke sprite berdiri normal
+        if (imageToDraw == null && !moving && !tilling && !planting && !watering && !recoverLand) {
+            switch(direction) {
+                case "up": imageToDraw = up1; break;
+                case "down": imageToDraw = down1; break;
+                case "left": imageToDraw = left1; break;
+                case "right": imageToDraw = right1; break;
+                default: imageToDraw = down1; // Fallback
+            }
+        } else if (imageToDraw == null) { // Fallback jika belum ada gambar terpilih
+             switch(direction) { // Fallback ke animasi jalan normal jika aksi belum punya sprite spesifik
+                case "up": imageToDraw = (spriteNum == 1) ? up1 : up2; break;
+                case "down": imageToDraw = (spriteNum == 1) ? down1 : down2; break;
+                case "left": imageToDraw = (spriteNum == 1) ? left1 : left2; break;
+                case "right": imageToDraw = (spriteNum == 1) ? right1 : right2; break;
+                default: imageToDraw = down1;
+            }
+        }
+
+
+        // Gambar pemain pada posisi screenX, screenY yang sudah ditentukan (final)
+        // Menggunakan gp.tileSize untuk lebar dan tinggi agar konsisten
+        if (imageToDraw != null) {
+            g2.drawImage(imageToDraw, playerDrawScreenX, playerDrawScreenY, gp.tileSize, gp.tileSize, null);
+        } else {
+            // Jika imageToDraw masih null setelah semua logika, gambar fallback atau log error
+            // Contoh: g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize); // Gambar kotak merah
+            System.err.println("PLAYER DRAW: imageToDraw is null for direction " + direction + " and state.");
+            if (down1 != null) g2.drawImage(down1, screenX, screenY, gp.tileSize, gp.tileSize, null); // Fallback paling aman
+        }
+
+        // Opsional: Gambar solidArea untuk debug (gunakan screenX, screenY dari Player)
+        // g2.setColor(java.awt.Color.BLUE);
+        // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
     public void proposeToNPC(int npcIndex){
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
