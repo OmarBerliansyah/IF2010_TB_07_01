@@ -526,7 +526,7 @@ public class UI {
     public void drawDialogueScreen(){
         //WINDOW
         int x = gp.tileSize*2;
-        int y = gp.tileSize*2;
+        int y = gp.tileSize*5;
         int width = gp.screenWidth - (gp.tileSize *4);
         int height = gp.tileSize *5;
 
