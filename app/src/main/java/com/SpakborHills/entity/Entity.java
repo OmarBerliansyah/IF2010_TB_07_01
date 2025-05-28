@@ -40,6 +40,10 @@ public class Entity {
 
     public BufferedImage image;
     public String name;
+    public int daysToHarvest; 
+    public int buyPrice; 
+    public int salePrice;
+    public int cropCount; //Jumlah Crop per Panen
     public boolean collision = false;
     boolean tilling = false;
     boolean planting = false;
@@ -55,6 +59,7 @@ public class Entity {
 
     // ITEM ATTRIBUTES 
     public String description = "";
+    private boolean dialogueInProgress;
 
     public Entity(GamePanel gp){
         this.gp = gp;
@@ -64,7 +69,9 @@ public class Entity {
 
     public void speak(){
         if(dialogue[dialogueIndex]==null){
+            System.out.println("DIALOGUE FINISHED - RESETTING FLAGS");
             dialogueIndex = 0;
+            dialogueInProgress = false;
         }
         gp.ui.currentDialogue = dialogue[dialogueIndex];
         dialogueIndex++;

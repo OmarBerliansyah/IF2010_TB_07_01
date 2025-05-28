@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import com.SpakborHills.entity.NPC;
+
 public class UI {
     GamePanel gp;
     KeyHandler keyH;
@@ -23,6 +25,7 @@ public class UI {
     Font menuFont;
     Font selectorFont; 
     Font inputFont;
+    Font confirmationFont;
 
     public boolean messageOn = false;
     public ArrayList<String> message = new ArrayList<>(); 
@@ -40,6 +43,9 @@ public class UI {
     public String inputGender = "Male"; // Default Male
     public int inputState = 0; // 0 = name, 1 = farm name, 2 = gender, 3 = done
     public boolean isTyping = false;
+    public boolean showingSleepConfirmDialog = false;
+    public int sleepConfirmCommandNum = 0; // 0 = Yes, 1 = No
+    public boolean forceBlackScreenActive = false;
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -58,7 +64,8 @@ public class UI {
                 
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
-                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                inputFont = baseFont.deriveFont(Font.PLAIN, 50f);
+                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
 
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
@@ -71,7 +78,8 @@ public class UI {
             menuFont = new Font(Font.SANS_SERIF, Font.BOLD, 48); // Fallback untuk menuFont
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
             inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
-        }          
+            confirmationFont = new Font(Font.SANS_SERIF, Font.PLAIN, 36);
+        }
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
         try {
@@ -111,6 +119,13 @@ public class UI {
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
+
+        if(forceBlackScreenActive){
+            g2.setColor(Color.black);
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            return; // Skip drawing anything else if black screen is forced
+        }
+
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.white);
 
@@ -120,19 +135,35 @@ public class UI {
         }
         if(gp.gameState == gp.playState){
             drawMessage();
+            if (isInNPCHouse()) {
+                drawNPCInteractionInfo();
+            }
+            if(showingSleepConfirmDialog){
+                drawSleepConfirmationDialog(g2);
+            }
         }
         if(gp.gameState == gp.pauseState){
             drawPauseScreen();
         }
         if(gp.gameState == gp.dialogueState){
-            drawDialogueScreen();
+            if(showingSleepConfirmDialog){
+                drawSleepConfirmationDialog(g2);
+            }
+            else{
+                drawDialogueScreen();
+            }
+            if (isInNPCHouse()) {
+                drawNPCInteractionInfo();
+            }
         }
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
         }
     }
-
+    private boolean isInNPCHouse() {
+        return gp.currentMap >= 5 && gp.currentMap <= 10;
+    }
     public void addMessage(String text) {
         message.add(text);
         messageCounter.add(0);
@@ -165,9 +196,118 @@ public class UI {
         }
     }
 
-    public void drawBlackScreen() {
-        g2.setColor(Color.black);
-        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+    public void setForceBlackScreen(boolean active) {
+        this.forceBlackScreenActive = active;
+    }
+
+    public void showSleepConfirmationDialog(){
+        gp.keyH.enterPressed = false; // Reset enter key state
+        this.showingSleepConfirmDialog = true;
+        this.sleepConfirmCommandNum = 0; // Reset command number to 0 (Yes)
+    }
+
+    public void closeSleepConfirmationDialog(){
+        this.showingSleepConfirmDialog = false;
+        gp.eHandler.canTouchEvent = true;
+        if (gp.gameState == gp.dialogueState) { 
+            boolean otherDialogueStillActive = false;
+            if (!otherDialogueStillActive) {
+                gp.gameState = gp.playState;
+            }
+        }
+    }
+
+    public void drawSleepConfirmationDialog(Graphics2D g2) {
+        if (!showingSleepConfirmDialog) return;
+        int windowWidth = gp.tileSize * 9;    // Sesuaikan lebar
+        int windowHeight = gp.tileSize * 4;   // Sesuaikan tinggi
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        // 4. Gambar teks pertanyaan
+        g2.setFont(confirmationFont); // Gunakan font yang sudah disiapkan
+        g2.setColor(Color.white);
+        String question = "Want to sleep for the night?";
+        int qx = getXforCenteredTextInWindow(question, x, windowWidth, g2, confirmationFont);
+        int qy = y + gp.tileSize + (gp.tileSize/2); // Posisi Y pertanyaan
+
+        g2.drawString(question, qx, qy);
+
+        // 5. Gambar opsi "Yes" dan "No"
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F)); // Sedikit lebih besar untuk opsi
+
+        String yesText = "Yes";
+        String noText = "No";
+
+        // Posisi untuk "Yes" (kiri)
+        int yesX = x + windowWidth / 4 - getHalfTextWidth(yesText, g2, g2.getFont()) ;
+        int optionY = qy + gp.tileSize + (gp.tileSize/2) ;
+
+        // Posisi untuk "No" (kanan)
+        int noX = x + (windowWidth / 4 * 3) - getHalfTextWidth(noText, g2, g2.getFont());
+
+
+        // Gambar "Yes" dengan selector jika terpilih
+        if (sleepConfirmCommandNum == 0) {
+            g2.setColor(Color.YELLOW); // Warna highlight
+            g2.drawString(">", yesX - gp.tileSize / 2, optionY);
+        } else {
+            g2.setColor(Color.white);
+        }
+        g2.drawString(yesText, yesX, optionY);
+
+        // Gambar "No" dengan selector jika terpilih
+        if (sleepConfirmCommandNum == 1) {
+            g2.setColor(Color.YELLOW); // Warna highlight
+            g2.drawString(">", noX - gp.tileSize / 2, optionY);
+        } else {
+            g2.setColor(Color.white);
+        }
+        g2.drawString(noText, noX, optionY);
+    }
+
+     // Helper untuk mendapatkan posisi X agar teks terpusat di dalam area window
+    private int getXforCenteredTextInWindow(String text, int windowX, int windowWidth, Graphics2D g2, Font font) {
+        FontMetrics fm = g2.getFontMetrics(font);
+        int textWidth = fm.stringWidth(text);
+        return windowX + (windowWidth - textWidth) / 2;
+    }
+
+    // Helper untuk mendapatkan setengah lebar teks (untuk centering manual jika diperlukan)
+    private int getHalfTextWidth(String text, Graphics2D g2, Font font) {
+        FontMetrics fm = g2.getFontMetrics(font);
+        return fm.stringWidth(text) / 2;
+    }
+
+
+    public void processSleepConfirmationInput() {
+        if (!showingSleepConfirmDialog) return; // Hanya proses jika dialog aktif
+
+        if (gp.keyH.leftPressed || (gp.keyH.upPressed && sleepConfirmCommandNum == 1) ) { // Pindah ke kiri (atau atas dari No ke Yes)
+            sleepConfirmCommandNum = 0; // Pilih Yes
+            gp.keyH.leftPressed = false;
+            gp.keyH.upPressed = false;
+            gp.keyH.enterPressed = false;
+        } else if (gp.keyH.rightPressed || (gp.keyH.downPressed && sleepConfirmCommandNum == 0) ) { // Pindah ke kanan (atau bawah dari Yes ke No)
+            sleepConfirmCommandNum = 1; // Pilih No
+            gp.keyH.rightPressed = false;
+            gp.keyH.downPressed = false;
+            gp.keyH.enterPressed = false;
+        }
+
+        if (gp.keyH.enterPressed) {
+            if (sleepConfirmCommandNum == 0) { // Jika "Yes" dipilih
+                closeSleepConfirmationDialog(); // Tutup dialog dulu
+                gp.player.sleeping();
+                gp.eHandler.canTouchEvent = false; // Nonaktifkan input sementara
+            } else { // Jika "No" dipilih
+                closeSleepConfirmationDialog();
+                gp.eHandler.canTouchEvent = false; // Nonaktifkan input sementara
+                // gp.player.canMove = true; // Pastikan player bisa gerak lagi jika di-disable
+                // gp.canTouchEvent = true; // Aktifkan kembali jika ini yang kamu gunakan
+            }
+            gp.keyH.enterPressed = false; // Konsumsi input enter
+        }
     }
 
     public void drawTitleScreen(){
@@ -386,7 +526,7 @@ public class UI {
     public void drawDialogueScreen(){
         //WINDOW
         int x = gp.tileSize*2;
-        int y = gp.tileSize*2;
+        int y = gp.tileSize*5;
         int width = gp.screenWidth - (gp.tileSize *4);
         int height = gp.tileSize *5;
 
@@ -527,7 +667,6 @@ public class UI {
                 slotY += slotSize; 
             }
         }
-
         // CURSOR
         int cursorX = slotXstart + (slotSize * slotCol);
         int cursorY = slotYstart + (slotSize * slotRow);
@@ -565,4 +704,126 @@ public class UI {
         int itemIndex = slotCol + (slotRow*5);
         return itemIndex;
     }
+    public void drawNPCInteractionInfo() {
+        // Always show NPC info when in NPC house (maps 5-10)
+        if (!isInNPCHouse()) {
+            return; // Exit if not in NPC house
+        }
+        
+        // Find the NPC in current house
+        NPC houseNPC = null;
+        for (int i = 0; i < gp.NPC.length; i++) {
+            if (gp.NPC[i] instanceof NPC) {
+                houseNPC = (NPC) gp.NPC[i];
+                break; // Found the NPC in this house
+            }
+        }
+        
+        if (houseNPC == null) {
+            return; // No NPC found in this house
+        }
+        
+        // Check if player is nearby for distance-based actions
+        int npcIndex = gp.cChecker.checkEntity(gp.player, gp.NPC);
+        boolean isNearby = (npcIndex != 999);
+        
+        g2.setFont(g2.getFont().deriveFont(16F));
+        int x = 20; // Kiri atas
+        int y = 50; // Sedikit dari atas
+        
+        // Background
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRoundRect(x - 10, y - 20, 260, 220, 10, 10);
+        
+        // NPC Info Header
+        g2.setColor(Color.YELLOW);
+        g2.drawString("=== " + houseNPC.name + " ===", x, y);
+        y += 25;
+        
+        // Current Stats (Always Updated)
+        g2.setColor(Color.WHITE);
+        g2.drawString("Heart Points: " + houseNPC.getHeartPoints() + "/150", x, y);
+        y += 20;
+        g2.drawString("Status: " + houseNPC.getRelationshipStatus(), x, y);
+        y += 20;
+        g2.drawString("Chat Count: " + houseNPC.getChattingFrequency(), x, y);
+        y += 20;
+        g2.drawString("Gift Count: " + houseNPC.getGiftingFrequency(), x, y);
+        y += 25;
+        
+        // Available Actions Header
+        g2.setColor(Color.CYAN);
+        g2.drawString("ACTIONS:", x, y);
+        y += 20;
+        
+        if (isNearby) {
+            // Show available actions when nearby
+            g2.setColor(Color.WHITE);
+            
+            // Chat action
+            if (gp.player.energy >= 10) {
+                g2.setColor(Color.GREEN);
+            } else {
+                g2.setColor(Color.RED);
+            }
+            g2.drawString("ENTER: Chat (+10♥, -10⚡)", x, y);
+            y += 15;
+            
+            // Gift action
+            if (gp.player.equippedItem != null) {
+                String giftEffect = getGiftEffect(houseNPC, gp.player.equippedItem.name);
+                g2.setColor(Color.WHITE);
+                g2.drawString("G: Gift " + gp.player.equippedItem.name, x, y);
+                y += 12;
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.drawString("   " + giftEffect, x, y);
+                y += 15;
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("G: No item equipped", x, y);
+                y += 15;
+            }
+            
+            // Propose action
+            if (gp.player.hasProposalRing()) {
+                if (houseNPC.getHeartPoints() >= 150 && 
+                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.SINGLE) {
+                    g2.setColor(Color.GREEN);
+                    g2.drawString("R: Propose (Ready!)", x, y);
+                } else {
+                    g2.setColor(Color.YELLOW);
+                    g2.drawString("R: Propose (Need 150♥)", x, y);
+                }
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("R: Propose (Need ring)", x, y);
+            }
+            y += 15;
+            
+            // Marry action
+            if (houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE) {
+                g2.setColor(Color.PINK);
+                g2.drawString("M: Marry your fiance!", x, y);
+            } else {
+                g2.setColor(Color.GRAY);
+                g2.drawString("M: Marry (Need fiance)", x, y);
+            }
+        } else {
+            // Show "Get closer" message when not nearby
+            g2.setColor(Color.GRAY);
+            g2.drawString("Get closer to interact!", x, y);
+        }
+    }
+    private String getGiftEffect(NPC npc, String itemName) {
+        if (npc.getLovedItems().contains(itemName)) {
+            return "(+25♥, -5⚡) LOVES IT!";
+        } else if (npc.getLikedItems().contains(itemName)) {
+            return "(+20♥, -5⚡) Likes it";
+        } else if (npc.getHatedItems().contains(itemName)) {
+            return "(-25♥, -5⚡) HATES IT!";
+        } else {
+            return "(+0♥, -5⚡) Neutral";
+        }
+    }
+
 }

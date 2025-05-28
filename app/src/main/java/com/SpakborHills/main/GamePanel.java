@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 
@@ -13,6 +14,13 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
 import com.SpakborHills.tile.TileManager;
+import com.SpakborHills.entity.NPC;
+import com.SpakborHills.entity.Emily;
+import com.SpakborHills.entity.Dasco;
+import com.SpakborHills.entity.Mayor;
+import com.SpakborHills.entity.Caroline;
+import com.SpakborHills.entity.Abigail;
+import com.SpakborHills.entity.Perry;
 
 public class GamePanel extends JPanel implements Runnable {
     // SCREEN SETTINGS
@@ -53,9 +61,10 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
 
     //ENTITY AND OBJECT
-    public Player player = new Player(this, keyH);
-    public Entity mapObjects[][] = new Entity[maxMap][100]; // Ukuran 100 objek per peta
-    public Entity NPC[] = new Entity[10]; // Array untuk NPC
+    public Player player = new Player(this, keyH); // Create an instance of the Player class, passing the GamePanel and KeyHandler as parameters
+    public Entity mapObjects[][] = new Entity[maxMap][100];
+    public Entity NPC[] = new Entity[10];
+    private static HashMap<String, NPC> NPCs = new HashMap<>();
     ArrayList<Entity> entityList = new ArrayList<>();
 
     //GAMESTATE
@@ -125,12 +134,48 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-
+     public static NPC getOrCreateNPC(String npcName, GamePanel gp) {
+        if (!NPCs.containsKey(npcName)) {
+            // Create NPC only if doesn't exist
+            switch (npcName) {
+                case "Abigail":
+                    NPCs.put(npcName, new Abigail(gp));
+                    break;
+                case "Caroline":
+                    NPCs.put(npcName, new Caroline(gp));
+                    break;
+                case "Dasco":
+                    NPCs.put(npcName, new Dasco(gp));
+                    break;
+                case "Emily":
+                    NPCs.put(npcName, new Emily(gp));
+                    break;
+                case "Mayor":
+                    NPCs.put(npcName, new Mayor(gp));
+                    break;
+                case "Perry":
+                    NPCs.put(npcName, new Perry(gp));
+                    break;
+            }
+            System.out.println("CREATED NEW NPC: " + npcName);
+        } else {
+            System.out.println("REUSING EXISTING NPC: " + npcName + " (Heart points: " + 
+                             NPCs.get(npcName).getHeartPoints() + ")");
+        }
+        return NPCs.get(npcName);
+    }
     public void update() {
-        if (gameState == playState) {
-            player.update();
-            for (int i = 0; i < NPC.length; i++) {
-                if (NPC[i] != null) {
+        if (ui.showingSleepConfirmDialog) {
+            ui.processSleepConfirmationInput();
+        }
+        // // Update game logic here
+        if(gameState == playState){
+            if(!ui.showingSleepConfirmDialog) {
+                player.update(); // Update the player entity 
+            }
+            //NPC
+            for(int i = 0; i < NPC.length ; i++){
+                if(NPC[i] != null){
                     NPC[i].update();
                 }
             }
@@ -143,8 +188,17 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             eManager.update();
+            if (ui.showingSleepConfirmDialog) {
+                ui.processSleepConfirmationInput();                                             // Pastikan player.update() di atas tidak memproses gerakan jika dialog aktif
+            }
         }
-        // Tidak ada logika untuk pauseState di sini, mungkin ada di KeyHandler atau UI
+        else if (gameState == pauseState){
+        }
+        else if(gameState == dialogueState){
+            if(ui.showingSleepConfirmDialog){
+                ui.processSleepConfirmationInput();
+            }
+        }
     }
 
     @Override
