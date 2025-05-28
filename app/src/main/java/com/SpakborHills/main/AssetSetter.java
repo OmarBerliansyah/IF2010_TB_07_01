@@ -23,6 +23,7 @@ import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
+import com.SpakborHills.objects.OBJ_QueenBed;
 
 
 public class AssetSetter {
@@ -99,6 +100,9 @@ public class AssetSetter {
             case 10:
                 initializeCarolineMap(mapIndex);
                 break;
+            case 11: // Mountain Map
+                initializeMountainMap(mapIndex);
+                break;
         }
         
         System.out.println("=== MAP " + mapIndex + " INITIALIZED ===");
@@ -136,17 +140,28 @@ public class AssetSetter {
     
      private void initializeHouseMap(int mapIndex) {
         // Place keset permanently
-        int objIndex = getNextAvailableObjectIndexForMap(mapIndex);
-        if(objIndex != -1) {
-            gp.mapObjects[mapIndex][objIndex] = new OBJ_Keset(gp);
-            gp.mapObjects[mapIndex][objIndex].worldX = 11 * gp.tileSize;
-            gp.mapObjects[mapIndex][objIndex].worldY = 22 * gp.tileSize;
-            System.out.println("House map: Keset placed permanently");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 11 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 22 * gp.tileSize;
+        }
+        // ini aja di copy ya
+        int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex2 != -1) {
+            gp.mapObjects[mapIndex][objIndex2] = new OBJ_QueenBed(gp);
+            gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {
         // Forest map objects 
         System.out.println("Forest map initialized");
+    }
+
+    private void initializeMountainMap(int mapIndex) {
+        // Forest map objects 
+        System.out.println("Mountain initialized");
     }
     private void initializeNPCMap(int mapIndex) {
         setTreesForNPCMapPermanent(mapIndex);
@@ -237,15 +252,15 @@ public class AssetSetter {
         int[][] treePositions2;
         treePositions2 = switch (houseIndex+1) {
             case 1 -> new int[][]{
-                {30,0}, {28,0}, {26,0}, {24,0},
-                {30,3}, {30,5}, {30,7}, {30,9}
+                {22,0}, {24,0},
+                {31,3}, {30,5}, {30,7}, {30,9}
             };
             case 2 -> new int[][]{
                  {13,0}, {15,0}, {17,0},
                 {7,3}, {5,3}, {9,3}, {11,3}
             };
             case 3 -> new int[][]{
-                {30,0}, {28,0}, {26,0}, {24,0},
+                {22,0}, {24,0},
                 {30,3}, {30,5}, {30,7}, {30,9}
             };
             default -> new int[][]{

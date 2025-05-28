@@ -173,6 +173,22 @@ public class Player extends Entity {
             recoverLand();
             return;
         }
+        if (sleeping){
+            sleeping();
+            return;
+        }
+        // if (watching){
+        //     watching();
+        //     return;
+        // }
+        // if (proposing){
+        //     proposing();
+        //     return;
+        // }
+        // if (marry){
+        //     marry();
+        //     return;
+        // }
         if(moving){
             handleMovement();
         }
@@ -663,6 +679,45 @@ public class Player extends Entity {
             spriteCounter = 0;
             watering = false;
         }
+    }
+
+    // public void interactWithFurniture(){
+    //     if (){
+    //         if (gp.keyH.enterPressed) {
+                
+    //             gp.keyH.enterPressed = false;
+    //         }
+    //     }
+    // }
+
+    public void sleeping(){
+        gp.ui.drawBlackScreen();
+        gp.ui.addMessage("You are sleeping...");
+
+        if (energy < 10) {
+            energy += 50;
+        }
+        else if (energy == 0) {
+            energy += 10;
+        }
+        else {
+            energy = 100;
+        }
+
+        gp.eManager.setTime(6,0);
+        gp.ui.addMessage("You have rested and regained energy!");
+    }
+
+    public void watching(){
+        
+    }
+
+    public void proposing(){
+
+    }
+
+    public void marry(){
+
     }
 
     public void interactNPC(int i){
