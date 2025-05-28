@@ -6,6 +6,7 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.objects.OBJ_BullHead;
 import com.SpakborHills.objects.OBJ_Carp;
+import com.SpakborHills.objects.OBJ_Cauliflower;
 import com.SpakborHills.objects.OBJ_CookedPigHead;
 import com.SpakborHills.objects.OBJ_FishStew;
 import com.SpakborHills.objects.OBJ_FishingRod;
@@ -43,6 +44,7 @@ public class Inventory {
 
     public void setItems() {
         inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 180));
         inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));

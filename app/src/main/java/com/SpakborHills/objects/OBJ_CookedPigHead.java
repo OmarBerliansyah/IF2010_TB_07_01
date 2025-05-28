@@ -8,7 +8,7 @@ public class OBJ_CookedPigHead extends Entity {
 
     public OBJ_CookedPigHead(GamePanel gp){
         super(gp);
-        name = "CookedPigHead ";
+        name = "CookedPigHead";
         down1 = setup("objects/CookedPigHead",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 100; 

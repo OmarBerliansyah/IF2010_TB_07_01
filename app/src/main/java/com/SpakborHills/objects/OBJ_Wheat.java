@@ -7,7 +7,7 @@ public class OBJ_Wheat extends Entity {
 
     public OBJ_Wheat(GamePanel gp){
         super(gp);
-        name = "Wheat ";
+        name = "Wheat";
         down1 = setup("objects/Wheat",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;

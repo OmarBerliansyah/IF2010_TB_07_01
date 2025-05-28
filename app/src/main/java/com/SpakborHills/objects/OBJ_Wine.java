@@ -8,7 +8,7 @@ public class OBJ_Wine extends Entity {
 
     public OBJ_Wine(GamePanel gp){
         super(gp);
-        name = "Wine ";
+        name = "Wine";
         down1 = setup("objects/Wine",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 20; 

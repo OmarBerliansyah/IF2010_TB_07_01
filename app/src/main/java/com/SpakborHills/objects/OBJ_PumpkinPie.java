@@ -8,7 +8,7 @@ public class OBJ_PumpkinPie extends Entity {
 
     public OBJ_PumpkinPie(GamePanel gp){
         super(gp);
-        name = "PumpkinPie ";
+        name = "PumpkinPie";
         down1 = setup("objects/PumpkinPie",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 35; 

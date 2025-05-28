@@ -8,7 +8,7 @@ public class OBJ_Sashimi extends Entity {
 
     public OBJ_Sashimi(GamePanel gp){
         super(gp);
-        name = "Sashimi ";
+        name = "Sashimi";
         down1 = setup("objects/Sashimi",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 70; 

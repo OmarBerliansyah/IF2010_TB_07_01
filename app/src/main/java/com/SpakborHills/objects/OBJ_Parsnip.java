@@ -7,7 +7,7 @@ public class OBJ_Parsnip extends Entity {
 
     public OBJ_Parsnip(GamePanel gp){
         super(gp);
-        name = "Parsnip ";
+        name = "Parsnip";
         down1 = setup("objects/Parsnip",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;

@@ -7,7 +7,7 @@ public class OBJ_Pumpkin extends Entity {
 
     public OBJ_Pumpkin(GamePanel gp){
         super(gp);
-        name = "Pumpkin ";
+        name = "Pumpkin";
         down1 = setup("objects/Pumpkin",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;

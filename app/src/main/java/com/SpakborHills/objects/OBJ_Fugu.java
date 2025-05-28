@@ -8,7 +8,7 @@ public class OBJ_Fugu extends Entity {
 
     public OBJ_Fugu(GamePanel gp){
         super(gp);
-        name = "Fugu ";
+        name = "Fugu";
         down1 = setup("objects/Fugu",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 50; 

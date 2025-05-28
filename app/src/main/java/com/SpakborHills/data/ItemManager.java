@@ -1,6 +1,7 @@
 package com.SpakborHills.data;
 
 import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.main.UtilityTool;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -10,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
 
 public class ItemManager {
     private final Map<String, ItemDefinition> itemDefinitions = new HashMap<>();
@@ -26,7 +28,7 @@ public class ItemManager {
             br.readLine(); // Skip header line
             String line;
             while ((line = br.readLine()) != null) {
-                String[] values = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); // Handles commas within quotes
+                String[] values = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1); 
                 if (values.length < 7) {
                     System.err.println("ItemManager: Skipping malformed line in " + csvFilePath + ": " + line);
                     continue;
@@ -40,21 +42,20 @@ public class ItemManager {
                 String description = values[5].trim().replaceAll("\"", "");
                 String attributesString = values[6].trim().replaceAll("\"", "");
                 BufferedImage itemDefImage = null;
+                UtilityTool uTool = new UtilityTool();
 
                 try {
-                    // Path for UI icons, distinct from entity world sprites
                     String imagePath = "/ui_icons/items/" + id + ".png"; // e.g., /resources/ui_icons/items/001.png
                     InputStream imageStream = getClass().getResourceAsStream(imagePath);
                     if (imageStream != null) {
                         BufferedImage originalImage = ImageIO.read(imageStream);
                         // Typically icons are a fixed size, e.g., 32x32 or 48x48, not necessarily gp.tileSize
-                        // itemDefImage = UtilityTool.scaleImage(originalImage, 48, 48); // Example: scale to 48x48
-                        itemDefImage = originalImage; // Or use as is if already correctly sized
+                        itemDefImage = uTool.scaleImage(originalImage, 48, 48); // Example: scale to 48x48
+                        itemDefImage = originalImage; 
                         imageStream.close();
                     }
                 } catch (Exception e) {
-                    // It's okay if an icon isn't found, can fallback to entity sprite or blank
-                    // System.err.println("ItemManager: UI icon not found for item ID: " + id + " - " + e.getMessage());
+                    System.err.println("ItemManager: UI icon not found for item ID: " + id + " - " + e.getMessage());
                 }
 
                 ItemDefinition definition = new ItemDefinition(id, name, category, sellPrice, buyPrice, description, attributesString, itemDefImage);

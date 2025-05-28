@@ -376,7 +376,7 @@ public class Player extends Entity {
             }
             gp.keyH.enterPressed = false;
         }
-        else{
+        else {
             standCounter++;
             if(standCounter == 20){
                 spriteNum = 1;
@@ -1071,6 +1071,7 @@ public class Player extends Entity {
         }
         return false; // Not found
     }
+
     private boolean removeItemFromInventory(String itemName) {
         // Akses inventory melalui player.inventory.getInventory()
         for (int i = 0; i < inventory.getInventory().size(); i++) {
@@ -1137,13 +1138,9 @@ public class Player extends Entity {
         
         if (existingItem != null) {
             existingItem.quantity += quantity;
-        } else {
-            shippingBinItems.add(new ShippingBinItem(
-                itemDef.id, 
-                itemName, 
-                quantity, 
-                itemDef.sellPrice
-            ));
+        }
+        else {
+            shippingBinItems.add(new ShippingBinItem(itemDef.id,itemName,quantity, itemDef.sellPrice));
         }
         
         // Remove dari inventory
@@ -1182,10 +1179,10 @@ public class Player extends Entity {
     }
 
     public List<ShippingBinItem> getShippingBinItems() {
-            return new ArrayList<>(shippingBinItems);
-        }
+        return new ArrayList<>(shippingBinItems);
+    }
 
-        public List<Inventory.InventoryItem> getSellableItems() {
+    public List<Inventory.InventoryItem> getSellableItems() {
         List<Inventory.InventoryItem> sellableItems = new ArrayList<>();
         
         for (Inventory.InventoryItem invItem : inventory.getInventory()) {
