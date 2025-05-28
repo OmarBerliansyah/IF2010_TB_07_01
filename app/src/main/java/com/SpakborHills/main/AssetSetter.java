@@ -76,6 +76,9 @@ public class AssetSetter {
             case 4: // NPC Map
                 initializeNPCMap(mapIndex);
                 break;
+            case 11: // Mountain Map
+                initializeMountainMap(mapIndex);
+                break;
         }
         
         System.out.println("=== MAP " + mapIndex + " INITIALIZED ===");
@@ -124,6 +127,11 @@ public class AssetSetter {
     private void initializeForestMap(int mapIndex) {
         // Forest map objects 
         System.out.println("Forest map initialized");
+    }
+
+    private void initializeMountainMap(int mapIndex) {
+        // Forest map objects 
+        System.out.println("Mountain initialized");
     }
     private void initializeNPCMap(int mapIndex) {
         setTreesForNPCMapPermanent(mapIndex);
@@ -190,15 +198,15 @@ public class AssetSetter {
         int[][] treePositions2;
         treePositions2 = switch (houseIndex+1) {
             case 1 -> new int[][]{
-                {30,0}, {28,0}, {26,0}, {24,0},
-                {30,3}, {30,5}, {30,7}, {30,9}
+                {22,0}, {24,0},
+                {31,3}, {30,5}, {30,7}, {30,9}
             };
             case 2 -> new int[][]{
                  {13,0}, {15,0}, {17,0},
                 {7,3}, {5,3}, {9,3}, {11,3}
             };
             case 3 -> new int[][]{
-                {30,0}, {28,0}, {26,0}, {24,0},
+                {22,0}, {24,0},
                 {30,3}, {30,5}, {30,7}, {30,9}
             };
             default -> new int[][]{

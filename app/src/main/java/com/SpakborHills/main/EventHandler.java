@@ -63,11 +63,11 @@ public class EventHandler {
 
             // TELEPORT TO OCEAN
             if (hit(0, 13, 31, "any") == true) {
-                teleport(1, 5, 5);
+                teleport(1, 11, 0);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
-            else if (hit(1, 5, 5, "any") == true) {
+            else if (hit(1, 12, 0, "any") == true) {
                 teleport(0, 13, 31);
             }
 
@@ -102,7 +102,15 @@ public class EventHandler {
             
             }
             
+            // TELEPORT TO MOUNTAIN LAKE
+            else if (hit(0, 26, 0, "any") == true) {
+                teleport(11, 8, 2);
+            }
 
+            // BACK TELEPORT TO MAIN MAP FROM MOUNTAIN LAKE
+            else if (hit(11, 8, 2, "any") == true) {
+                teleport(0, 26, 0);
+            }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
             //     speak(gp.npc[1][0]);
