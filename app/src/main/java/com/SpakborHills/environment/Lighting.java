@@ -94,6 +94,13 @@ public class Lighting {
                 }
             }
         }
+
+        if(hour == 2 && minute == 0){
+            if(gp.gameState == gp.playState && !gp.ui.showingSleepConfirmDialog){
+                gp.player.sleeping();
+            }
+        }
+        
         updateFilterAlphaByTime();
 
         if(hour>=6 && hour<18){
@@ -138,6 +145,26 @@ public class Lighting {
 
     public int getMinute(){
         return this.minute;
+    }
+
+    public int getHari(){
+        return this.hari;
+    }
+
+    public String getSeasonName(){
+        return this.season.name();
+    }
+
+    public void incrementDayAndAdvanceWeather() {
+        hari++;
+        dayFrameCounter = 0; 
+
+        if (hari > 10) { 
+            hari = 1;
+            season = season.next();
+            rainyDayCount = 0;  
+        }
+        nextDay(hari);
     }
 
     public void nextDay(int currentDayInSeason){

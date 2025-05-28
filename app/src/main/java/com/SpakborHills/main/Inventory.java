@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.objects.OBJ_BullHead;
+import com.SpakborHills.objects.OBJ_Carp;
 import com.SpakborHills.objects.OBJ_CookedPigHead;
 import com.SpakborHills.objects.OBJ_FishStew;
 import com.SpakborHills.objects.OBJ_FishingRod;
@@ -12,6 +13,7 @@ import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_Parsnip;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_Ring;
 import com.SpakborHills.objects.OBJ_WateringCan;
 
 public class Inventory {

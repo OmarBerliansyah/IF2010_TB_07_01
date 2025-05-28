@@ -161,6 +161,7 @@ public class EventHandler {
                 if(!gp.ui.showingSleepConfirmDialog){
                     canTouchEvent = false;
                     gp.gameState = gp.dialogueState;
+                    gp.keyH.enterPressed = false;
                     gp.ui.showSleepConfirmationDialog();
                     // teleport(2, 8, 10);
                 }

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 
@@ -13,51 +14,58 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
 import com.SpakborHills.tile.TileManager;
+import com.SpakborHills.entity.NPC;
+import com.SpakborHills.entity.Emily;
+import com.SpakborHills.entity.Dasco;
+import com.SpakborHills.entity.Mayor;
+import com.SpakborHills.entity.Caroline;
+import com.SpakborHills.entity.Abigail;
+import com.SpakborHills.entity.Perry;
 import com.SpakborHills.data.ItemManager;
 
 public class GamePanel extends JPanel implements Runnable {
-    // SCREEN SETTINGGS
+    // SCREEN SETTINGS
+    final int originalTileSize = 32;
+    final int scale = 2;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
 
-    final int originalTileSize = 32; // 32x32 tile
-    final int scale = 2; // Scale the tile size by 2 (basically zooming the character)
-
-    public final int tileSize = originalTileSize * scale; // 64x64 tile
-    public final int maxScreenCol = 16; // 16 tiles across the screen
-    public final int maxScreenRow = 12; // 12 tiles down the screen
-    public final int screenWidth = tileSize * maxScreenCol; // 1024 pixels wide
-    public final int screenHeight = tileSize * maxScreenRow; // 768 pixels tall
-
-    // WORLD SEtTINGS
-    public final int maxWorldCol = 32;
-    public final int maxWorldRow = 32;
-    public final int maxMap = 20; // bisa bikin sampai 10 map
+    // WORLD SETTINGS
+    public final int maxWorldCol = 32; // Ukuran maksimum global, TileManager akan menggunakan ukuran spesifik per peta
+    public final int maxWorldRow = 32; // Ukuran maksimum global
+    public final int maxMap = 20;
     public int currentMap = 0;
 
-    // FULL SCREEN
-    int screenWidth2 = screenWidth;
-    int screenHeight2 = screenHeight;
-    Graphics2D g2;
+    // FULL SCREEN (tidak relevan langsung dengan clamping kamera, tapi ada di kode Anda)
+    // int screenWidth2 = screenWidth; // Anda bisa hapus jika tidak digunakan
+    // int screenHeight2 = screenHeight; // Anda bisa hapus jika tidak digunakan
+    // Graphics2D g2; // Deklarasi g2 di sini tidak perlu, karena didapat dari parameter paintComponent
+
     public boolean fullScreenOn = false;
 
     //FPS
     int FPS = 60;
 
     // SYSTEM
-    public TileManager tileM = new TileManager((this));
-    public KeyHandler keyH = new KeyHandler(this); // Create an instance of the KeyHandler class to handle keyboard input
-    Sound music = new Sound();
-    Sound se = new Sound();
+    public TileManager tileM = new TileManager(this); // 'this' sudah benar
+    public KeyHandler keyH = new KeyHandler(this);
+    Sound music = new Sound(); // Pastikan kelas Sound ada dan berfungsi
+    Sound se = new Sound();    // Pastikan kelas Sound ada dan berfungsi
     public CollisionChecker cChecker = new CollisionChecker(this);
     public AssetSetter aSetter = new AssetSetter(this);
     public UI ui = new UI(this, keyH);
     public EventHandler eHandler = new EventHandler(this);
     public EnvironmentManager eManager = new EnvironmentManager(this);
-    Thread gameThread; // Thread for the game loop
+    Thread gameThread;
 
     //ENTITY AND OBJECT
     public Player player = new Player(this, keyH); // Create an instance of the Player class, passing the GamePanel and KeyHandler as parameters
     public Entity mapObjects[][] = new Entity[maxMap][100];
     public Entity NPC[] = new Entity[10];
+    private static HashMap<String, NPC> NPCs = new HashMap<>();
     ArrayList<Entity> entityList = new ArrayList<>();
     public ItemManager itemManager = new ItemManager(this);
 
@@ -71,67 +79,94 @@ public class GamePanel extends JPanel implements Runnable {
     public final int characterState = 4;
     public final int shippingBinState = 5;
 
-    public GamePanel(){
-        this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight)); // Set the preferred size of the panel
-        this.setBackground(java.awt.Color.black); // Set the background color to black
-        this.setDoubleBuffered(true); // Enable double buffering for smoother graphics
-        this.addKeyListener(keyH); // Add key listener for handling keyboard input
-        this.setFocusable(true); // Make the panel focusable to receive key events
+    // Variabel untuk menyimpan posisi kamera yang sudah dibatasi (clamped)
+    public int clampedCameraX;
+    public int clampedCameraY;
+
+    public GamePanel() {
+        this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight));
+        this.setBackground(java.awt.Color.black);
+        this.setDoubleBuffered(true);
+        this.addKeyListener(keyH);
+        this.setFocusable(true);
     }
-     public Entity[] getCurrentMapObjects() {
+
+    public Entity[] getCurrentMapObjects() {
         return mapObjects[currentMap];
     }
-    public void setUpGame(){
+
+    public void setUpGame() {
         initializeAllMapObjects();
-        aSetter.setObject();
-        aSetter.setNPC();
+        aSetter.setObject(); // Pastikan ini mengisi mapObjects[currentMap] dengan benar
+        aSetter.setNPC();    // Mengisi array NPC
         playMusic(0);
         eManager.setup();
         gameState = titleState;
     }
 
     public void startGameThread() {
-        gameThread = new Thread(this); // Create a new thread for the game loop
-        gameThread.start(); // Start the thread
+        gameThread = new Thread(this);
+        gameThread.start();
     }
 
     @Override
     public void run() {
-        // Game loop
+        double drawInterval = 1000000000.0 / FPS; // Gunakan double untuk presisi
+        double nextDrawTime = System.nanoTime() + drawInterval;
 
-        double drawInterval = 1000000000/FPS; //0.01666 second
-        double nextDrawTime = System.nanoTime() + drawInterval; // Calculate the next draw time
-
-        while(gameThread != null) { // While the game thread is running
-            // long currentTime = System.nanoTime(); // Get the current time in nanoseconds
-            // System.out.println("current Time :"+currentTime); // Print a message to the console
-
-            update(); // Update the game logic
-            repaint(); // Repaint the screen with the updated graphics
-
+        while (gameThread != null) {
+            update();
+            repaint();
             try {
-                double remainingTime = nextDrawTime - System.nanoTime(); // Calculate the remaining time until the next draw
-                remainingTime = remainingTime / 1000000; // Convert remaining time to milliseconds
-
-                if(remainingTime < 0) { // If the remaining time is negative, set it to 0
+                double remainingTime = nextDrawTime - System.nanoTime();
+                remainingTime = remainingTime / 1000000; // ke milidetik
+                if (remainingTime < 0) {
                     remainingTime = 0;
                 }
-                Thread.sleep((long) remainingTime); // Sleep for the remaining time in milliseconds
-
-                nextDrawTime += drawInterval; // Update the next draw time
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace(); // Print the stack trace if an exception occurs
+                Thread.sleep((long) remainingTime);
+                nextDrawTime += drawInterval;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
-     private void initializeAllMapObjects() {
-        // Initialize array untuk semua map
-        for(int map = 0; map < maxMap; map++) {
-            for(int i = 0; i < mapObjects[map].length; i++) {
+
+    private void initializeAllMapObjects() {
+        for (int map = 0; map < maxMap; map++) {
+            for (int i = 0; i < mapObjects[map].length; i++) {
                 mapObjects[map][i] = null;
             }
         }
+    }
+     public static NPC getOrCreateNPC(String npcName, GamePanel gp) {
+        if (!NPCs.containsKey(npcName)) {
+            // Create NPC only if doesn't exist
+            switch (npcName) {
+                case "Abigail":
+                    NPCs.put(npcName, new Abigail(gp));
+                    break;
+                case "Caroline":
+                    NPCs.put(npcName, new Caroline(gp));
+                    break;
+                case "Dasco":
+                    NPCs.put(npcName, new Dasco(gp));
+                    break;
+                case "Emily":
+                    NPCs.put(npcName, new Emily(gp));
+                    break;
+                case "Mayor":
+                    NPCs.put(npcName, new Mayor(gp));
+                    break;
+                case "Perry":
+                    NPCs.put(npcName, new Perry(gp));
+                    break;
+            }
+            System.out.println("CREATED NEW NPC: " + npcName);
+        } else {
+            System.out.println("REUSING EXISTING NPC: " + npcName + " (Heart points: " + 
+                             NPCs.get(npcName).getHeartPoints() + ")");
+        }
+        return NPCs.get(npcName);
     }
     public void update() {
         if (ui.showingSleepConfirmDialog) {
@@ -151,7 +186,9 @@ public class GamePanel extends JPanel implements Runnable {
             Entity[] currentObjects = getCurrentMapObjects();
             for (Entity currentObject : currentObjects) {
                 if (currentObject != null) {
-                    currentObject.update();
+                    // Jika objek punya update sendiri, panggil di sini.
+                    // Beberapa objek mungkin statis dan tidak perlu update().
+                    // currentObject.update(); // Aktifkan jika objek Anda punya logika update
                 }
             }
             eManager.update();
@@ -161,70 +198,121 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if (gameState == pauseState){
         }
+        else if(gameState == dialogueState){
+            if(ui.showingSleepConfirmDialog){
+                ui.processSleepConfirmationInput();
+            }
+        }
         else if (gameState == shippingBinState) {
             ui.processShippingBinInput();
         }
     }
 
+    @Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g); // Call the superclass method to paint the component
-        // Draw the game graphics here
-        Graphics2D g2 = (Graphics2D) g; // Cast the Graphics object to Graphics2D for better control
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
 
-        // DEBUG
         long drawStart = 0;
-        if(keyH.checkDrawTime == true){
+        if (keyH.checkDrawTime) { // Asumsi checkDrawTime adalah boolean di KeyHandler
             drawStart = System.nanoTime();
         }
 
-        // TITLE SCREEN
-        if(gameState == titleState){
+        if (gameState == titleState) {
             ui.draw(g2);
-        }
-        // OTHERS
-        else{
-            //TILE
-            tileM.draw(g2);
+        } else { // Untuk playState, pauseState, dialogueState, characterState
+            // --- LOGIKA KAMERA YANG DIPERBAIKI ---
+            // player.screenX dan player.screenY adalah posisi target pemain di layar (misal, tengah)
+            int targetCameraX = player.worldX - player.screenX;
+            int targetCameraY = player.worldY - player.screenY;
 
-            //ADD ENTITY TO LIST
+            // Dimensi peta saat ini dalam piksel
+            // Mengakses field dari GamePanel ini secara langsung (tanpa "gp.")
+            int currentMapActualCols = this.tileM.mapCols[this.currentMap];
+            int currentMapActualRows = this.tileM.mapRows[this.currentMap];
+            int currentMapWorldWidth = currentMapActualCols * this.tileSize;
+            int currentMapWorldHeight = currentMapActualRows * this.tileSize;
+
+            // Clamp Camera X
+            if (currentMapWorldWidth > 0 && currentMapWorldWidth <= this.screenWidth) {
+                // Jika peta lebih sempit atau sama dengan layar, kamera bisa di 0 (rata kiri)
+                // atau di tengah: (currentMapWorldWidth - this.screenWidth) / 2; (akan <= 0)
+                // Biarkan logika Math.max(0, ...) di bawah yang menangani ini agar konsisten.
+                // Untuk kasus ini, clampedCameraX akan menjadi 0 karena
+                // (currentMapWorldWidth - this.screenWidth) akan <= 0,
+                // sehingga min(targetCameraX, nilai_negatif_atau_0) akan menghasilkan nilai_negatif_atau_0,
+                // dan max(0, nilai_negatif_atau_0) akan menjadi 0.
+                this.clampedCameraX = 0; // Simplifikasi untuk peta lebih kecil dari layar
+            } else if (currentMapWorldWidth > 0) { // Peta lebih lebar dari layar
+                this.clampedCameraX = Math.max(0, Math.min(targetCameraX, currentMapWorldWidth - this.screenWidth));
+            } else { // Peta tidak punya lebar (seharusnya tidak terjadi untuk peta valid)
+                this.clampedCameraX = 0;
+            }
+
+            // Clamp Camera Y
+            if (currentMapWorldHeight > 0 && currentMapWorldHeight <= this.screenHeight) {
+                this.clampedCameraY = 0; // Simplifikasi untuk peta lebih kecil dari layar
+            } else if (currentMapWorldHeight > 0) { // Peta lebih tinggi dari layar
+                this.clampedCameraY = Math.max(0, Math.min(targetCameraY, currentMapWorldHeight - this.screenHeight));
+            } else { // Peta tidak punya tinggi
+                this.clampedCameraY = 0;
+            }
+            // ------------------------------------
+
+            // TILE
+            tileM.draw(g2, this.clampedCameraX, this.clampedCameraY);
+
+            // ADD ENTITY TO LIST (untuk sorting Z-order/Y-order)
+            entityList.clear(); // Kosongkan dulu untuk frame ini
             entityList.add(player);
 
-            for (Entity NPC1 : NPC) {
-                if (NPC1 != null) {
-                    entityList.add(NPC1);
+            for (Entity npcEntity : NPC) { // Ganti nama variabel agar tidak bentrok
+                if (npcEntity != null) {
+                    entityList.add(npcEntity);
                 }
             }
-            Entity[] currentObjects = getCurrentMapObjects();
-            for (Entity currentObject : currentObjects) {
-                if (currentObject != null) {
-                    entityList.add(currentObject);
+            Entity[] currentMapObjArray = getCurrentMapObjects();
+            for (Entity obj : currentMapObjArray) {
+                if (obj != null) {
+                    entityList.add(obj);
                 }
             }
 
-            //SORT
+            // SORT entity berdasarkan worldY untuk urutan penggambaran yang benar
             Collections.sort(entityList, new Comparator<Entity>() {
                 @Override
                 public int compare(Entity e1, Entity e2) {
-                    int result = Integer.compare(e1.worldY, e2.worldY);
-                    return result;
+                    return Integer.compare(e1.worldY, e2.worldY);
                 }
             });
 
-            // DRAW ENTITIES
-            for(int i = 0; i<entityList.size();i++){
-                entityList.get(i).draw(g2);
+            // DRAW ENTITIES (Player, NPC, Objects)
+            // Metode draw pada setiap entitas akan menggunakan gp.clampedCameraX/Y
+            for (Entity entity : entityList) {
+                entity.draw(g2);
             }
+            // entityList.clear(); // Sudah di atas sebelum add
 
-            // EMPTY ENTITY LIST
-            entityList.clear();
+            // ENVIRONMENT
+            eManager.draw(g2); // Jika eManager perlu camera, ia harus akses gp.clampedCameraX/Y
 
-            //ENVIROTNMENT
-            eManager.draw(g2);
+            // UI (digambar terakhir agar di atas segalanya)
+            ui.draw(g2);
 
-            //DEBUG
-            if(keyH.checkDrawTime == true){
+            // DEBUG Draw Time
+            if (keyH.checkDrawTime) {
                 long drawEnd = System.nanoTime();
                 long passed = drawEnd - drawStart;
+                g2.setColor(Color.white); // Set warna lagi jika UI menggantinya
+                // Anda mungkin ingin font yang lebih kecil atau posisi berbeda untuk debug text
+                g2.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 12));
+                g2.drawString("Draw Time: " + passed + " ns", 10, screenHeight - 10);
+                // System.out.println("Draw Time: "+passed); // Hindari print di game loop jika memungkinkan
+            }
+        }
+        // g2.dispose(); // Umumnya tidak perlu di paintComponent Swing, karena Graphics g dikelola Swing.
+                       // Jika Anda membuat salinan g (misal g.create()), maka salinannya yang di-dispose.
+                       // Untuk g2 = (Graphics2D) g;, biarkan Swing yang urus.
                 g2.setColor(Color.white);
                 g2.drawString("Draw Time: "+passed, 10, 400);
                 System.out.println("Draw Time: "+passed);
@@ -241,17 +329,17 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void playMusic(int i){
+    public void playMusic(int i) {
         music.setFile(i);
         music.play();
         music.loop();
     }
 
-    public void stopMusic(){
+    public void stopMusic() {
         music.stop();
     }
 
-    public void playSE(int i){
+    public void playSE(int i) {
         se.setFile(i);
         se.play();
     }

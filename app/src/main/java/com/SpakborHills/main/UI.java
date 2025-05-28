@@ -48,6 +48,7 @@ public class UI {
     public boolean isTyping = false;
     public boolean showingSleepConfirmDialog = false;
     public int sleepConfirmCommandNum = 0; // 0 = Yes, 1 = No
+    public boolean forceBlackScreenActive = false;
     public boolean showingShippingBinInterface = false;
     public int shippingBinSelectedIndex = 0;
     public int shippingBinQuantity = 1;
@@ -124,6 +125,13 @@ public class UI {
 
     public void draw(Graphics2D g2){
         this.g2 = g2;
+
+        if(forceBlackScreenActive){
+            g2.setColor(Color.black);
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            return; // Skip drawing anything else if black screen is forced
+        }
+
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setColor(Color.white);
 
@@ -197,10 +205,14 @@ public class UI {
         }
     }
 
+    public void setForceBlackScreen(boolean active) {
+        this.forceBlackScreenActive = active;
+    }
+
     public void showSleepConfirmationDialog(){
+        gp.keyH.enterPressed = false; // Reset enter key state
         this.showingSleepConfirmDialog = true;
         this.sleepConfirmCommandNum = 0; // Reset command number to 0 (Yes)
-        gp.keyH.enterPressed = false; // Reset enter key state
     }
 
     public void closeSleepConfirmationDialog(){
@@ -209,7 +221,7 @@ public class UI {
         if (gp.gameState == gp.dialogueState) { 
             boolean otherDialogueStillActive = false;
             if (!otherDialogueStillActive) {
-                    gp.gameState = gp.playState;
+                gp.gameState = gp.playState;
             }
         }
     }
@@ -679,7 +691,7 @@ public class UI {
     public void drawDialogueScreen(){
         //WINDOW
         int x = gp.tileSize*2;
-        int y = gp.tileSize*2;
+        int y = gp.tileSize*5;
         int width = gp.screenWidth - (gp.tileSize *4);
         int height = gp.tileSize *5;
 
