@@ -25,20 +25,11 @@ public class OBJ_Tree2 extends Entity {
     }
     @Override
     public void draw(Graphics2D g2){
-        
-        // Kalkulasi posisi di layar relatif terhadap pemain
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        int drawX = worldX - gp.clampedCameraX;
+        int drawY = worldY - gp.clampedCameraY;
 
-        // Cek apakah pohon berada di dalam layar (optimisasi)
-        // Kita gunakan ukuran pohon besar (3 * gp.tileSize) agar tidak hilang terlalu cepat dari layar
-        if(worldX + (2 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
-           worldX - (2 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
-           worldY + (3 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
-           worldY - (3 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
-            
-            // Gambar pohon dengan ukuran yang benar
-            g2.drawImage(down1, screenX, screenY, 2 * gp.tileSize, 3 * gp.tileSize, null);
+        if (drawX + (2 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (3 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 2 * gp.tileSize, 3 * gp.tileSize, null);
         }
     }
 }

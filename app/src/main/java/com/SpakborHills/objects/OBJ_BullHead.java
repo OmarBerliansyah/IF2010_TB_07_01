@@ -1,6 +1,8 @@
 package com.SpakborHills.objects;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
@@ -10,19 +12,24 @@ public class OBJ_BullHead extends Entity {
 
     public EnumSet<Season> availableSeasons;
     public EnumSet<Weather> availableWeathers;
-    public int availableStartTime;
-    public int availableEndTime;
-    public String availableLocation;
+    public List<Integer> availableStartTimes;
+    public List<Integer> availableEndTimes;
+    public EnumSet<Location> availableLocations;
+    public String category; //Common, Regular, Legendary
 
     public OBJ_BullHead(GamePanel gp){
         super(gp);
-        name = "Bullhead";
-        down1 = setup("objects/Bullhead",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nDapat ditangkap pada\nsemua musim, waktu, \ndan cuaca apapun."; 
+        name = "BullHead";
+        down1 = setup("objects/BullHead",gp.tileSize, gp.tileSize);
+        description = "[" + name + "]\nJenis Common Fish hanya\ndapat ditangkap di\nMountain Lake.";
         isPickable = true;
         availableSeasons = EnumSet.allOf(Season.class);
-        availableStartTime = 0;
-        availableEndTime = 24;
-        availableWeathers = EnumSet.of(Weather.SUNNY, Weather.RAINY); 
+        availableWeathers = EnumSet.allOf(Weather.class); 
+        availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE);
+        availableStartTimes = new ArrayList<>();
+        availableEndTimes = new ArrayList<>();
+        availableStartTimes.add(0);
+        availableEndTimes.add(24);
+        category = "Common"; 
     }
 }

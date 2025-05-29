@@ -7,11 +7,12 @@ public class OBJ_HotPepper extends Entity {
 
     public OBJ_HotPepper(GamePanel gp){
         super(gp);
-        name = "HotPepOBJ_HotPepper ";
-        down1 = setup("objects/HotPepOBJ_HotPepper",gp.tileSize, gp.tileSize);
+        name = "HotPepper";
+        down1 = setup("objects/HotPepper",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;
         salePrice = 40;
+        buyPrice = -1;
         cropCount = 1; 
     }
 }

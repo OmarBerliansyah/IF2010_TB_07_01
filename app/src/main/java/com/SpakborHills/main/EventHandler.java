@@ -166,6 +166,23 @@ public class EventHandler {
                     // teleport(2, 8, 10);
                 }
             }
+
+            else if ((hit(0, 22, 4, "any") || hit(0, 29, 4, "any") || hit(0, 24, 28, "any") || hit(0, 10, 28, "any")) && (gp.cChecker.checkObject(gp.player, true) != 0)) {
+                System.out.println("Shipping bin interaction detected!");
+                canTouchEvent = false;
+                gp.gameState = gp.shippingBinState;
+                gp.player.openShippingBin();
+            }
+
+            else if (hit(2, 20, 6, "any") == true) { // Cooking station in house
+                if (gp.player.energy >= 10) {
+                    canTouchEvent = false;
+                    gp.gameState = gp.cookingState;
+                    gp.ui.showCookingInterface();
+                } else {
+                    gp.ui.addMessage("Not enough energy to cook!");
+                }
+            }
             else if(hit(2, 13, 6, "any") == true){
                 if(!gp.ui.showingWatchTV){
                     gp.gameState = gp.dialogueState;
@@ -190,6 +207,15 @@ public class EventHandler {
             gp.player.solidArea.y = gp.player.worldY + gp.player.solidArea.y;
             eventRect[map][col][row].x = col*gp.tileSize + eventRect[map][col][row].x;
             eventRect[map][col][row].y = row*gp.tileSize + eventRect[map][col][row].y;
+
+            // gp.ui.addMessage("Player Area: " + 
+            // (gp.player.worldX + gp.player.solidArea.x) + ", " +
+            // (gp.player.worldY + gp.player.solidArea.y) + " " + gp.player.solidArea.width + "x" + gp.player.solidArea.height);
+            // gp.ui.addMessage("Event Area at (" + col + "," + row + "): " +
+            //         (col * gp.tileSize + eventRect[map][col][row].x) + ", " +
+            //         (row * gp.tileSize + eventRect[map][col][row].y) +
+            //         " " + eventRect[map][col][row].width + "x" +
+            //         eventRect[map][col][row].height);
 
             if(gp.player.solidArea.intersects(eventRect[map][col][row])){
                 if(gp.player.direction.contentEquals(reqDirection) || reqDirection.contentEquals("any")){

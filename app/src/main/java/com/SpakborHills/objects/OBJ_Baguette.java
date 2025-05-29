@@ -8,7 +8,7 @@ public class OBJ_Baguette extends Entity {
 
     public OBJ_Baguette(GamePanel gp){
         super(gp);
-        name = "Baguette ";
+        name = "Baguette";
         down1 = setup("objects/Baguette",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 25; 

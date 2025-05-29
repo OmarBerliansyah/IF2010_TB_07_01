@@ -8,11 +8,12 @@ public class OBJ_TheLegendsOfSpakbor extends Entity {
 
     public OBJ_TheLegendsOfSpakbor(GamePanel gp){
         super(gp);
-        name = "TheLegendsOfSpakbor ";
+        name = "TheLegendsOfSpakbor";
         down1 = setup("objects/TheLegendsOfSpakbor",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 100; 
         salePrice = 2000;
+        buyPrice = -1;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
@@ -25,7 +26,7 @@ public class Entity {
     public String direction = "down";
 
     public int spriteCounter = 0;
-    public int spriteNum =1;
+    public int spriteNum = 1;
 
     public Rectangle solidArea = new Rectangle(0, 0, 48, 56);
     public Rectangle tillingArea = new Rectangle(0, 0, 0, 0);
@@ -42,6 +43,7 @@ public class Entity {
     public int daysToHarvest; 
     public int buyPrice; 
     public int salePrice;
+    public boolean isEdible; 
     public int cropCount; //Jumlah Crop per Panen
     public boolean collision = false;
     boolean tilling = false;
@@ -65,6 +67,7 @@ public class Entity {
     }
 
     public void setAction(){}
+
     public void speak(){
         if(dialogue[dialogueIndex]==null){
             System.out.println("DIALOGUE FINISHED - RESETTING FLAGS");
@@ -122,63 +125,57 @@ public class Entity {
     }
 
     public void draw(Graphics2D g2){
-        BufferedImage image = null;
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+        BufferedImage imageToDraw = null;
 
-        if(worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-                worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
-                worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
-                worldY - gp.tileSize < gp.player.worldY + gp.player.screenY){
-            switch (direction){
+        int entityDrawScreenX = worldX - gp.clampedCameraX;
+        int entityDrawScreenY = worldY - gp.clampedCameraY;
+
+        if (entityDrawScreenX + gp.tileSize > 0 &&   // Tepi kanan entitas > tepi kiri layar
+            entityDrawScreenX < gp.screenWidth &&    // Tepi kiri entitas < tepi kanan layar
+            entityDrawScreenY + gp.tileSize > 0 &&   // Tepi bawah entitas > tepi atas layar
+            entityDrawScreenY < gp.screenHeight) { 
+            switch (direction) {
                 case "up":
-                    if(spriteNum == 1){
-                        image = up1;
-                    }
-                    if(spriteNum == 2){
-                        image = up2;
-                    }
+                    if (spriteNum == 1) imageToDraw = up1;
+                    if (spriteNum == 2) imageToDraw = up2;
                     break;
                 case "down":
-                    if(spriteNum == 1){
-                        image = down1;
-                    }
-                    if(spriteNum == 2){
-                        image = down2;
-                    }
+                    if (spriteNum == 1) imageToDraw = down1;
+                    if (spriteNum == 2) imageToDraw = down2;
                     break;
                 case "left":
-                    if(spriteNum == 1){
-                        image = left1;
-                    }
-                    if(spriteNum == 2){
-                        image = left2;
-                    }
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2) imageToDraw = left2;
                     break;
                 case "right":
-                    if(spriteNum == 1){
-                        image = right1;
-                    }
-                    if(spriteNum == 2){
-                        image = right2;
-                    }
+                    if (spriteNum == 1) imageToDraw = right1;
+                    if (spriteNum == 2) imageToDraw = right2;
                     break;
             }
-            g2.drawImage(image, screenX, screenY, gp.tileSize , gp.tileSize, null);
+            if (imageToDraw != null){
+            g2.drawImage(imageToDraw, entityDrawScreenX, entityDrawScreenY, gp.tileSize , gp.tileSize, null);
+            }
         }
     }
 
     public BufferedImage setup(String imageName, int width, int height) {
         UtilityTool uTool = new UtilityTool();
-        BufferedImage image = null;
+        BufferedImage localImage = null;
 
-        try{
-            image = ImageIO.read(getClass().getClassLoader().getResourceAsStream(imageName+".png"));
-            image = uTool.scaleImage(image, width, height);
-        }
-        catch(IOException e){
+        try {
+            // Pastikan path lengkap ada di imageName, misal "NPC/abibelakang" bukan "NPC/abibelakang.png"
+            InputStream is = getClass().getClassLoader().getResourceAsStream(imageName + ".png");
+            if (is == null) {
+                System.err.println("ERROR ENTITY: Gambar tidak ditemukan: " + imageName + ".png");
+                return null; // Kembalikan null jika gambar tidak ditemukan
+            }
+            localImage = ImageIO.read(is);
+            localImage = uTool.scaleImage(localImage, width, height);
+            is.close();
+        } catch (IOException e) {
+            System.err.println("ERROR ENTITY: Gagal memuat gambar: " + imageName + ".png");
             e.printStackTrace();
         }
-        return image;
+        return localImage;
     }
 }

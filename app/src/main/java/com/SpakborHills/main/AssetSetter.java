@@ -16,6 +16,7 @@ import com.SpakborHills.objects.OBJ_PerryHouse;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_QueenBed;
 import com.SpakborHills.objects.OBJ_ShippingBin;
+import com.SpakborHills.objects.OBJ_Stove;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
 import com.SpakborHills.objects.OBJ_TV;
@@ -128,6 +129,7 @@ public class AssetSetter {
         setTreesForMap(mapIndex);
         setTrees2ForMap(mapIndex, houseIndex);
     }
+    
      private void initializeOceanMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Ocean map initialized");
@@ -148,12 +150,18 @@ public class AssetSetter {
             gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
         }
-        
         int objIndex3 = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex3 != -1) {
-            gp.mapObjects[mapIndex][objIndex3] = new OBJ_TV(gp);
-            gp.mapObjects[mapIndex][objIndex3].worldX = 13 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex3] = new OBJ_Stove(gp);
+            gp.mapObjects[mapIndex][objIndex3].worldX = 20 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex3].worldY = 5 * gp.tileSize;
+        }
+        
+        int objIndex4 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex4 != -1) {
+            gp.mapObjects[mapIndex][objIndex4] = new OBJ_TV(gp);
+            gp.mapObjects[mapIndex][objIndex4].worldX = 13 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex4].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {
@@ -367,60 +375,61 @@ public class AssetSetter {
         return 24; // default
     }
 
+
      public void setNPC(){
         // Clear all NPCs first
-    for (int i = 0; i < gp.NPC.length; i++) {
-        gp.NPC[i] = null;
-    }
-    
-    // Spawn NPC based on current map
-        switch (gp.currentMap) {
-            case 5: // Emily's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Emily", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Emily spawned at house map");
-                break;
-                
-            case 6: // Perry's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Perry", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Perry spawned at house map");
-                break;
-                
-            case 7: // Dasco's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Dasco", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Dasco spawned at house map");
-                break;
-                
-            case 8: // Abigail's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Abigail", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Abigail spawned at house map");
-                break;
-                
-            case 9: // Mayor's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Mayor", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Mayor Tedi spawned at house map");
-                break;
-                
-            case 10: // Caroline's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Caroline", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Caroline spawned at house map");
-                break;
-                
-            default:
-                // For other maps, no NPCs or set different NPCs
-                System.out.println("No NPCs for map " + gp.currentMap);
-                break;
+        for (int i = 0; i < gp.NPC.length; i++) {
+            gp.NPC[i] = null;
         }
-    }
+        
+        // Spawn NPC based on current map
+            switch (gp.currentMap) {
+                case 5: // Emily's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Emily", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Emily spawned at house map");
+                    break;
+                    
+                case 6: // Perry's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Perry", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Perry spawned at house map");
+                    break;
+                    
+                case 7: // Dasco's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Dasco", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Dasco spawned at house map");
+                    break;
+                    
+                case 8: // Abigail's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Abigail", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Abigail spawned at house map");
+                    break;
+                    
+                case 9: // Mayor's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Mayor", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Mayor Tedi spawned at house map");
+                    break;
+                    
+                case 10: // Caroline's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Caroline", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Caroline spawned at house map");
+                    break;
+                    
+                default:
+                    // For other maps, no NPCs or set different NPCs
+                    System.out.println("No NPCs for map " + gp.currentMap);
+                    break;
+            }
+        }
 }

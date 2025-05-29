@@ -7,7 +7,7 @@ public class OBJ_Grape extends Entity {
 
     public OBJ_Grape(GamePanel gp){
         super(gp);
-        name = "Grape ";
+        name = "Grape";
         down1 = setup("objects/Grape",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;

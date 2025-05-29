@@ -8,7 +8,7 @@ public class OBJ_FishSandwich extends Entity {
 
     public OBJ_FishSandwich(GamePanel gp){
         super(gp);
-        name = "FishSandwich ";
+        name = "FishSandwich";
         down1 = setup("objects/FishSandwich",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 50; 

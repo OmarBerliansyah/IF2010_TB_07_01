@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
+import com.SpakborHills.objects.OBJ_BullHead;
+import com.SpakborHills.objects.OBJ_Carp;
+import com.SpakborHills.objects.OBJ_Cauliflower;
+import com.SpakborHills.objects.OBJ_CookedPigHead;
 import com.SpakborHills.objects.OBJ_FishStew;
 import com.SpakborHills.objects.OBJ_FishingRod;
 import com.SpakborHills.objects.OBJ_Hoe;
@@ -40,13 +44,13 @@ public class Inventory {
 
     public void setItems() {
         inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        // inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 180)); //Debug
         inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishStew(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Ring(gp),1));
     }
 
     public void addItem(Entity item) {
