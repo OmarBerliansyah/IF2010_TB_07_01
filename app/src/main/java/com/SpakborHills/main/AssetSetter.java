@@ -20,6 +20,7 @@ import com.SpakborHills.objects.OBJ_Stove;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
 import com.SpakborHills.objects.OBJ_TV;
+import com.SpakborHills.objects.OBJ_Catfish;
 
 
 public class AssetSetter {

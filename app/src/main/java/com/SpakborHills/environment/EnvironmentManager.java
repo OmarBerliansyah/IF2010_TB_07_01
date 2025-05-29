@@ -1,6 +1,10 @@
 package com.SpakborHills.environment;
 
 import java.awt.Graphics2D;
+import com.SpakborHills.environment.Season;
+import com.SpakborHills.environment.Weather;
+
+import java.awt.*;
 
 import com.SpakborHills.main.GamePanel;
 
@@ -49,13 +53,6 @@ public class EnvironmentManager {
         return 1; // Nilai default
     }
 
-    public String getSeasonName() {
-        if (lighting != null) {
-            return lighting.getSeasonName(); // Asumsi getSeasonName() ada di Lighting.java
-        }
-        return "SPRING"; // Nilai default
-    }
-
     public String getWeatherName(){
         if( lighting != null) {
             return lighting.getWeatherName(); // Asumsi getWeatherName() ada di Lighting.java
@@ -71,5 +68,28 @@ public class EnvironmentManager {
 
     public void draw(Graphics2D g2){
         lighting.draw(g2);
+    }
+
+
+    public String getSeasonName(){
+        if (lighting != null){
+            return lighting.getSeasonName();
+        } else {
+            return "SPRING"; // Nilai default jika lighting null
+        }
+    }
+
+    public Season getCurrentSeason(){
+        if(lighting!= null && lighting.season != null){
+            return lighting.season;
+        } 
+        return Season.SPRING;
+    }
+
+    public Weather getCurrentWeather(){
+        if (lighting != null && lighting.currentWeather != null) {
+            return lighting.currentWeather;
+        } 
+        return Weather.SUNNY; // Nilai default jika lighting null
     }
 }

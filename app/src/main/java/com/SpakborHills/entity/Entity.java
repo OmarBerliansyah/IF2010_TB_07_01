@@ -5,8 +5,14 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
+import java.util.List;
 
 import javax.imageio.ImageIO;
+
+import com.SpakborHills.environment.Season;
+import com.SpakborHills.environment.Weather;
+import com.SpakborHills.environment.Location;
 
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.UtilityTool;
@@ -55,6 +61,9 @@ public class Entity {
     boolean watching = false;
     boolean proposing = false;
     boolean marry = false;
+    public int price = 0;
+    public int sellPrice = 0;
+    public int value = 0;
 
 
     public boolean isPickable = true;
@@ -178,5 +187,58 @@ public class Entity {
             e.printStackTrace();
         }
         return localImage;
+    }
+
+    public static interface FishableProperties{
+        String getFishName();
+        String getFishCategory();
+        EnumSet<Season> getAvailableSeasons();
+        EnumSet<Weather> getAvailableWeathers();
+        List<Integer> getAvailableStartTimes();
+        List<Integer> getAvailableEndTimes();
+        EnumSet<Location> getAvailableLocations();
+
+        default int getNumSeasonsFactor() {
+        if (getAvailableSeasons() == null || getAvailableSeasons().isEmpty() || getAvailableSeasons().size() == Season.values().length) {
+            return 4; // "Any" atau semua season
+        }
+        return getAvailableSeasons().size();
+        }
+
+        default int getNumHoursFactor() {
+        if (getAvailableStartTimes() == null || getAvailableStartTimes().isEmpty()) {
+            return 24; // "Any" time implicitly, but formula expects actual hours.
+                       // For "Any" time, the condition check will pass, for price calc, use 24 if no specific hours.
+                       // However, fish usually have specific hours.
+        }
+        int totalHours = 0;
+        for (int i = 0; i < getAvailableStartTimes().size(); i++) {
+            int start = getAvailableStartTimes().get(i);
+            int end = getAvailableEndTimes().get(i);
+            if (end == 0) end = 24; // Midnight Carp 20:00 - 02:00 means end is effectively next day 2am.
+                                   // Or, treat 00:00 as start of day. Pufferfish 00:00-16:00 is 16 hours.
+                                   // Halibut: 06-11 (5 jam), 19-02 (7 jam) -> 12 jam
+            if (end < start) { // Overnight
+                totalHours += (24 - start) + end;
+            } else {
+                totalHours += (end - start);
+            }
+        }
+        return totalHours == 0 ? 24 : totalHours; // if 0, assume "Any" for formula, though rare.
+    }
+
+        default int getNumWeatherFactor() {
+            if (getAvailableWeathers() == null || getAvailableWeathers().isEmpty() || getAvailableWeathers().size() == Weather.values().length) {
+                return 2; // "Any" atau semua weather (Sunny, Rainy)
+            }
+            return getAvailableWeathers().size();
+        }
+
+        default int getNumLocationsFactor() {
+            if (getAvailableLocations() == null || getAvailableLocations().isEmpty()) {
+                return 4; // Should not happen, fish always has locations
+            }
+            return getAvailableLocations().size();
+        }
     }
 }
