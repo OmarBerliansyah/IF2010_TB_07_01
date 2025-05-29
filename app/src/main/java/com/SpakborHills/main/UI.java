@@ -163,7 +163,7 @@ public class UI {
             if(showingSleepConfirmDialog){
                 drawSleepConfirmationDialog(g2);
             }
-            if(showingWatchTV){
+            else if(showingWatchTV){
                 drawTVScreen();
             }
             if (isInNPCHouse()) {
