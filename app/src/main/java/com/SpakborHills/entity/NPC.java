@@ -19,7 +19,7 @@ public abstract class NPC extends Entity {
     public boolean dialogueInProgress = false;
     
     public enum RelationshipStatus {
-        SINGLE, FIANCE, SPOUSE
+        FRIEND, FIANCE, SPOUSE
     }
     
     public NPC(GamePanel gp, String name) {
@@ -29,7 +29,7 @@ public abstract class NPC extends Entity {
         this.lovedItems = new ArrayList<>();
         this.likedItems = new ArrayList<>();
         this.hatedItems = new ArrayList<>();
-        this.relationshipStatus = RelationshipStatus.SINGLE;
+        this.relationshipStatus = RelationshipStatus.FRIEND;
         this.chattingFrequency = 0;
         this.giftingFrequency = 0;
         this.visitingFrequency = 0;
@@ -80,7 +80,7 @@ public abstract class NPC extends Entity {
     
     // Method untuk proposal
     public boolean propose() {
-        if (heartPoints >= 150 && relationshipStatus == RelationshipStatus.SINGLE) {
+        if (heartPoints >= 150 && relationshipStatus == RelationshipStatus.FRIEND) {
             relationshipStatus = RelationshipStatus.FIANCE;
             gp.ui.addMessage(name + " accepted your proposal! You are now engaged!");
             return true;

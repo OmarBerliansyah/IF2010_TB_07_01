@@ -59,6 +59,7 @@ public class UI {
     public boolean showingFuelSelectionDialog = false;
     public int fuelSelectionIndex = 0;
     public String pendingRecipeId = null;
+    public boolean showingWatchTV = false;
 
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -135,7 +136,7 @@ public class UI {
         if(forceBlackScreenActive){
             g2.setColor(Color.black);
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-            return; // Skip drawing anything else if black screen is forced
+            return; 
         }
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -161,11 +162,14 @@ public class UI {
             if(showingSleepConfirmDialog){
                 drawSleepConfirmationDialog(g2);
             }
-            else{
-                drawDialogueScreen();
+            else if(showingWatchTV){
+                drawTVScreen();
             }
             if (isInNPCHouse()) {
                 drawNPCInteractionInfo();
+                if (currentDialogue != null && !currentDialogue.isEmpty()) {
+                        drawDialogueScreen(); 
+                }
             }
         }
         if(gp.gameState == gp.characterState){
@@ -244,31 +248,27 @@ public class UI {
 
     public void drawSleepConfirmationDialog(Graphics2D g2) {
         if (!showingSleepConfirmDialog) return;
-        int windowWidth = gp.tileSize * 9;    // Sesuaikan lebar
-        int windowHeight = gp.tileSize * 4;   // Sesuaikan tinggi
+        int windowWidth = gp.tileSize * 9;  
+        int windowHeight = gp.tileSize * 4;  
         int x = gp.screenWidth / 2 - windowWidth / 2;
         int y = gp.screenHeight / 2 - windowHeight / 2;
         drawSubWindow(x, y, windowWidth, windowHeight);
-        // 4. Gambar teks pertanyaan
-        g2.setFont(confirmationFont); // Gunakan font yang sudah disiapkan
+        
+        g2.setFont(confirmationFont); 
         g2.setColor(Color.white);
         String question = "Want to sleep for the night?";
         int qx = getXforCenteredTextInWindow(question, x, windowWidth, g2, confirmationFont);
-        int qy = y + gp.tileSize + (gp.tileSize/2); // Posisi Y pertanyaan
+        int qy = y + gp.tileSize + (gp.tileSize/2); 
 
         g2.drawString(question, qx, qy);
-
-        // 5. Gambar opsi "Yes" dan "No"
-        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F)); // Sedikit lebih besar untuk opsi
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F));
 
         String yesText = "Yes";
         String noText = "No";
 
-        // Posisi untuk "Yes" (kiri)
         int yesX = x + windowWidth / 4 - getHalfTextWidth(yesText, g2, g2.getFont()) ;
         int optionY = qy + gp.tileSize + (gp.tileSize/2) ;
 
-        // Posisi untuk "No" (kanan)
         int noX = x + (windowWidth / 4 * 3) - getHalfTextWidth(noText, g2, g2.getFont());
 
 
@@ -517,6 +517,67 @@ public class UI {
         }
     }
 
+
+    public void drawTVScreen(){
+        // Gambar layar TV
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2;
+        int width = gp.tileSize * 10;
+        int height = gp.tileSize * 7;
+
+        drawSubWindow(x, y, width, height);
+
+        // Gambar teks di dalam layar TV
+        g2.setColor(Color.white);
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F));
+        FontMetrics fm = g2.getFontMetrics(); 
+        int lineHeight = fm.getHeight()+8;
+
+        int currentMinute = gp.eManager.getMinute();
+        int currentHour = gp.eManager.getHour();
+        String timeString = String.format("Waktu : %02d : %02d", currentHour, currentMinute);
+
+        String weatherString = "Cuaca : " + gp.eManager.getWeatherName();
+        String seasonString = "Musim : " + gp.eManager.getSeasonName();
+
+        String programLine1 = "Selamat Datang di TV Spakbor!";
+        String programLine2 = "Informasi Hari Ini";
+
+        int numberOfLine = 5;
+        int totalTextHeight = lineHeight * numberOfLine;
+
+        int currentTextY = y + (height - totalTextHeight) / 2 + fm.getAscent();
+        int textX_Program1 = x + (width - fm.stringWidth(programLine1)) / 2; // Tengah horizontal
+        g2.drawString(programLine1, textX_Program1, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Program2 = x + (width - fm.stringWidth(programLine2)) / 2;
+        g2.drawString(programLine2, textX_Program2, currentTextY);
+        currentTextY += lineHeight + 5;
+
+        int textX_Time = x + (width - fm.stringWidth(timeString)) / 2;
+        g2.drawString(timeString, textX_Time, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Weather = x + (width - fm.stringWidth(weatherString)) / 2;
+        g2.drawString(weatherString, textX_Weather, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Season = x + (width - fm.stringWidth(seasonString)) / 2;
+        g2.drawString(seasonString, textX_Season, currentTextY);
+
+        String closeMessage = "[Tekan Enter untuk Kembali]";
+        Font closeFont = confirmationFont.deriveFont(Font.PLAIN, 18F); // Font lebih kecil
+        g2.setFont(closeFont);
+        FontMetrics fmClose = g2.getFontMetrics();
+        int closeX = x + (width - fmClose.stringWidth(closeMessage)) / 2;
+        // Posisikan di bawah, sedikit di atas batas bawah subWindow
+        int closeY = y + height - (gp.tileSize / 3) - fmClose.getDescent(); 
+        g2.drawString(closeMessage, closeX, closeY);
+
+        // gp.ui.showingWatchTV = false;
+        // gp.eHandler.canTouchEvent = true;
+    }
 
     public void drawTitleScreen(){
         if (titleScreenState == 0) {
@@ -995,7 +1056,7 @@ public class UI {
             // Propose action
             if (gp.player.hasProposalRing()) {
                 if (houseNPC.getHeartPoints() >= 150 && 
-                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.SINGLE) {
+                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.FRIEND) {
                     g2.setColor(Color.GREEN);
                     g2.drawString("R: Propose (Ready!)", x, y);
                 } else {
@@ -1036,14 +1097,10 @@ public class UI {
     public void showCookingInterface() {
         showingCookingInterface = true;
         cookingSelectedIndex = 0;
-        coalBatchMode = false;
-        coalBatchFirstRecipe = null;
     }
     
     public void closeCookingInterface() {
         showingCookingInterface = false;
-        coalBatchMode = false;
-        coalBatchFirstRecipe = null;
         showingFuelSelectionDialog = false;
         gp.gameState = gp.playState;
     }
@@ -1060,30 +1117,22 @@ public class UI {
         // === TITLE ===
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
         g2.setColor(Color.WHITE);
-        String title = coalBatchMode ? 
-            "🔥 Coal Batch Cooking - Select 2nd Recipe" : 
-            "🍳 Cooking Station";
+        String title = "🍳 KITCHEN 🍳";
         int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
         g2.drawString(title, titleX, y + 40);
-        
-        // === COAL BATCH STATUS ===
-        if (coalBatchMode && coalBatchFirstRecipe != null) {
-            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
-            g2.setColor(Color.ORANGE);
-            String firstRecipe = "First recipe: " + gp.cooking.getRecipe(coalBatchFirstRecipe).name;
-            g2.drawString(firstRecipe, x + 20, y + 70);
-            g2.setColor(Color.YELLOW);
-            g2.drawString("Select second recipe for coal batch cooking:", x + 20, y + 90);
-        }
         
         // === FUEL STATUS ===
         if (!coalBatchMode) {
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
             g2.setColor(Color.CYAN);
             String fuelStatus = gp.cooking.getFuelStatus();
-            g2.drawString("⛽ " + fuelStatus, x + 20, y + 90);
+            g2.drawString("⛽ " + fuelStatus, x + 20, y + 70);
         }
-        
+        // === COOKING INSTRUCTIONS ===
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawString("💡 Coal gives +1 cooking deposit | Wood is single use | Deposits are free", x + 20, y + 90);
+    
         // === RECIPE LIST ===
         List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
         
@@ -1096,7 +1145,7 @@ public class UI {
             return;
         }
         
-        int listStartY = coalBatchMode ? y + 120 : y + 120;
+        int listStartY = y + 120;
         int itemHeight = 45;
         int maxVisibleItems = 6;
         
@@ -1136,15 +1185,13 @@ public class UI {
         // === INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
         g2.setColor(Color.LIGHT_GRAY);
-        String instructions = coalBatchMode ? 
-            "ENTER: Select 2nd Recipe | ESC: Cancel Batch" : 
-            "ENTER: Cook Recipe | ESC: Close | ↑↓: Navigate";
+        String instructions = "ENTER: Cook Recipe | ESC: Close | ↑↓: Navigate";
         g2.drawString(instructions, x + 20, y + windowHeight - 30);
     }
     
     public void drawFuelSelectionDialog(Graphics2D g2) {
-        int windowWidth = gp.tileSize * 8;
-        int windowHeight = gp.tileSize * 6;
+        int windowWidth = gp.tileSize * 10;
+        int windowHeight = gp.tileSize * 7;
         int x = gp.screenWidth / 2 - windowWidth / 2;
         int y = gp.screenHeight / 2 - windowHeight / 2;
         
@@ -1160,11 +1207,11 @@ public class UI {
         // === FUEL OPTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
         
-        String[] fuelOptions = {"🪵 Wood (1 recipe)", "⚫ Coal (2 recipes)"};
-        String[] fuelDescriptions = {"Single recipe cooking", "Just batch cooking (more efficient)"};
+        String[] fuelOptions = {"🪵 Wood (Single Use)", "⚫ Coal (+1 Deposit)"};
+        String[] fuelDescriptions = {"Cook once then consume", "Cook once + get 1 free cook"};
         
         int optionY = y + gp.tileSize + 40;
-        int optionSpacing = 50;
+        int optionSpacing = 60;
         
         for (int i = 0; i < fuelOptions.length; i++) {
             int currentY = optionY + (i * optionSpacing);
@@ -1184,9 +1231,9 @@ public class UI {
             g2.drawString(fuelOptions[i], x + 50, currentY);
             
             // Description
-            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
             g2.setColor(hasThisFuel ? Color.LIGHT_GRAY : Color.DARK_GRAY);
-            g2.drawString(fuelDescriptions[i], x + 50, currentY + 18);
+            g2.drawString(fuelDescriptions[i], x + 50, currentY + 20);
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
         }
         
@@ -1195,6 +1242,7 @@ public class UI {
         g2.setColor(Color.LIGHT_GRAY);
         g2.drawString("ENTER: Select | ESC: Cancel", x + 20, y + windowHeight - 20);
     }
+
     
     public void processCookingInput() {
         if (showingFuelSelectionDialog) {
@@ -1237,29 +1285,24 @@ public class UI {
             if (cookingSelectedIndex < recipes.size()) {
                 Cooking.Recipe selectedRecipe = recipes.get(cookingSelectedIndex);
                 
-                if (coalBatchMode) {
-                    // FINISH COAL BATCH COOKING
-                    boolean success = gp.cooking.finishCoalBatchCooking(coalBatchFirstRecipe, selectedRecipe.id);
-                    if (success) {
-                        coalBatchMode = false;
-                        coalBatchFirstRecipe = null;
-                        closeCookingInterface();
-                    }
+                // Check fuel choice and handle cooking
+                Cooking.FuelChoice fuelChoice = gp.cooking.getFuelChoice();
+                
+                if (fuelChoice == Cooking.FuelChoice.DEPOSIT_AVAILABLE) {
+                    // Use deposit directly
+                    boolean success = gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.DEPOSIT);
+                    if (success) closeCookingInterface();
+                } else if (fuelChoice == Cooking.FuelChoice.BOTH_AVAILABLE) {
+                    // Show fuel selection dialog
+                    showFuelSelectionDialog(selectedRecipe.id);
+                } else if (fuelChoice == Cooking.FuelChoice.WOOD_ONLY) {
+                    boolean success = gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.WOOD);
+                    if (success) closeCookingInterface();
+                } else if (fuelChoice == Cooking.FuelChoice.COAL_ONLY) {
+                    boolean success = gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.COAL);
+                    if (success) closeCookingInterface();
                 } else {
-                    // NORMAL COOKING - Check fuel choice
-                    Cooking.FuelChoice fuelChoice = gp.cooking.getFuelChoice();
-                    
-                    if (fuelChoice == Cooking.FuelChoice.BOTH_AVAILABLE) {
-                        // Show fuel selection dialog
-                        showFuelSelectionDialog(selectedRecipe.id);
-                    } else if (fuelChoice == Cooking.FuelChoice.WOOD_ONLY) {
-                        boolean success = gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.WOOD);
-                        if (success) closeCookingInterface();
-                    } else if (fuelChoice == Cooking.FuelChoice.COAL_ONLY) {
-                        gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.COAL); // Starts batch mode
-                    } else {
-                        gp.ui.addMessage("No fuel available!");
-                    }
+                    gp.ui.addMessage("No fuel available!");
                 }
             }
             gp.keyH.enterPressed = false;
@@ -1267,10 +1310,6 @@ public class UI {
         
         // ESCAPE
         if (gp.keyH.escPressed) {
-            if (coalBatchMode) {
-                coalBatchMode = false;
-                coalBatchFirstRecipe = null;
-            }
             closeCookingInterface();
             gp.keyH.escPressed = false;
         }
@@ -1284,17 +1323,17 @@ public class UI {
     
     public void processFuelSelectionInput() {
         if (gp.keyH.upPressed) {
-            fuelSelectionIndex--;
-            if (fuelSelectionIndex < 0) fuelSelectionIndex = 1;
-            gp.keyH.upPressed = false;
-        }
-        
+        fuelSelectionIndex--;
+        if (fuelSelectionIndex < 0) fuelSelectionIndex = 1;
+        gp.keyH.upPressed = false;
+    }
+    
         if (gp.keyH.downPressed) {
             fuelSelectionIndex++;
             if (fuelSelectionIndex > 1) fuelSelectionIndex = 0;
             gp.keyH.downPressed = false;
         }
-        
+    
         if (gp.keyH.enterPressed) {
             if (fuelSelectionIndex == 0) {
                 // Wood selected
@@ -1310,15 +1349,17 @@ public class UI {
             } else {
                 // Coal selected
                 if (hasEnoughItems("Coal", 1)) {
-                    gp.cooking.cookRecipe(pendingRecipeId, Cooking.FuelType.COAL); // Starts batch mode
-                    showingFuelSelectionDialog = false;
+                    boolean success = gp.cooking.cookRecipe(pendingRecipeId, Cooking.FuelType.COAL);
+                    if (success) {
+                        showingFuelSelectionDialog = false;
+                        closeCookingInterface();
+                    }
                 } else {
                     gp.ui.addMessage("Not enough coal!");
                 }
             }
             gp.keyH.enterPressed = false;
         }
-        
         if (gp.keyH.escPressed) {
             showingFuelSelectionDialog = false;
             gp.keyH.escPressed = false;

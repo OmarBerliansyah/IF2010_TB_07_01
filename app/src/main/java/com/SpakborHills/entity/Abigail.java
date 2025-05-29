@@ -30,10 +30,10 @@ public class Abigail extends NPC{
     }
 
     public void setDialogue(){
-        dialogue[0] = "Hey there! I'm Abigail!";
-        dialogue[1] = "I love exploring and going on adventures!";
-        dialogue[2] = "Fruits give me energy for my expeditions!";
-        dialogue[3] = "Vegetables? Ugh, no thanks!";
+        dialogue[0] =  "Hey there! I'm Abigail!\n" +
+                      "I love exploring and going on adventures!\n" +
+                      "Fruits give me energy for my expeditions!\n" +
+                      "Vegetables? Ugh, no thanks!";   
     }
 
     public void setAction(){

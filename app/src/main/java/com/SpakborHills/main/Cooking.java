@@ -12,7 +12,8 @@ public class Cooking {
     private GamePanel gp;
     private Map<String, Recipe> recipes;
     private Map<String, Boolean> unlockedRecipes;
-
+    // DEPOSIT SYSTEM FOR COAL
+    private int coalCookingDeposit = 0;
     // Player stats for unlocking recipes
     private int totalFishCaught = 0;
     private boolean hasHarvestedOnce = false;
@@ -21,11 +22,11 @@ public class Cooking {
     private boolean hasLegendFish = false;
 
     public enum FuelType {
-        WOOD, COAL
+        WOOD, COAL, DEPOSIT
     }
 
     public enum FuelChoice {
-        WOOD_ONLY, COAL_ONLY, BOTH_AVAILABLE, NO_FUEL
+        WOOD_ONLY, COAL_ONLY, BOTH_AVAILABLE, NO_FUEL, DEPOSIT_AVAILABLE
     }
 
     public Cooking(GamePanel gp) {
@@ -120,18 +121,19 @@ public class Cooking {
         }
         
         // Check fuel (Wood or Coal)
-        if (!hasFuel()) {
-            return false;
-        }
-        
+         // Check fuel (Wood, Coal, or Deposit)
+        if (getFuelChoice() == FuelChoice.NO_FUEL) { return false; }
         return true;
     }
 
     public FuelChoice getFuelChoice() {
         boolean hasWood = hasEnoughItems("Wood", 1);
         boolean hasCoal = hasEnoughItems("Coal", 1);
+        boolean hasDeposit = coalCookingDeposit > 0;
         
-        if (hasCoal && hasWood) {
+        if (hasDeposit) {
+            return FuelChoice.DEPOSIT_AVAILABLE;
+        } else if (hasCoal && hasWood) {
             return FuelChoice.BOTH_AVAILABLE;
         } else if (hasCoal) {
             return FuelChoice.COAL_ONLY;
@@ -149,20 +151,6 @@ public class Cooking {
             return false;
         }
         
-        if (fuelType == FuelType.COAL) {
-            // Start coal batch mode
-            gp.ui.coalBatchMode = true;
-            gp.ui.coalBatchFirstRecipe = recipeId;
-            gp.ui.addMessage("Coal requires 2 recipes. Select another recipe!");
-            return false; // Don't cook yet
-        } else if (fuelType == FuelType.WOOD) {
-            return handleWoodCooking(recipeId);
-        }
-        
-        return false;
-    }
-
-    private boolean handleWoodCooking(String recipeId) {
         Recipe recipe = recipes.get(recipeId);
         
         // Consume ingredients
@@ -170,8 +158,24 @@ public class Cooking {
             removeItems(ingredient.itemName, ingredient.quantity);
         }
         
-        // Consume fuel and energy
-        removeItems("Wood", 1);
+        // Handle fuel consumption and deposits
+        if (fuelType == FuelType.DEPOSIT) {
+            // Use deposit (no fuel consumed)
+            coalCookingDeposit--;
+            gp.ui.addMessage("🔥 Using coal deposit! Remaining: " + coalCookingDeposit);
+        } else if (fuelType == FuelType.WOOD) {
+            // Normal wood cooking
+            removeItems("Wood", 1);
+            gp.ui.addMessage("🪵 Wood consumed for cooking!");
+        } else if (fuelType == FuelType.COAL) {
+            // Coal cooking - consume coal and add deposit
+            removeItems("Coal", 1);
+            coalCookingDeposit += 1; // Add 1 free cooking
+            gp.ui.addMessage("⚫ Coal consumed! Added 1 cooking deposit!");
+            gp.ui.addMessage("🔥 Coal deposit: " + coalCookingDeposit + " free cooks available!");
+        }
+        
+        // Consume energy
         gp.player.energy -= 10;
         
         // ADVANCE TIME BY 1 HOUR
@@ -192,79 +196,6 @@ public class Cooking {
         
         return true;
     }
-
-    public boolean finishCoalBatchCooking(String firstRecipeId, String secondRecipeId) {
-        Recipe recipe1 = recipes.get(firstRecipeId);
-        Recipe recipe2 = recipes.get(secondRecipeId);
-        
-        // Check if both recipes can be cooked
-        if (!canCookBothRecipes(recipe1, recipe2)) {
-            return false;
-        }
-        
-        // Check energy for both recipes (20 total)
-        if (gp.player.energy < 20) {
-            gp.ui.addMessage("Need 20 energy for coal batch cooking!");
-            return false;
-        }
-        
-        // Consume all ingredients for both recipes
-        for (Ingredient ingredient : recipe1.ingredients) {
-            removeItems(ingredient.itemName, ingredient.quantity);
-        }
-        for (Ingredient ingredient : recipe2.ingredients) {
-            removeItems(ingredient.itemName, ingredient.quantity);
-        }
-        
-        // Consume coal and energy
-        removeItems("Coal", 1);
-        gp.player.energy -= 20;
-        
-        // ADVANCE TIME BY 1 HOUR
-        int currentHour = gp.eManager.getHour();
-        int currentMinute = gp.eManager.getMinute();
-        int newHour = (currentHour + 1) % 24;
-        gp.eManager.setTime(newHour, currentMinute);
-        
-        // CREATE BOTH ITEMS USING FACTORY
-        Entity cookedItem1 = ItemFactory.createCookedItem(recipe1.id, gp);
-        Entity cookedItem2 = ItemFactory.createCookedItem(recipe2.id, gp);
-        
-        if (cookedItem1 != null) gp.player.inventory.addItem(cookedItem1);
-        if (cookedItem2 != null) gp.player.inventory.addItem(cookedItem2);
-        
-        // Success messages
-        gp.ui.addMessage("🔥 Coal batch cooking complete!");
-        gp.ui.addMessage("🍳 Cooked " + recipe1.name + " & " + recipe2.name + "!");
-        gp.playSE(1);
-        
-        return true;
-    }
-
-    private boolean canCookBothRecipes(Recipe recipe1, Recipe recipe2) {
-        // Check ingredients for both recipes
-        Map<String, Integer> totalNeeded = new HashMap<>();
-        
-        // Calculate total ingredients needed
-        for (Ingredient ing : recipe1.ingredients) {
-            totalNeeded.put(ing.itemName, totalNeeded.getOrDefault(ing.itemName, 0) + ing.quantity);
-        }
-        for (Ingredient ing : recipe2.ingredients) {
-            totalNeeded.put(ing.itemName, totalNeeded.getOrDefault(ing.itemName, 0) + ing.quantity);
-        }
-        
-        // Check if player has enough of each ingredient
-        for (Map.Entry<String, Integer> entry : totalNeeded.entrySet()) {
-            if (!hasEnoughItems(entry.getKey(), entry.getValue())) {
-                gp.ui.addMessage("Not enough " + entry.getKey() + " for batch cooking!");
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    // REMOVED: createCookedItem method - now using ItemFactory!
 
     private boolean hasFuel() {
         return hasEnoughItems("Coal", 1) || hasEnoughItems("Wood", 1);

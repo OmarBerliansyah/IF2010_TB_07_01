@@ -19,6 +19,7 @@ import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Stove;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
+import com.SpakborHills.objects.OBJ_TV;
 
 
 public class AssetSetter {
@@ -154,6 +155,13 @@ public class AssetSetter {
             gp.mapObjects[mapIndex][objIndex3] = new OBJ_Stove(gp);
             gp.mapObjects[mapIndex][objIndex3].worldX = 20 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex3].worldY = 5 * gp.tileSize;
+        }
+        
+        int objIndex4 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex4 != -1) {
+            gp.mapObjects[mapIndex][objIndex4] = new OBJ_TV(gp);
+            gp.mapObjects[mapIndex][objIndex4].worldX = 13 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex4].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {

@@ -1,14 +1,16 @@
 package com.SpakborHills.environment;
 
-import com.SpakborHills.main.GamePanel;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+
+import javax.swing.ImageIcon;
+
+import com.SpakborHills.main.GamePanel;
 
 public class Lighting {
 
@@ -100,7 +102,7 @@ public class Lighting {
                 gp.player.sleeping();
             }
         }
-        
+
         updateFilterAlphaByTime();
 
         if(hour>=6 && hour<18){
@@ -138,6 +140,26 @@ public class Lighting {
             this.dayState = night;
         }
     }
+    public void addMinutes(int minutesToAdd) {
+        this.minute += minutesToAdd;
+        while (this.minute >= 60) {
+            this.minute -= 60;
+            this.hour++;
+            if (this.hour >= 24) {
+                this.hour = 0;
+            }
+        } updateFilterAlphaByTime(); // Pastikan filter pencahayaan diperbarui
+        // Perbarui juga fase hari
+        if(this.hour >= 6 && this.hour < 18){
+            this.dayState = day;
+            this.phase = "Siang";
+        } else{
+            this.dayState = night;
+            this.phase = "Malam";
+        }
+        System.out.println("Time manually advanced by " + minutesToAdd + " mins. New time: " + String.format("%02d:%02d", this.hour, this.minute));
+    }
+        
 
     public int getHour(){
         return this.hour;
@@ -153,6 +175,10 @@ public class Lighting {
 
     public String getSeasonName(){
         return this.season.name();
+    }
+
+    public String getWeatherName(){
+        return this.currentWeather.name();
     }
 
     public void incrementDayAndAdvanceWeather() {

@@ -30,10 +30,10 @@ public class Emily extends NPC{
     }
 
     public void setDialogue(){
-        dialogue[0]="Hello, " + gp.ui.inputPlayerName;
-        dialogue[1]="Welcome to this store. \n My name is Emily. \n You can ask anything to me, \n and also you can find me just in this store/house";
-        dialogue[2]="I hope you can enjoy your life here,\n and interact as many as you can. \n Now, you can go to your house first.";
-        dialogue[3]="Bye-bye and See you!!!";
+        dialogue[0]="Hello, " + gp.player.name + ".\n" + // Menggunakan gp.player.name untuk konsistensi setelah game dimulai
+                      "Welcome to this store. \nMy name is Emily. \nYou can ask anything to me, \nand also you can find me just in this store/house.\n" +
+                      "I hope you can enjoy your life here,\nand interact as many as you can. \nNow, you can go to your house first.\n" +
+                      "Bye-bye and See you!!!";
     }
 
     public void setAction(){

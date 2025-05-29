@@ -39,6 +39,7 @@ public class Player extends Entity {
     public int jumpDuration = 20; 
     public int jumpHeight = 24; 
     public int jumpOffsetY = 0;
+    public boolean tillWithoutEnergy = false;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -177,18 +178,26 @@ public class Player extends Entity {
         return equippedItem;
     }
     public Inventory.InventoryItem getEquippedInventoryItem() {
-    if (equippedItem == null) return null;
+        if (equippedItem == null) return null;
     
-    for (Inventory.InventoryItem item : inventory.getInventory()) {
-        if (item.item == equippedItem) {
-            return item;
+        for (Inventory.InventoryItem item : inventory.getInventory()) {
+            if (item.item == equippedItem) {
+                return item;
+                }
             }
-        }
-        return null;
+            return null;
     }
     public void update(){
         if(gp.ui.showingSleepConfirmDialog) {
             return;
+        }
+        if(gp.ui.showingWatchTV) {
+            if (gp.keyH.enterPressed) {
+                gp.gameState = gp.playState;
+                gp.ui.showingWatchTV = false;
+                gp.keyH.enterPressed = false;
+                gp.eHandler.canTouchEvent = true;
+            }
         }
         if(tilling){
             tilling();
@@ -206,22 +215,6 @@ public class Player extends Entity {
             recoverLand();
             return;
         }
-        // if (sleeping){
-        //     sleeping();
-        //     return;
-        // }
-        // if (watching){
-        //     watching();
-        //     return;
-        // }
-        // if (proposing){
-        //     proposing();
-        //     return;
-        // }
-        // if (marry){
-        //     marry();
-        //     return;
-        // }
         if(moving){
             handleMovement();
         }
@@ -403,6 +396,8 @@ public class Player extends Entity {
     }
 
     public void useTool(){
+        int targetCol = 0;
+        int targetRow = 0;
         Entity currentTool = equippedItem;
         if (gp.currentMap == 2) { // In house
             int playerTileX = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
@@ -421,81 +416,152 @@ public class Player extends Entity {
             }
         }
         if (currentTool instanceof OBJ_Hoe) {
-            tilling = true;
-            if(this.energy >= 5){
-                int col = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                int row = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
 
-                int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
-                if (gp.tileM.tile[tileNum].tileType == TileType.TILLABLE) {
-                    tilling = true;
-                    energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
-                } 
-                else {
-                    gp.ui.addMessage("Cannot till this tile!");
-                }
-            } 
-            else {
+            int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE) {
+                tilling = true;
+                energy-=5;
+                tillWithoutEnergy = false;
+            }
+            else if(energy < 5){
+                tillWithoutEnergy = true;
+                tilling = true;
                 gp.ui.addMessage("Not enough energy to use the hoe!");
+            }
+            else {
+                tillWithoutEnergy = true;
+                tilling = true;
+                gp.ui.addMessage("You can't till this tile!");
             }
         }
         else if (currentTool instanceof OBJ_ParsnipSeeds) {
-            planting = true;
             Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
             if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
-                if(canPlant()){
-                    if(energy >= 5){
-                        planting = true;
-                        energy -= 5;
-                    }
-                    else{
-                        gp.ui.addMessage("Not enough energy to plant!");
-                    }
+                if(energy >= 5 && canPlant()){
+                    planting = true;
+                    energy -= 5;
+                    equippedInventoryItem.count--;
+                    tillWithoutEnergy = false;
+                }
+                else if (energy < 5){
+                    tillWithoutEnergy = true;
+                    planting = true;
+                    gp.ui.addMessage("Not enough energy to plant!");
                 }
                 else{
-                    gp.ui.addMessage("Cannot plant here!"); // Pes
+                    tillWithoutEnergy = true;
+                    planting = true;
+                    gp.ui.addMessage("You can't plant here!");
                 }
             }
             else{
+                planting = true;
+                tillWithoutEnergy = true;
                 gp.ui.addMessage("You don't have any seeds to plant!");
             }
         }
         else if (currentTool instanceof OBJ_WateringCan) {
-            watering = true;
-            if(this.energy >= 5){
-                int col = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                int row = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
 
-                int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
-                if (gp.tileM.tile[tileNum].tileType == TileType.PLANTED) {
-                    watering = true;
-                    energy -= 5; // Misal biaya energi untuk menyiram adalah 5
-                } 
-                else {
-                    gp.ui.addMessage("Cannot water this tile!");
-                }
+            int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10) {
+                watering = true;
+                tillWithoutEnergy = false;
+                energy -= 5; // Misal biaya energi untuk menyiram adalah 5
             } 
-            else {
+            else if(energy < 5) {
+                watering = true;
+                tillWithoutEnergy = true;
                 gp.ui.addMessage("Not enough energy to use the watering can!");
+            }
+            else{
+                watering = true;
+                tillWithoutEnergy = true;
+                gp.ui.addMessage("Cannot watering this tile!");
             }
         }
         else if (currentTool instanceof OBJ_Pickaxe) {
-            recoverLand = true;
-            if(this.energy >= 5){
-                int col = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                int row = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+            switch(direction) {
+                case "up":
+                    // Tile di atas area solid pemain
+                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "down":
+                    // Tile di bawah area solid pemain
+                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                    break;
+                case "left":
+                    // Tile di kiri area solid pemain
+                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+                case "right":
+                    // Tile di kanan area solid pemain
+                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                    break;
+            }
 
-                int tileNum = gp.tileM.mapTileNum[gp.currentMap][col][row];
-                if (gp.tileM.tile[tileNum].tileType == TileType.TILLED) {
-                    recoverLand = true;
-                    energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
-                } 
-                else {
-                    gp.ui.addMessage("Cannot recover this tile!");
-                }
+            int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED) {
+                recoverLand = true;
+                tillWithoutEnergy = false;
+                energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
             } 
-            else {
-                gp.ui.addMessage("Not enough energy to use the hoe!");
+            else if (energy < 5) {
+                recoverLand = true;
+                tillWithoutEnergy = true;
+                gp.ui.addMessage("Not enough energy to recover this tile!");
+            }
+            else{
+                recoverLand = true;
+                tillWithoutEnergy = true;
+                gp.ui.addMessage("Cannot recover this tile!");
             }
         }
         else{
@@ -572,44 +638,47 @@ public class Player extends Entity {
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
-            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+            if(!tillWithoutEnergy){
+                int targetCol = 0;
+                int targetRow = 0;
 
-            switch(direction) {
-                case "up":
-                    // Tile di atas area solid pemain
-                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "down":
-                    // Tile di bawah area solid pemain
-                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "left":
-                    // Tile di kiri area solid pemain
-                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-                case "right":
-                    // Tile di kanan area solid pemain
-                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-            }
+                switch(direction) {
+                    case "up":
+                        // Tile di atas area solid pemain
+                        targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "down":
+                        // Tile di bawah area solid pemain
+                        targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "left":
+                        // Tile di kiri area solid pemain
+                        targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                    case "right":
+                        // Tile di kanan area solid pemain
+                        targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                }
 
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
-                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
-                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
-                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    // gp.playSE(indeksSuaraCangkul);
+                if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
+                    int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
+                        gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
+                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                        // gp.playSE(indeksSuaraCangkul);
+                    }
                 }
             }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
+            tillWithoutEnergy = false; 
             planting = false;
         }
     }
@@ -621,48 +690,49 @@ public class Player extends Entity {
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            // Tentukan tile yang akan diolah berdasarkan arah pemain
-            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
-            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+            if(!tillWithoutEnergy){
+                // Tentukan tile yang akan diolah berdasarkan arah pemain
+                int targetCol = 0;
+                int targetRow = 0;
 
-            switch(direction) {
-                case "up":
-                    // Tile di atas area solid pemain
-                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "down":
-                    // Tile di bawah area solid pemain
-                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "left":
-                    // Tile di kiri area solid pemain
-                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-                case "right":
-                    // Tile di kanan area solid pemain
-                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-            }
-
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
-                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
-                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
-                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    // gp.playSE(indeksSuaraCangkul);
+                switch(direction) {
+                    case "up":
+                        // Tile di atas area solid pemain
+                        targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "down":
+                        // Tile di bawah area solid pemain
+                        targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "left":
+                        // Tile di kiri area solid pemain
+                        targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                    case "right":
+                        // Tile di kanan area solid pemain
+                        targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                }
+                if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                    int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
+                        gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
+                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                        // gp.playSE(indeksSuaraCangkul);
+                    }
                 }
             }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
+            tillWithoutEnergy = false; 
             tilling = false;
         }
-        
     }
 
     public void recoverLand(){
@@ -672,45 +742,48 @@ public class Player extends Entity {
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            // Tentukan tile yang akan diolah berdasarkan arah pemain
-            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
-            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+            if(!tillWithoutEnergy){
+                // Tentukan tile yang akan diolah berdasarkan arah pemain
+                int targetCol = 0;
+                int targetRow = 0;
 
-            switch(direction) {
-                case "up":
-                    // Tile di atas area solid pemain
-                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "down":
-                    // Tile di bawah area solid pemain
-                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "left":
-                    // Tile di kiri area solid pemain
-                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-                case "right":
-                    // Tile di kanan area solid pemain
-                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-            }
+                switch(direction) {
+                    case "up":
+                        // Tile di atas area solid pemain
+                        targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "down":
+                        // Tile di bawah area solid pemain
+                        targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "left":
+                        // Tile di kiri area solid pemain
+                        targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                    case "right":
+                        // Tile di kanan area solid pemain
+                        targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                }
 
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
-                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
-                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 0; // 0 = soil
-                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    // gp.playSE(indeksSuaraRecoverLand);
+                if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                    int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
+                        gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 0; // 0 = soil
+                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                        // gp.playSE(indeksSuaraRecoverLand);
+                    }
                 }
             }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
+            tillWithoutEnergy = false;
             recoverLand = false;
         }
     }
@@ -722,45 +795,48 @@ public class Player extends Entity {
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            // Tentukan tile yang akan diolah berdasarkan arah pemain
-            int targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;  // Default ke tile di bawah pemain (tengah)
-            int targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize; // Default ke tile di bawah pemain (tengah)
+            if(!tillWithoutEnergy){
+                // Tentukan tile yang akan diolah berdasarkan arah pemain
+                int targetCol = 0;
+                int targetRow = 0;
 
-            switch(direction) {
-                case "up":
-                    // Tile di atas area solid pemain
-                    targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "down":
-                    // Tile di bawah area solid pemain
-                    targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
-                    targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
-                    break;
-                case "left":
-                    // Tile di kiri area solid pemain
-                    targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-                case "right":
-                    // Tile di kanan area solid pemain
-                    targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
-                    targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
-                    break;
-            }
+                switch(direction) {
+                    case "up":
+                        // Tile di atas area solid pemain
+                        targetRow = (worldY + solidArea.y - 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "down":
+                        // Tile di bawah area solid pemain
+                        targetRow = (worldY + solidArea.y + solidArea.height + 1) / gp.tileSize;
+                        targetCol = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+                        break;
+                    case "left":
+                        // Tile di kiri area solid pemain
+                        targetCol = (worldX + solidArea.x - 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                    case "right":
+                        // Tile di kanan area solid pemain
+                        targetCol = (worldX + solidArea.x + solidArea.width + 1) / gp.tileSize;
+                        targetRow = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+                        break;
+                }
 
-            if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
-                int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.PLANTED) { // Periksa tipe tile tersebut
-                    gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 10; // 10 = WateredSoil
-                    // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                    // gp.playSE(indeksSuaraWatering);
+                if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
+                    int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.PLANTED && tileNumAtTarget != 10) { // Periksa tipe tile tersebut
+                        gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 10; // 10 = WateredSoil
+                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
+                        // gp.playSE(indeksSuaraWatering);
+                    }
                 }
             }
         }
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
+            tillWithoutEnergy = false;
             watering = false;
         }
     }
@@ -780,7 +856,7 @@ public class Player extends Entity {
         sleepLogic();
 
         try{
-            Thread.sleep(1000); // Delay 1 second to simulate sleep transition
+            Thread.sleep(3000); // Delay 1 second to simulate sleep transition
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -832,15 +908,8 @@ public class Player extends Entity {
     }
 
     public void watching(){
-        
-    }
-
-    public void proposing(){
-
-    }
-
-    public void marry(){
-
+        gp.ui.showingWatchTV = true;
+        gp.gameState = gp.dialogueState;
     }
 
     public void interactNPC(int i){
@@ -904,7 +973,7 @@ public class Player extends Entity {
                 } else if (planting) {
                     // ... (logika sprite untuk planting)
                     if (spriteNum == 1) imageToDraw = up1;
-                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.up1 : up1; // Ganti parsnipSeeds dengan image dari equippedItem jika ada
+                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
                 } else if (watering) {
                     // ... (logika sprite untuk watering)
                     if (spriteNum == 1) imageToDraw = up1;
@@ -925,7 +994,7 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingDown;
                 } else if (planting) {
                     if (spriteNum == 1) imageToDraw = down1;
-                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.down1 : down1;
+                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = down1;
                     if (spriteNum == 2) imageToDraw = wateringDown;
@@ -944,7 +1013,7 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingLeft;
                 } else if (planting) {
                      if (spriteNum == 1) imageToDraw = left1;
-                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.left1 : left1;
+                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = wateringLeft;
@@ -963,7 +1032,7 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingRight;
                 } else if (planting) {
                      if (spriteNum == 1) imageToDraw = right1;
-                    if (spriteNum == 2) imageToDraw = (equippedItem != null) ? equippedItem.right1 : right1;
+                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = right1;
                     if (spriteNum == 2) imageToDraw = wateringRight;
@@ -1012,7 +1081,7 @@ public class Player extends Entity {
     public void proposeToNPC(int npcIndex){
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
-            if (hasProposalRing()) {
+            if (hasProposalRing() && energy>=20) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
                 boolean accepted = currentNPC.propose();
                 if (accepted) {
                     // LAMARAN DITERIMA
@@ -1039,7 +1108,7 @@ public class Player extends Entity {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
             
-            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE) {
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80) {
                 boolean married = currentNPC.marry();
                 
                 if (married) {
@@ -1061,6 +1130,10 @@ public class Player extends Entity {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
             if (inventory.getInventory().isEmpty()) {
                 gp.ui.addMessage("You have no items to give!");
+                return;
+            }
+            if (energy<5){
+                gp.ui.addMessage("You're too tired to gift me! (Need 5 energy)");
                 return;
             }
             // Get the equipped item, or first item if nothing equipped

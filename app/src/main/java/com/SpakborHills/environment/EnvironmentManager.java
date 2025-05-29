@@ -1,8 +1,8 @@
 package com.SpakborHills.environment;
 
-import com.SpakborHills.main.GamePanel;
+import java.awt.Graphics2D;
 
-import java.awt.*;
+import com.SpakborHills.main.GamePanel;
 
 public class EnvironmentManager {
 
@@ -24,6 +24,9 @@ public class EnvironmentManager {
 
     public void setTime(int hour, int minute){
         lighting.setTime(hour, minute);
+    }
+    public void addMinutesToTime(int minute){
+        lighting.addMinutes(minute);
     }
     public int getHour() {
         if (lighting != null) {
@@ -53,9 +56,13 @@ public class EnvironmentManager {
         return "SPRING"; // Nilai default
     }
 
-    /**
-     * Mendelegasikan panggilan untuk memajukan hari, musim, dan cuaca ke instance Lighting.
-     */
+    public String getWeatherName(){
+        if( lighting != null) {
+            return lighting.getWeatherName(); // Asumsi getWeatherName() ada di Lighting.java
+        }
+        return "SUNNY";
+    }
+
     public void incrementDayAndAdvanceWeather() {
         if (lighting != null) {
             lighting.incrementDayAndAdvanceWeather(); // Panggil metode yang ada di Lighting.java
