@@ -14,5 +14,7 @@ public class OBJ_HotPepper extends Entity {
         salePrice = 40;
         buyPrice = -1;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

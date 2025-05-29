@@ -22,6 +22,7 @@ public class OBJ_Tree2 extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
+        isEdible = false;
     }
     @Override
     public void draw(Graphics2D g2){

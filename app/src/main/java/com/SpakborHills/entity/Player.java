@@ -1,19 +1,25 @@
 package com.SpakborHills.entity;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 
 import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
+import com.SpakborHills.main.UI;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.*;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.TileType;
+import com.SpakborHills.environment.*;
+import com.SpakborHills.entity.Entity.FishableProperties;
+
 
 public class Player extends Entity {
     KeyHandler keyH;
@@ -35,6 +41,13 @@ public class Player extends Entity {
     public Entity equippedItem;
     private List<ShippingBinItem> shippingBinItems = new ArrayList<>();
     private int maxShippingSlots = 16;
+    private Random randomGenerator;
+    public Entity fishBeingFishedProto;
+    public String fishingRangeString;
+    public boolean inFishingMinigame;
+    public int maxFishingTries;
+    public int currentFishingTry;
+    private int numberToGuess;
 
     public boolean jumping = false;
     public int jumpTimer = 0;
@@ -46,7 +59,8 @@ public class Player extends Entity {
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
         this.keyH = keyH;
-
+        this.inventory = new Inventory(gp, this);
+        this.randomGenerator = new Random();
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
 
@@ -238,6 +252,10 @@ public class Player extends Entity {
         if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
             return;
         }
+        if(gp.gameState == gp.characterState){
+            eating();
+            return;
+        }
  
     }
 
@@ -306,13 +324,13 @@ public class Player extends Entity {
     public void handleInput(){
         boolean movementKeyPressed = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
-        if(keyH.useToolPressed && equippedItem != null) {
+        if(keyH.useToolPressed && equippedItem != null && !inFishingMinigame) {
             useTool();
-            keyH.useToolPressed = false; // Reset the useToolPressed flag
+            // keyH.useToolPressed = false; // Reset the useToolPressed flag
             return;
         }
         // NPC INTERACTIONS
-        if (keyH.enterPressed) {
+        if (keyH.enterPressed && !inFishingMinigame) {
             // Chat dengan NPC
             int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
             if (npcIndex != 999) {
@@ -323,14 +341,14 @@ public class Player extends Entity {
             }
             return;
         }
-        if (keyH.giftPressed) {
+        if (keyH.giftPressed && !inFishingMinigame) {
             // Gift ke NPC
             int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
              if (npcIndex != 999) {
                 giftToNPC(npcIndex);
             }
         }
-        if (keyH.proposePressed) {
+        if (keyH.proposePressed && !inFishingMinigame) {
         // Propose ke NPC
         int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
         if (npcIndex != 999) {
@@ -341,7 +359,7 @@ public class Player extends Entity {
         keyH.proposePressed = false;
         return;
     }
-    if (keyH.marryPressed) {
+    if (keyH.marryPressed && !inFishingMinigame) {
         // Marry NPC
         int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
         if (npcIndex != 999) {
@@ -352,47 +370,27 @@ public class Player extends Entity {
         keyH.marryPressed = false;
         return;
     }
+       
+        
+    if (movementKeyPressed && !inFishingMinigame) {
+        // Hanya mengatur 'niat' untuk bergerak dan arahnya
+        if (keyH.upPressed) direction = "up";
+        else if (keyH.downPressed) direction = "down";
+        else if (keyH.leftPressed) direction = "left";
+        else if (keyH.rightPressed) direction = "right";
 
-        if(movementKeyPressed || keyH.enterPressed) {
-            if (keyH.upPressed == true) {
-                direction = "up";
-            } else if (keyH.downPressed == true) {
-                direction = "down";
-            } else if (keyH.leftPressed == true) {
-                direction = "left";
-            } else if (keyH.rightPressed == true) {
-                direction = "right";
-            }
-
-            //CHECK TILE COLLISION
-            collisionOn = false;
-            gp.cChecker.checkTile(this);
-
-            // CHECK OBJECT COLLISION
-            int objIndex = gp.cChecker.checkObject(this, true);
-            pickUpObject(objIndex);
-
-            // CHECK NPC COLLISION
-            int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
-            interactNPC(npcIndex);
-
-            // CHECK EVENT
-            gp.eHandler.checkEvent();
-
-            if(movementKeyPressed) {
-                moving = true;
-                standCounter = 0; // Reset the stand counter when moving
-            }
-            gp.keyH.enterPressed = false;
-        }
-        else {
-            standCounter++;
-            if(standCounter == 20){
-                spriteNum = 1;
-                standCounter = 0;
-            }
+        moving = true; // Tandai bahwa pemain ingin bergerak. Aksi gerakan akan dihandle di Player.update() -> handleMovement()
+        standCounter = 0;
+    } else if (!inFishingMinigame) { // Jika tidak ada tombol gerakan ditekan DAN tidak sedang memancing
+        // Logika animasi idle
+        standCounter++;
+        if (standCounter >= 20) { // Saya ganti '==' menjadi '>=' untuk sedikit lebih robas
+            spriteNum = 1;
+            standCounter = 0;
         }
     }
+}
+
 
     public void useTool(){
         int targetCol = 0;
@@ -564,6 +562,20 @@ public class Player extends Entity {
                 recoverLand = true;
                 tillWithoutEnergy = true;
                 gp.ui.addMessage("Cannot recover this tile!");
+            }
+        } else if (currentTool instanceof OBJ_FishingRod) {
+            if(this.energy >= 5){
+                startFishing();
+                if (gp.gameState != gp.fishingMinigameState){
+                    keyH.useToolPressed = false; // Reset the useToolPressed flag
+                }
+            }
+        } else if (currentTool instanceof OBJ_FishingRod) {
+            if(this.energy >= 5){
+                startFishing();
+                if (gp.gameState != gp.fishingMinigameState){
+                    keyH.useToolPressed = false; // Reset the useToolPressed flag
+                }
             }
         }
         else{
@@ -949,6 +961,7 @@ public class Player extends Entity {
                 // Only deduct energy and show messages for NEW conversations
                 if (isNewConversation) {
                     energy -= 10;  // Only deduct energy for new conversations
+                    gp.eManager.addMinutesToTime(10);
                     gp.ui.addMessage("You chatted with " + currentNPC.name + " (+10 heart points, -10 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
                     gp.ui.addMessage("Energy: " + energy );
@@ -1080,22 +1093,53 @@ public class Player extends Entity {
         // g2.setColor(java.awt.Color.BLUE);
         // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
+    public boolean isInRelationship() {
+        return partner != null;
+    }
+    public String getRelationshipStatus() {
+        if (partner == null) {
+            return "SINGLE";
+        }
+        if (partner instanceof NPC) {
+            NPC npcPartner = (NPC) partner;
+            return npcPartner.getRelationshipStatus().toString();
+        }
+        return "UNKNOWN";
+    }
+
     public void proposeToNPC(int npcIndex){
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
+            if (isInRelationship()) {
+                if (partner == currentNPC) {
+                    // Trying to propose to current partner
+                    if (getRelationshipStatus().equals("FIANCE")) {
+                        gp.ui.addMessage("You're already engaged to " + currentNPC.name + "!");
+                        gp.ui.addMessage("Time to plan the wedding! 💒");
+                    } else if (getRelationshipStatus().equals("SPOUSE")) {
+                        gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
+                        gp.ui.addMessage("What a loving couple you are! 💕");
+                    }
+                } else {
+                    // Trying to propose to someone else - CHEATING!
+                    gp.ui.addMessage("Whoa! You're already in a relationship with " + partner.name + "!");
+                    gp.ui.addMessage("jan selingkuh");
+                }
+                return; // Exit without proposing
+            }
             if (hasProposalRing() && energy>=20) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
                 boolean accepted = currentNPC.propose();
                 if (accepted) {
                     // LAMARAN DITERIMA
                     energy -= 10; // -10 energi sesuai spesifikasi
                     partner = currentNPC; // Set partner player
-                    
+                    gp.eManager.addMinutesToTime(60);
                     gp.ui.addMessage("Congratulations! You are now engaged to " + currentNPC.name + "!");
                     gp.ui.addMessage("Energy: -10");
                     } else {
                     // LAMARAN DITOLAK
                     energy -= 20; // -20 energi sesuai spesifikasi
-                    
+                    gp.eManager.addMinutesToTime(60);
                     gp.ui.addMessage("Your proposal was rejected...");
                     gp.ui.addMessage("Energy: -20");
                     
@@ -1109,8 +1153,27 @@ public class Player extends Entity {
     public void marryNPC(int npcIndex) {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
-            
-            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80) {
+             // CHECK: Already married to someone?
+            if (isInRelationship() && getRelationshipStatus().equals("SPOUSE")) {
+                if (partner == currentNPC) {
+                    // Trying to marry current spouse again
+                    gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
+                    gp.ui.addMessage("What a sweet reminder of your wedding day! 💕");
+                    gp.ui.addMessage("Maybe bring flowers next time instead? 🌹");
+                } else {
+                    // Trying to marry someone else - BIGAMY!
+                    gp.ui.addMessage("Hold up! You're already married to " + partner.name + "!");
+                    gp.ui.addMessage("Bigamy is not allowed in Spakbor Hills! 😤");
+                    gp.ui.addMessage("You can only have one spouse at a time!");
+                }
+                return; // Exit without marrying
+            } 
+            if (isInRelationship() && partner != currentNPC) {
+                gp.ui.addMessage("You're engaged to " + partner.name + ", not " + currentNPC.name + "!");
+                gp.ui.addMessage("Marry your fiance first, or break up and start over!");
+                return;
+            }
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80 && currentNPC.canMarryToday()) {
                 boolean married = currentNPC.marry();
                 
                 if (married) {
@@ -1118,14 +1181,70 @@ public class Player extends Entity {
                     partner = currentNPC;
                     
                     gp.ui.addMessage("You married " + currentNPC.name + "! Congratulations!");
-                    gp.ui.addMessage("Energy: -80");
-                }
+                    gp.ui.addMessage("✨ You spend the entire day together as newlyweds...");
+                
+                    // CALL WEDDING DAY METHOD (with black screen transition)
+                    weddingDay();
+        
+                    }
             } else if (!hasProposalRing()) {
                 gp.ui.addMessage("You need a Proposal Ring to marry!");
             } else if (currentNPC.getRelationshipStatus() != NPC.RelationshipStatus.FIANCE) {
                 gp.ui.addMessage("You can only marry your fiance! Propose first.");
+            }else if (energy<80){
+                 gp.ui.addMessage("You're too tired to gift me! (Need 80 energy)");
+            }else if (!currentNPC.canMarryToday()) {
+                    gp.ui.addMessage("You need to wait until tomorrow to marry " + currentNPC.name + "!");
+                    gp.ui.addMessage("Come back on a different day.");
             }
         }
+    }
+    public void weddingDay(){
+        // FORCE BLACK SCREEN ON
+        gp.ui.setForceBlackScreen(true);
+        if(gp instanceof javax.swing.JPanel){
+            gp.repaint();
+        }
+        
+        try {
+            Thread.sleep(1500); // Brief delay to show black screen
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        weddingLogic();
+        // TURN OFF BLACK SCREEN
+        gp.ui.setForceBlackScreen(false);
+        
+        // Return to play state
+        if (gp.gameState != gp.playState && gp.gameState != gp.dialogueState) {
+            gp.gameState = gp.playState;
+        } else if (gp.gameState != gp.dialogueState) { 
+            gp.gameState = gp.playState;
+        }
+
+        // WEDDING COMPLETION MESSAGES
+        gp.ui.addMessage("🏠 After a perfect wedding day, you return home in the evening.");
+        gp.ui.addMessage("💍 What a wonderful day spent with your new spouse!");
+
+        // Force repaint to show normal screen
+        if (gp instanceof javax.swing.JPanel) {
+            gp.repaint();
+        }
+    }
+    public void weddingLogic(){
+        gp.ui.addMessage("Having a magical wedding day together...");
+        
+        // TELEPORT PLAYER TO HOUSE (NPC stays where they are)
+        gp.currentMap = 2; // House map
+        gp.player.worldX = gp.tileSize * 11; // Center of house
+        gp.player.worldY = gp.tileSize * 12;
+        
+        // Refresh house map objects and NPCs
+        gp.aSetter.setObject();
+        gp.aSetter.setNPC();
+        // TIME SKIP TO 22:00 (10 PM)
+        gp.eManager.setTime(22, 0);
+        
     }
     public void giftToNPC(int npcIndex) {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
@@ -1158,7 +1277,7 @@ public class Player extends Entity {
                 if (removed) {
                     currentNPC.giveGift(itemToGive);
                     energy -= 5;
-                    
+                    gp.eManager.addMinutesToTime(10);
                     // Show feedback
                     gp.ui.addMessage("You gave " + itemToGive + " to " + currentNPC.name + " (-5 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
@@ -1173,7 +1292,7 @@ public class Player extends Entity {
     // Helper method untuk cek Proposal Ring
     public boolean hasProposalRing() {
         for (Inventory.InventoryItem invItem : inventory.getInventory()) {
-            if (invItem.item.name.equals("Proposal Ring")) {
+            if (invItem.item.name.equals("Ring")) {
                 return true; // FOUND! Tapi JANGAN di-remove (reusable)
             }
         }
@@ -1304,10 +1423,487 @@ public class Player extends Entity {
         return sellableItems;
     }
 
+    public boolean takeBackFromShippingBin(String itemName, int quantity) {
+        ShippingBinItem target = null;
+        for (ShippingBinItem item : shippingBinItems) {
+            if (item.itemName.equals(itemName)) {
+                target = item;
+                break;
+            }
+        }
+        if (target == null || target.quantity < quantity) {
+            gp.ui.addMessage("No such item in shipping bin!");
+            return false;
+        }
+        
+        // Remove from shipping bin first
+        target.quantity -= quantity;
+        if (target.quantity <= 0) {
+            shippingBinItems.remove(target);
+        }
+        
+        // Add back to inventory
+        boolean found = false;
+        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+            if (invItem.item.name.equals(itemName)) {
+                invItem.count += quantity;
+                found = true;
+                break;
+            }
+        }
+        
+        // If item not found in inventory, create new inventory item
+        if (!found) {
+            Entity newItem = createItemByName(itemName);
+            if (newItem != null) {
+                inventory.getInventory().add(new Inventory.InventoryItem(newItem, quantity));
+                found = true;
+            }
+        }
+        
+        if (!found) {
+            boolean existsInBin = false;
+            for (ShippingBinItem binItem : shippingBinItems) {
+                if (binItem.itemName.equals(itemName)) {
+                    binItem.quantity += quantity;
+                    existsInBin = true;
+                    break;
+                }
+            }
+            if (!existsInBin) {
+                ItemDefinition itemDef = gp.itemManager.getDefinitionByName(itemName);
+                if (itemDef != null) {
+                    shippingBinItems.add(new ShippingBinItem(itemDef.id, itemName, quantity, itemDef.sellPrice));
+                }
+            }
+            gp.ui.addMessage("Can't create item: " + itemName);
+            return false;
+        }
+        
+        gp.ui.addMessage("Took back " + quantity + " " + itemName + " from shipping bin!");
+        return true;
+    }
+
+    private Entity createItemByName(String itemName) {
+        switch (itemName) {
+            case "Parsnip Seeds":
+                return new OBJ_ParsnipSeeds(gp);
+            case "Parsnip":
+                return new OBJ_Parsnip(gp);
+            default:
+                return null;
+        }
+    }
+
     private ItemDefinition findItemDefinitionByName(String itemName) {
-        // Method helper untuk mencari item definition berdasarkan nama
-        // Implementasi tergantung pada struktur ItemManager Anda
         return gp.itemManager.getDefinitionByName(itemName);
     }
+    public void eating() {
+        if (equippedItem == null) {
+            gp.ui.addMessage("No item selected to eat!");
+            return;
+        }
+        if (equippedItem.isEdible) {
+            this.energy += equippedItem.plusEnergy;
+            if (this.energy > 100) this.energy = 100;
+
+            gp.ui.addMessage("Ate " + equippedItem.name + " and restored " + equippedItem.plusEnergy + " energy!");
+
+            removeItemFromInventory(equippedItem.name);
+            unEquipItem();
+
+        } else {
+            gp.ui.addMessage("Its not edible!");
+        }
+    }
+
+    public void startFishing(){
+        if (energy < 5){
+            gp.ui.addMessage("Not enough energy to fish!");
+            return;
+        } 
+        if (!isPlayerFacingWater()){
+            gp.ui.addMessage("You must be facing water to fish!");
+            return;
+        }
+
+        energy -= 5;
+        gp.eManager.addMinutesToTime(15);
+        gp.ui.addMessage("You cast your fishing rod...");
+
+        this.fishBeingFishedProto = selectFishToCatch();
+
+        if (this.fishBeingFishedProto == null){
+            gp.ui.addMessage("Nothing seems to be biting...");
+            return;
+        }
+
+        if (!(this.fishBeingFishedProto instanceof FishableProperties)){
+            gp.ui.addMessage("Error: Selected fish is not fishable!");
+            this.fishBeingFishedProto = null;
+            return;
+        }
+
+        FishableProperties fishProps = (FishableProperties) this.fishBeingFishedProto;
+        String category = fishProps.getFishCategory();
+        int rangeMax = 0 ;
+
+        switch (category.toLowerCase()){
+            case "common":
+                rangeMax = 10;
+                this.maxFishingTries = 10;
+                break;
+            case "regular":
+                rangeMax = 100;
+                this.maxFishingTries = 10;
+                break;
+            case "legendary":
+                rangeMax = 500;
+                this.maxFishingTries = 7;
+                break;
+            default:
+                gp.ui.addMessage("Unknown fish category: " + category);
+                this.fishBeingFishedProto = null;
+                return;
+        }
+
+        this.fishingRangeString = "1-" + rangeMax;
+        this.numberToGuess = randomGenerator.nextInt(rangeMax) + 1; 
+        this.currentFishingTry = 0;
+        this.inFishingMinigame = true;
+
+        gp.gameState = gp.fishingMinigameState;
+        gp.ui.addMessage("A " + category + " " + this.fishBeingFishedProto.name + " is on the line!");
+        gp.ui.addMessage("Guess the number (" +this.fishingRangeString + "). Tries: " + (this.maxFishingTries - this.currentFishingTry));
+
+    }
+
+    public void attempToCatchFish(){
+        Location playerLocation = getCurrentPlayerLocationEnum();
+        Season currentSeason = gp.eManager.getCurrentSeason();
+        Weather currentWeather = gp.eManager.getCurrentWeather();
+        int currentHour = gp.eManager.getHour();
+
+        List<Entity> potentialCatches = new ArrayList<>();
+
+        if (playerLocation != null){
+            for (Entity fishProto : gp.getAllFishPrototypes()){
+                if (fishProto instanceof FishableProperties){
+                    FishableProperties fishP = (FishableProperties) fishProto;
+                    if (canCatchThisFish(fishP, playerLocation, currentSeason, currentWeather, currentHour)){
+                        potentialCatches.add(fishProto);
+                    }
+                }
+            }
+        }
+
+        if (potentialCatches.isEmpty() && (playerLocation == Location.MOUNTAIN_LAKE || playerLocation == Location.FARM || gp.currentMap == 0 || gp.currentMap == 11)){
+            Location pondLocation = Location.POND;
+            for (Entity fishProto : gp.getAllFishPrototypes()){
+                if (fishProto instanceof FishableProperties){
+                    FishableProperties fishP = (FishableProperties) fishProto;
+                    if (canCatchThisFish(fishP, pondLocation, currentSeason, currentWeather, currentHour)){
+                        potentialCatches.add(fishProto);
+                    }
+                }
+            }
+        }
+
+        if (potentialCatches.isEmpty()){
+            gp.ui.addMessage("Nothing seems to be biting...");
+        } else {
+            Entity caughtFishPrototype = potentialCatches.get(randomGenerator.nextInt(potentialCatches.size()));
+
+            try {
+                Entity newCatch = caughtFishPrototype.getClass().getDeclaredConstructor(GamePanel.class).newInstance(gp);
+
+                if (newCatch instanceof FishableProperties){
+                    newCatch.sellPrice = calculationFishSellPrice(newCatch);
+                    newCatch.price = newCatch.sellPrice;
+
+
+                    String originalDescription = (newCatch.description != null && !newCatch.description.startsWith("[" + newCatch.name + "]")) ? newCatch.description : ((FishableProperties) newCatch).getFishCategory() + " fish.";
+                    newCatch.description = "[" + newCatch.name + "]\n" + originalDescription + "\nSell Price: " + newCatch.sellPrice + "g";
+                    newCatch.value = 1;
+                    
+                    this.inventory.addItem(newCatch);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                gp.ui.addMessage("Failed to catch fish! Please try again.");
+            }
+        }
+    }
+
+    public void processPlayerGuess(int guessNumber){
+        if (!inFishingMinigame || gp.gameState != gp.fishingMinigameState){
+            System.err.println("Player.processPlayerGuess called when not in fishing minigame!");
+            return;
+        }
+
+        this.currentFishingTry++;
+        String fishName = (this.fishBeingFishedProto != null) ? this.fishBeingFishedProto.name : "fish";
+
+        if (guessNumber == this.numberToGuess){
+            gp.ui.addMessage("ANJAY! The number was " + this.numberToGuess + ".");
+            gp.ui.addMessage("You caught a " + fishName + "!");
+            addCaughtFishToInventory();
+            endFishingMinigame(true);
+        } else {
+            if(this.currentFishingTry >= this.maxFishingTries){
+                gp.ui.addMessage("Out of Tries!");
+                gp.ui.addMessage("The correct number was " + this.numberToGuess + ".");
+                endFishingMinigame(false);
+            } else {
+                String hint = (guessNumber < this.numberToGuess) ? "higher" : "lower";
+                gp.ui.addMessage("Wrong. " + hint + "Tries left: "  + (this.maxFishingTries - this.currentFishingTry));
+
+            }
+        }
+        }
+    
+        private void addCaughtFishToInventory(){
+            if (this.fishBeingFishedProto == null) {
+                return;
+            }
+            try {
+                Entity newCatch = this.fishBeingFishedProto.getClass().getDeclaredConstructor(GamePanel.class).newInstance(gp);
+                if (newCatch instanceof FishableProperties) {
+                    newCatch.sellPrice = calculationFishSellPrice(newCatch);
+                    newCatch.price = newCatch.sellPrice;
+
+                   String originalDescription = (newCatch.description != null && !newCatch.description.startsWith("[" + newCatch.name + "]")) ? newCatch.description : ((FishableProperties)newCatch).getFishCategory() + " fish.";
+                    newCatch.description = "[" + newCatch.name + "]\n" + originalDescription + "\nSell Price: " + newCatch.sellPrice + "g";
+                    newCatch.value = 1;
+
+                    this.inventory.addItem(newCatch);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                gp.ui.addMessage("Failed to add caught fish to inventory!");
+            }
+        }
+
+        public void endFishingMinigame(boolean success){
+            this.inFishingMinigame = false;
+            this.fishBeingFishedProto = null;
+            this.fishingRangeString = "N/A";
+
+            gp.gameState = gp.playState;
+            gp.fishingInputBuffer = "";
+
+            if (success){
+                gp.ui.addMessage("Fishing ended succesfully");
+            } else {
+                gp.ui.addMessage("Fishing ended");
+            }
+        }
+
+        public Location getCurrentPlayerLocationEnum(){
+            if (gp == null){
+                return null;
+            }
+
+            switch(gp.currentMap){
+                case 0 : return Location.FARM;
+                case 1 : return Location.OCEAN;
+                case 2 : return Location.HOUSE;
+                case 3 : return Location.FOREST_RIVER;
+                case 4 : return Location.NPCMAP;
+                case 5 : return Location.EMILY_MAP;
+                case 6 : return Location.PERRY_MAP;
+                case 7 : return Location.DASCO_MAP;
+                case 8 : return Location.ABIGAIL_MAP;
+                case 9 : return Location.MAYOR_MAP;
+                case 10 : return Location.CAROLINE_MAP;
+                case 11 : return Location.MOUNTAIN_LAKE;
+                default : 
+                return null;
+            }
+        }
+
+        private Entity selectFishToCatch(){
+            Location mapLocation = getCurrentPlayerLocationEnum();
+            Season currSeason = gp.eManager.getCurrentSeason();
+            Weather curWeather = gp.eManager.getCurrentWeather();
+            int currentHour = gp.eManager.getHour();
+
+            System.out.println("selectFishToCatch - Location: " + mapLocation +
+                       ", Season: " + currSeason +
+                       ", Weather: " + curWeather +
+                       ", Hour: " + currentHour);
+            List<Entity> potentialCatches = new ArrayList<>();
+
+            if (mapLocation != null){
+                for (Entity fishProto : gp.getAllFishPrototypes()){
+                    if (fishProto instanceof FishableProperties){
+                        FishableProperties fishP = (FishableProperties) fishProto;
+                        if (canCatchThisFish(fishP, mapLocation, currSeason, curWeather, currentHour)){
+                            potentialCatches.add(fishProto);
+                        }
+                    }
+                }
+            }
+
+            if (mapLocation == Location.FARM || mapLocation == Location.MOUNTAIN_LAKE){
+                Location pondLocation = Location.POND;
+                for (Entity fishProto : gp.getAllFishPrototypes()){
+                    if (fishProto instanceof FishableProperties){
+                        FishableProperties fishP = (FishableProperties) fishProto;
+                        if (fishP.getAvailableLocations() != null && fishP.getAvailableLocations().contains(pondLocation) && !potentialCatches.contains(fishProto)) {
+                            if (canCatchThisFish(fishP, pondLocation, currSeason, curWeather, currentHour)) {
+                                potentialCatches.add(fishProto);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (potentialCatches.isEmpty()){
+                return null;
+            } else {
+                return potentialCatches.get(randomGenerator.nextInt(potentialCatches.size()));
+            }
+        }
+
+
+        /**
+         * @param fish FishableProperties dari ikan yang dicek
+         * @param pLoc Lokasi memancing (enum Location)
+         * @param pSeason Musim saat ini (enum Season)
+         * @param pWeather Cuaca saat ini (enum Weather)
+         * @param pHour Jam saat ini (0-23)
+         * @return true jika ikan bisa ditangkap, false jika tidak
+         */
+
+         private boolean canCatchThisFish(FishableProperties fish, Location pLoc, Season pSeason, Weather pWeather, int pHour) {
+            System.out.println("canCatchThisFish - Checking: " + fish.getFishName() + " for Location: " + pLoc +
+                       ", Season: " + pSeason + ", Weather: " + pWeather + ", Hour: " + pHour);
+
+            if (fish.getAvailableLocations() == null || fish.getAvailableLocations().isEmpty()) {
+                return false; // Tidak ada lokasi yang valid
+            }
+
+            EnumSet<Season> fishSeasons = fish.getAvailableSeasons();
+            if (fishSeasons != null && !fishSeasons.isEmpty() && fishSeasons.size() < Season.values().length){
+                if (!fishSeasons.contains(pSeason)){
+                    return false;
+                }
+            }
+
+            EnumSet<Weather> fishWeathers = fish.getAvailableWeathers();
+            if (fishWeathers != null && !fishWeathers.isEmpty() && fishWeathers.size() < Weather.values().length){
+                if (!fishWeathers.contains(pWeather)){
+                    return false;
+                }
+            }
+
+            List<Integer> startTimes = fish.getAvailableStartTimes();
+            List<Integer> endTimes = fish.getAvailableEndTimes();
+            boolean timeMatches = false;
+
+            if (startTimes == null || startTimes.isEmpty()){
+                timeMatches = true; // Tidak ada batas waktu, selalu cocok
+            } else {
+                for (int i = 0; i < startTimes.size(); i++) {
+                    int start = startTimes.get(i);
+                    int end = endTimes.get(i);
+
+                    if (end < start) {
+                        if (pHour >= start || pHour < end){
+                            timeMatches = true; // Jam saat ini cocok dengan jam yang diberikan
+                            break;
+                        }
+                    } else {
+                        if (pHour >= start && pHour < end){
+                            timeMatches = true; // Jam saat ini cocok dengan jam yang diberikan
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!timeMatches) {
+                return false; // Jam saat ini tidak cocok
+            }
+
+            return true;
+         }
+
+         public boolean isPlayerFacingWater(){
+            int targetCol = worldX / gp.tileSize;
+            int targetRow = worldY / gp.tileSize;
+
+            int playerCenterX = worldX + solidArea.x + solidArea.width / 2;
+            int playerCenterY = worldY + solidArea.y + solidArea.height / 2;
+
+            switch(direction) {
+                case "up":    targetRow = (playerCenterY - gp.tileSize) / gp.tileSize; targetCol = playerCenterX / gp.tileSize; break;
+                case "down":  targetRow = (playerCenterY + gp.tileSize) / gp.tileSize; targetCol = playerCenterX / gp.tileSize; break;
+                case "left":  targetCol = (playerCenterX - gp.tileSize) / gp.tileSize; targetRow = playerCenterY / gp.tileSize; break;
+                case "right": targetCol = (playerCenterX + gp.tileSize) / gp.tileSize; targetRow = playerCenterY / gp.tileSize; break;
+                default: return false; // Arah tidak valid
+            }
+
+            if (targetCol < 0 || targetCol >= gp.tileM.mapCols[gp.currentMap] || targetRow < 0 || targetRow >= gp.tileM.mapRows[gp.currentMap]) {
+                return false; // Di luar batas peta
+            }
+
+            try {
+                int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
+                if (tileNum >= 0 && tileNum < gp.tileM.tile.length && gp.tileM.tile[tileNum] != null) {
+                    return gp.tileM.tile[tileNum].tileType == TileType.WATER; // Cek apakah tile adalah air
+                } 
+            } catch (ArrayIndexOutOfBoundsException e){
+                return false;
+            }
+            return false;
+         }
+
+         public int calculationFishSellPrice(Entity fishEntity){
+            if (!(fishEntity instanceof FishableProperties)) {
+                return fishEntity.price > 0 ? fishEntity.price : (fishEntity.sellPrice > 0 ? fishEntity.sellPrice : 0) ; // Tidak bisa dihitung, bukan ikan
+            }
+
+            FishableProperties fish = (FishableProperties) fishEntity;
+
+            double cValue;
+            switch(fish.getFishCategory().toLowerCase()) {
+                case "common":
+                    cValue = 10.0;
+                    break;
+                case "regular":
+                    cValue = 5.0;
+                    break;
+                case "legendary":
+                    cValue = 25.0;
+                    break;
+                default:
+                    cValue = 1.0; // Default jika tidak dikenali
+            }
+
+            double numSeason = fish.getNumSeasonsFactor();
+            double numHours = fish.getNumHoursFactor();
+            double numWeather = fish.getNumWeatherFactor();
+            double numLocation = fish.getNumLocationsFactor();
+
+            if (numHours <= 0){
+                numHours = 24;
+            }
+
+            if (numSeason <= 0){
+                numSeason = 4; 
+            }
+
+            if (numWeather <= 0){
+                numWeather = 2; 
+            }
+
+            if (numLocation <= 0){
+                numLocation = 1; 
+            }
+
+            double price = (4.0 / numSeason) * (24.0 / numHours) * (2.0 / numWeather) * (4.0 / numLocation) * cValue;
+            return (int) Math.round(price);
+         }
 }
 

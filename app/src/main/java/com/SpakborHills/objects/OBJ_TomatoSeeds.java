@@ -19,6 +19,8 @@ public class OBJ_TomatoSeeds extends Entity {
         daysToHarvest = 3; 
         buyPrice = 50; 
         salePrice = 25;
+        isEdible = false;
+        availableSeasons = EnumSet.of(Season.SUMMER); 
         availableSeasons = EnumSet.of(Season.SUMMER);
         type = EntityType.SEED; 
     }

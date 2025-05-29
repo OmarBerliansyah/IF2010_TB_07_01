@@ -19,6 +19,7 @@ public class OBJ_WheatSeeds extends Entity {
         daysToHarvest = 1; 
         buyPrice = 60; 
         salePrice = 30;
+        isEdible = false;
         availableSeasons = EnumSet.of(Season.SPRING, Season.FALL);
         type = EntityType.SEED;
     }

@@ -32,5 +32,6 @@ public class OBJ_Angler extends Entity {
         availableEndTimes.add(20);
         category = "Legendary"; 
         isEdible = true;
+        plusEnergy = 1;
     }
 }

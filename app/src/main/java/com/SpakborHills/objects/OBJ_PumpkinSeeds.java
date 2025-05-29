@@ -19,6 +19,7 @@ public class OBJ_PumpkinSeeds extends Entity {
         daysToHarvest = 7; 
         buyPrice = 150; 
         salePrice = 75;
+        isEdible = false;
         availableSeasons = EnumSet.of(Season.FALL);
         type = EntityType.SEED;
     }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -21,6 +22,25 @@ import com.SpakborHills.entity.NPC;
 import com.SpakborHills.entity.Perry;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
+import com.SpakborHills.objects.OBJ_Angler;
+import com.SpakborHills.objects.OBJ_BullHead;
+import com.SpakborHills.objects.OBJ_Carp;
+import com.SpakborHills.objects.OBJ_Catfish;
+import com.SpakborHills.objects.OBJ_Chub;
+import com.SpakborHills.objects.OBJ_Crimsonfish;
+import com.SpakborHills.objects.OBJ_Flounder;
+import com.SpakborHills.objects.OBJ_Glacierfish;
+import com.SpakborHills.objects.OBJ_Halibut;
+import com.SpakborHills.objects.OBJ_LargemouthBass;
+import com.SpakborHills.objects.OBJ_Legend;
+import com.SpakborHills.objects.OBJ_MidnightCarp;
+import com.SpakborHills.objects.OBJ_Octopus;
+import com.SpakborHills.objects.OBJ_Pufferfish;
+import com.SpakborHills.objects.OBJ_RainbowTrout;
+import com.SpakborHills.objects.OBJ_Salmon;
+import com.SpakborHills.objects.OBJ_Sardine;
+import com.SpakborHills.objects.OBJ_Sturgeon;
+import com.SpakborHills.objects.OBJ_SuperCucumber;
 import com.SpakborHills.tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -69,6 +89,8 @@ public class GamePanel extends JPanel implements Runnable {
     private static HashMap<String, NPC> NPCs = new HashMap<>();
     ArrayList<Entity> entityList = new ArrayList<>();
     public ItemManager itemManager = new ItemManager(this);
+    ArrayList<Entity> allFishPrototypes = new ArrayList<>();
+
 
 
     //GAMESTATE
@@ -80,6 +102,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int characterState = 4;
     public final int shippingBinState = 5;
     public final int cookingState = 6;
+    public final int fishingMinigameState = 7;
+
+    public String fishingInputBuffer = "";
 
     // Variabel untuk menyimpan posisi kamera yang sudah dibatasi (clamped)
     public int clampedCameraX;
@@ -105,6 +130,8 @@ public class GamePanel extends JPanel implements Runnable {
         eManager.setup();
         cooking = new Cooking(this);
         gameState = titleState;
+        initializeFishPrototypes();
+
     }
 
     public void startGameThread() {
@@ -216,10 +243,19 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         else if (gameState == shippingBinState) {
-            ui.processShippingBinInput();
+            if (ui.showShippingBinConfirmDialog) {
+                ui.processShippingBinConfirmInput();
+            } 
+            else {
+                ui.processShippingBinInput();
+            }
         }
         else if (gameState == cookingState) {
             ui.processCookingInput();
+        }
+
+        else if (gameState == fishingMinigameState) {
+            ui.processFishingMinigameInput();
         }
     }
 
@@ -361,5 +397,44 @@ public class GamePanel extends JPanel implements Runnable {
     public void playSE(int i) {
         se.setFile(i);
         se.play();
+    }
+
+    public List<Entity> getAllFishPrototypes(){
+        if (this.allFishPrototypes == null){
+            System.out.println("Warning: allFishPrototypes is null, initializing it now.");
+            initializeFishPrototypes();
+        }
+        return this.allFishPrototypes;
+    }
+
+    public void initializeFishPrototypes(){
+        allFishPrototypes = new ArrayList<>();
+
+        // Common Fish
+        allFishPrototypes.add(new OBJ_BullHead(this));
+        allFishPrototypes.add(new OBJ_Carp(this));
+        allFishPrototypes.add(new OBJ_Chub(this));
+
+        // Regular Fish
+        allFishPrototypes.add(new OBJ_LargemouthBass(this));
+        allFishPrototypes.add(new OBJ_RainbowTrout(this));
+        allFishPrototypes.add(new OBJ_Sturgeon(this));
+        allFishPrototypes.add(new OBJ_MidnightCarp(this));
+        allFishPrototypes.add(new OBJ_Flounder(this));
+        allFishPrototypes.add(new OBJ_Halibut(this));
+        allFishPrototypes.add(new OBJ_Octopus(this));
+        allFishPrototypes.add(new OBJ_Pufferfish(this));
+        allFishPrototypes.add(new OBJ_Sardine(this));
+        allFishPrototypes.add(new OBJ_SuperCucumber(this));
+        allFishPrototypes.add(new OBJ_Catfish(this));
+        allFishPrototypes.add(new OBJ_Salmon(this));
+
+        // Legendary Fish
+        allFishPrototypes.add(new OBJ_Angler(this));
+        allFishPrototypes.add(new OBJ_Crimsonfish(this));
+        allFishPrototypes.add(new OBJ_Glacierfish(this));
+        allFishPrototypes.add(new OBJ_Legend(this));
+
+        System.out.println("Total fish prototypes initialized: " + allFishPrototypes.size());
     }
 }

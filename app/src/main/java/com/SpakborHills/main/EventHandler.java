@@ -167,7 +167,7 @@ public class EventHandler {
                 }
             }
 
-            else if ((hit(0, 22, 4, "any") || hit(0, 29, 4, "any") || hit(0, 24, 28, "any") || hit(0, 10, 28, "any")) && (gp.cChecker.checkObject(gp.player, true) != 0)) {
+            else if (hit(0, gp.aSetter.getDoorCol() + 6, gp.aSetter.getDoorRow() - 2, "any")) {
                 System.out.println("Shipping bin interaction detected!");
                 canTouchEvent = false;
                 gp.gameState = gp.shippingBinState;

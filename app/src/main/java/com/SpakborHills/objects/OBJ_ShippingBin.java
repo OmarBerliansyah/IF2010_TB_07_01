@@ -23,6 +23,7 @@ public class OBJ_ShippingBin extends Entity {
         name = "ShippingBin";
         down1 = setup("objects/ShippingBin",  gp.tileSize, gp.tileSize); // Your shipping bin sprite file
         collision = true;
+        isEdible = false;
         
         // Shipping bin is 3x2 tiles
         solidArea.x = 0;

@@ -2,25 +2,39 @@ package com.SpakborHills.main; // Package declaration for the main class
 
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
+import com.SpakborHills.entity.Entity;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
+
+    public boolean backspacePressedFishing = false;
+    public char lastTypeCharFishing = '\0';
+    public boolean newCharTypedFishing = false;
+
     public KeyHandler(GamePanel gp){
 
         this.gp = gp;
     }
     @Override
     public void keyTyped(KeyEvent e) {
+        char c = e.getKeyChar();
          // INPUT TEXT HANDLING untuk title screen
         if (gp.gameState == gp.titleState && gp.ui.titleScreenState == 1) {
-            char c = e.getKeyChar();
+
             // Only allow letters, numbers, and spaces
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || 
                 (c >= '0' && c <= '9') || c == ' ') {
                 gp.ui.addCharacterToInput(c);
+            }
+        }
+
+        else if (gp.gameState == gp.fishingMinigameState){
+            if (Character.isDigit(c)){
+                lastTypeCharFishing = c;
+                newCharTypedFishing = true; // Set the flag to indicate a new character was typed
             }
         }
     }
@@ -230,7 +244,6 @@ public class KeyHandler implements KeyListener {
             }
         }
 
-                    
         if (gp.gameState == gp.shippingBinState) {
             if (code == KeyEvent.VK_ESCAPE) {
                 escPressed = true;
@@ -290,7 +303,7 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_SPACE){
             useToolPressed = false; // Reset the useToolPressed flag when the space key is released
         }
-         if (code == KeyEvent.VK_G) {
+        if (code == KeyEvent.VK_G) {
             giftPressed = false;
         }
         if (code == KeyEvent.VK_R) {
@@ -303,7 +316,7 @@ public class KeyHandler implements KeyListener {
             escPressed = false;
         }
         if (gp.gameState == gp.characterState) {
-            if (code == KeyEvent.VK_E) {
+            if (code == KeyEvent.VK_ENTER) {
                 int selectedIndex = gp.ui.getItemIndexOnSLot();
                 if (selectedIndex >= 0 && selectedIndex < gp.player.inventory.getInventory().size()) {
                     if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(selectedIndex).item) {
@@ -313,6 +326,20 @@ public class KeyHandler implements KeyListener {
                     }
                 }
             }
+            if (code == KeyEvent.VK_E) {
+                gp.player.eating(); // biar semua logika ada di 1 tempat
+            }
+
+            /*if (code == KeyEvent.VK_E) {
+                Entity equippedItem = gp.player.getEquippedItem();
+                if (equippedItem != null && equippedItem.isEdible) {
+                    gp.player.eating();
+                } else if (equippedItem != null && !equippedItem.isEdible) {
+                    gp.ui.addMessage("This equipped item cannot be eaten!");
+                } else {
+                    gp.ui.addMessage("No item equipped to eat!");
+                }
+            }*/
         }
-}
+    }
 }

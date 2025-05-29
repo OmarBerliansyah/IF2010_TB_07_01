@@ -12,6 +12,7 @@ import com.SpakborHills.objects.OBJ_Hoe;
 import com.SpakborHills.objects.OBJ_Parsnip;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_Ring;
 import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.objects.OBJ_Wood;
 
@@ -52,6 +53,7 @@ public class Inventory {
         inventory.add(new InventoryItem (new OBJ_Wood(gp),2));
         inventory.add(new InventoryItem (new OBJ_Grape(gp),6));
         inventory.add(new InventoryItem(new OBJ_Coal(gp),1));
+        inventory.add(new InventoryItem(new OBJ_Ring(gp),1));
 
     }
 

@@ -17,6 +17,7 @@ public class OBJ_Pond extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
+        isEdible = false;
     }
     
     @Override
