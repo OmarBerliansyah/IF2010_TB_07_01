@@ -14,5 +14,7 @@ public class OBJ_Wheat extends Entity {
         buyPrice = 50;
         salePrice = 30;
         cropCount = 3; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

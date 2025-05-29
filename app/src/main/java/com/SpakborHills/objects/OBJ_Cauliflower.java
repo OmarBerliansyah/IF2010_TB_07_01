@@ -14,5 +14,7 @@ public class OBJ_Cauliflower extends Entity {
         buyPrice = 200;
         salePrice = 150;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

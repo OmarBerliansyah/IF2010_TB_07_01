@@ -30,10 +30,10 @@ public class Caroline extends NPC{
     }
 
     public void setDialogue(){
-        dialogue[0] = "Hello! I'm Caroline, the local carpenter.";
-        dialogue[1] = "I love working with wood and recycling materials.";
-        dialogue[2] = "Creating art from basic materials is my passion!";
-        dialogue[3] = "I prefer mild foods... spicy things aren't for me.";
+        dialogue[0] = "Hello! I'm Caroline, the local carpenter.\n" +
+                      "I love working with wood and recycling materials.\n" +
+                      "Creating art from basic materials is my passion!\n" +
+                      "I prefer mild foods... spicy things aren't for me.";
     }
 
     public void setAction(){

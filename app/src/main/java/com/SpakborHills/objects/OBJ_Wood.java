@@ -13,5 +13,6 @@ public class OBJ_Wood extends Entity {
         isPickable = false;
         buyPrice = 60; 
         salePrice = 30;
+        isEdible = false;
     }
 }

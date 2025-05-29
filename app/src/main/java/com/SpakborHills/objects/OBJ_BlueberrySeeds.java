@@ -18,6 +18,7 @@ public class OBJ_BlueberrySeeds extends Entity {
         daysToHarvest = 7; 
         buyPrice = 80; 
         salePrice = 40;
+        isEdible = false;
         availableSeasons = EnumSet.of(Season.SUMMER);
     }
 }

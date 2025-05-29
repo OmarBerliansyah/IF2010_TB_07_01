@@ -31,5 +31,7 @@ public class OBJ_Octopus extends Entity {
         availableStartTimes.add(6);
         availableEndTimes.add(22);
         category = "Regular";
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

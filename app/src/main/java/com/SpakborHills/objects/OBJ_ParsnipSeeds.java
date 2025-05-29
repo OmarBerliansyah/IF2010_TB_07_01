@@ -19,5 +19,6 @@ public class OBJ_ParsnipSeeds extends Entity {
         buyPrice = 20;
         salePrice = 10;
         availableSeasons = EnumSet.of(Season.SPRING); 
+        isEdible = false;
     }
 }

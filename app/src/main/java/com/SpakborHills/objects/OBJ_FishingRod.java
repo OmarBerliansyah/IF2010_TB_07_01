@@ -11,5 +11,6 @@ public class OBJ_FishingRod extends Entity {
         down1 = setup("objects/fishingrod", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDigunakan untuk \nmemancing."; 
         isPickable = true;
+        isEdible = false;
     }
 }

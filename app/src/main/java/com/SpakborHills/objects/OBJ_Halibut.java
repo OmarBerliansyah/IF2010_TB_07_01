@@ -33,5 +33,7 @@ public class OBJ_Halibut extends Entity {
         availableStartTimes.add(19);
         availableEndTimes.add(2);
         category = "Regular"; 
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

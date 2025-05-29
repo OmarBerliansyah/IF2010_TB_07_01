@@ -18,6 +18,7 @@ public class OBJ_CranberrySeeds extends Entity {
         daysToHarvest = 2; 
         buyPrice = 100; 
         salePrice = 50;
+        isEdible = false;
         availableSeasons = EnumSet.of(Season.FALL);
     }
 }

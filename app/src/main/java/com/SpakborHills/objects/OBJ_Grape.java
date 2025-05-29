@@ -14,5 +14,7 @@ public class OBJ_Grape extends Entity {
         buyPrice = 100;
         salePrice = 10;
         cropCount = 20; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

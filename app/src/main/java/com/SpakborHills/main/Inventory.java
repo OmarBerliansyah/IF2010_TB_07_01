@@ -49,10 +49,6 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishStew(gp), 1));
-        inventory.add(new InventoryItem (new OBJ_Wood(gp),2));
-        inventory.add(new InventoryItem (new OBJ_Grape(gp),6));
-        inventory.add(new InventoryItem(new OBJ_Coal(gp),1));
-
     }
 
     public void addItem(Entity item) {

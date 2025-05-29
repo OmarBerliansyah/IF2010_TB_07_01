@@ -4,7 +4,6 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_Fugu extends Entity {
-    public int plusEnergy; 
 
     public OBJ_Fugu(GamePanel gp){
         super(gp);
@@ -14,6 +13,7 @@ public class OBJ_Fugu extends Entity {
         plusEnergy = 50; 
         salePrice = 135;
         buyPrice = -1; 
+        isEdible = true;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }
