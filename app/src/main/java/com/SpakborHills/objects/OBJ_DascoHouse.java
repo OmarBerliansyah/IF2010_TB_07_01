@@ -18,6 +18,7 @@ public class OBJ_DascoHouse extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
+        isEdible = false;
     }
     
     @Override

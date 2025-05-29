@@ -14,5 +14,6 @@ public class OBJ_Chest extends Entity {
         down1 = setup("objects/Chest", gp.tileSize, gp.tileSize);
         collision = true;
         isPickable = false;
+        isEdible = false;
     }
 }

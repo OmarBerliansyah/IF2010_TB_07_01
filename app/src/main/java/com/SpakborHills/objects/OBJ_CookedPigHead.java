@@ -4,7 +4,6 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_CookedPigHead extends Entity {
-    public int plusEnergy; 
 
     public OBJ_CookedPigHead(GamePanel gp){
         super(gp);
@@ -15,5 +14,6 @@ public class OBJ_CookedPigHead extends Entity {
         buyPrice = 1000;
         salePrice = 0;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
+        isEdible = true;
     }
 }

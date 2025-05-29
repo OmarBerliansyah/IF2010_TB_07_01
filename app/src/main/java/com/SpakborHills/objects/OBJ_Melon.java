@@ -14,5 +14,7 @@ public class OBJ_Melon extends Entity {
         salePrice = 250;
         buyPrice = -1;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

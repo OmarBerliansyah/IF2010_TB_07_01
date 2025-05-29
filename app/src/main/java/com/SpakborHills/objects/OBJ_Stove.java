@@ -18,6 +18,7 @@ public class OBJ_Stove extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
+        isEdible = false;
     }
 
     public void draw(Graphics2D g2){

@@ -14,5 +14,7 @@ public class OBJ_Parsnip extends Entity {
         buyPrice = 50;
         salePrice = 35;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

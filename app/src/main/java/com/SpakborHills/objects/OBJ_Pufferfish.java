@@ -31,5 +31,7 @@ public class OBJ_Pufferfish extends Entity {
         availableStartTimes.add(0);
         availableEndTimes.add(16);
         category = "Regular"; 
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

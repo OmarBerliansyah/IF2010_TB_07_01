@@ -17,6 +17,7 @@ public class OBJ_House extends Entity {
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
+        isEdible = false;
     }
     
     @Override

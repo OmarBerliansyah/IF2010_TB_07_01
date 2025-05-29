@@ -30,6 +30,8 @@ public class OBJ_MidnightCarp extends Entity {
         availableEndTimes = new ArrayList<>();
         availableStartTimes.add(20);
         availableEndTimes.add(2);
-        category = "Regular"; 
+        category = "Regular";
+        isEdible = true;
+        plusEnergy = 1; 
     }
 }

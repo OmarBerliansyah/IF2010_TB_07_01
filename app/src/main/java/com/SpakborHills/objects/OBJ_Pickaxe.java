@@ -11,5 +11,6 @@ public class OBJ_Pickaxe extends Entity {
         down1 = setup("objects/pickaxe", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\ndigunakan untuk \nrecover land."; 
         isPickable = true;
+        isEdible = false;
     }
 }

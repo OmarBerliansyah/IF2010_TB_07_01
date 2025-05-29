@@ -30,6 +30,8 @@ public class OBJ_Flounder extends Entity {
         availableEndTimes = new ArrayList<>();
         availableStartTimes.add(6);
         availableEndTimes.add(22);
-        category = "Regular"; 
+        category = "Regular";
+        isEdible = true;
+        plusEnergy = 1; 
     }
 }
