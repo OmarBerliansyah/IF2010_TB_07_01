@@ -173,6 +173,16 @@ public class EventHandler {
                 gp.gameState = gp.shippingBinState;
                 gp.player.openShippingBin();
             }
+
+            else if (hit(2, 20, 6, "any") == true) { // Cooking station in house
+                if (gp.player.energy >= 10) {
+                    canTouchEvent = false;
+                    gp.gameState = gp.cookingState;
+                    gp.ui.showCookingInterface();
+                } else {
+                    gp.ui.addMessage("Not enough energy to cook!");
+                }
+            }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
             //     speak(gp.npc[1][0]);

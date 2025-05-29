@@ -16,6 +16,7 @@ import com.SpakborHills.objects.OBJ_PerryHouse;
 import com.SpakborHills.objects.OBJ_Pond;
 import com.SpakborHills.objects.OBJ_QueenBed;
 import com.SpakborHills.objects.OBJ_ShippingBin;
+import com.SpakborHills.objects.OBJ_Stove;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
 
@@ -147,6 +148,12 @@ public class AssetSetter {
             gp.mapObjects[mapIndex][objIndex2] = new OBJ_QueenBed(gp);
             gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
+        }
+        int objIndex3 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex3 != -1) {
+            gp.mapObjects[mapIndex][objIndex3] = new OBJ_Stove(gp);
+            gp.mapObjects[mapIndex][objIndex3].worldX = 20 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex3].worldY = 5 * gp.tileSize;
         }
     }
     private void initializeForestMap(int mapIndex) {
