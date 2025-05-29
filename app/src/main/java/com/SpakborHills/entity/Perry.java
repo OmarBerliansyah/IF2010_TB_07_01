@@ -36,14 +36,14 @@ public class Perry extends NPC {
     }
     
     public void getNPCImage(){
-        up1 = setup("NPC/perrybelakang", gp.tileSize, gp.tileSize);
-        up2 = setup("NPC/perrybelakangjalan", gp.tileSize, gp.tileSize);
-        down1 = setup("NPC/perrydepan", gp.tileSize, gp.tileSize);
-        down2 = setup("NPC/perrydepanjalan", gp.tileSize, gp.tileSize);
-        left1 = setup("NPC/perrykiri", gp.tileSize, gp.tileSize);
-        left2 = setup("NPC/perrykirijalan", gp.tileSize, gp.tileSize);
-        right1 = setup("NPC/perrykanan", gp.tileSize, gp.tileSize);
-        right2 = setup("NPC/perrykananjalan", gp.tileSize, gp.tileSize);
+        up1 = setup("NPC/alexbelakang", gp.tileSize, gp.tileSize);
+        up2 = setup("NPC/alexbelakangjalan", gp.tileSize, gp.tileSize);
+        down1 = setup("NPC/alexdepan", gp.tileSize, gp.tileSize);
+        down2 = setup("NPC/alexdepanjalan", gp.tileSize, gp.tileSize);
+        left1 = setup("NPC/alexkiri", gp.tileSize, gp.tileSize);
+        left2 = setup("NPC/alexkirijalan", gp.tileSize, gp.tileSize);
+        right1 = setup("NPC/alexkanan", gp.tileSize, gp.tileSize);
+        right2 = setup("NPC/alexkananjalan", gp.tileSize, gp.tileSize);
     }
     
     protected void setDialogue() {

@@ -861,6 +861,7 @@ public class Player extends Entity {
                 // Only deduct energy and show messages for NEW conversations
                 if (isNewConversation) {
                     energy -= 10;  // Only deduct energy for new conversations
+                    gp.eManager.addMinutesToTime(10);
                     gp.ui.addMessage("You chatted with " + currentNPC.name + " (+10 heart points, -10 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
                     gp.ui.addMessage("Energy: " + energy );
@@ -992,22 +993,53 @@ public class Player extends Entity {
         // g2.setColor(java.awt.Color.BLUE);
         // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
+    public boolean isInRelationship() {
+        return partner != null;
+    }
+    public String getRelationshipStatus() {
+        if (partner == null) {
+            return "SINGLE";
+        }
+        if (partner instanceof NPC) {
+            NPC npcPartner = (NPC) partner;
+            return npcPartner.getRelationshipStatus().toString();
+        }
+        return "UNKNOWN";
+    }
+
     public void proposeToNPC(int npcIndex){
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
+            if (isInRelationship()) {
+                if (partner == currentNPC) {
+                    // Trying to propose to current partner
+                    if (getRelationshipStatus().equals("FIANCE")) {
+                        gp.ui.addMessage("You're already engaged to " + currentNPC.name + "!");
+                        gp.ui.addMessage("Time to plan the wedding! 💒");
+                    } else if (getRelationshipStatus().equals("SPOUSE")) {
+                        gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
+                        gp.ui.addMessage("What a loving couple you are! 💕");
+                    }
+                } else {
+                    // Trying to propose to someone else - CHEATING!
+                    gp.ui.addMessage("Whoa! You're already in a relationship with " + partner.name + "!");
+                    gp.ui.addMessage("jan selingkuh");
+                }
+                return; // Exit without proposing
+            }
             if (hasProposalRing() && energy>=20) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
                 boolean accepted = currentNPC.propose();
                 if (accepted) {
                     // LAMARAN DITERIMA
                     energy -= 10; // -10 energi sesuai spesifikasi
                     partner = currentNPC; // Set partner player
-                    
+                    gp.eManager.addMinutesToTime(60);
                     gp.ui.addMessage("Congratulations! You are now engaged to " + currentNPC.name + "!");
                     gp.ui.addMessage("Energy: -10");
                     } else {
                     // LAMARAN DITOLAK
                     energy -= 20; // -20 energi sesuai spesifikasi
-                    
+                    gp.eManager.addMinutesToTime(60);
                     gp.ui.addMessage("Your proposal was rejected...");
                     gp.ui.addMessage("Energy: -20");
                     
@@ -1021,8 +1053,27 @@ public class Player extends Entity {
     public void marryNPC(int npcIndex) {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
-            
-            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80) {
+             // CHECK: Already married to someone?
+            if (isInRelationship() && getRelationshipStatus().equals("SPOUSE")) {
+                if (partner == currentNPC) {
+                    // Trying to marry current spouse again
+                    gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
+                    gp.ui.addMessage("What a sweet reminder of your wedding day! 💕");
+                    gp.ui.addMessage("Maybe bring flowers next time instead? 🌹");
+                } else {
+                    // Trying to marry someone else - BIGAMY!
+                    gp.ui.addMessage("Hold up! You're already married to " + partner.name + "!");
+                    gp.ui.addMessage("Bigamy is not allowed in Spakbor Hills! 😤");
+                    gp.ui.addMessage("You can only have one spouse at a time!");
+                }
+                return; // Exit without marrying
+            } 
+            if (isInRelationship() && partner != currentNPC) {
+                gp.ui.addMessage("You're engaged to " + partner.name + ", not " + currentNPC.name + "!");
+                gp.ui.addMessage("Marry your fiance first, or break up and start over!");
+                return;
+            }
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80 && currentNPC.canMarryToday()) {
                 boolean married = currentNPC.marry();
                 
                 if (married) {
@@ -1030,14 +1081,70 @@ public class Player extends Entity {
                     partner = currentNPC;
                     
                     gp.ui.addMessage("You married " + currentNPC.name + "! Congratulations!");
-                    gp.ui.addMessage("Energy: -80");
-                }
+                    gp.ui.addMessage("✨ You spend the entire day together as newlyweds...");
+                
+                    // CALL WEDDING DAY METHOD (with black screen transition)
+                    weddingDay();
+        
+                    }
             } else if (!hasProposalRing()) {
                 gp.ui.addMessage("You need a Proposal Ring to marry!");
             } else if (currentNPC.getRelationshipStatus() != NPC.RelationshipStatus.FIANCE) {
                 gp.ui.addMessage("You can only marry your fiance! Propose first.");
+            }else if (energy<80){
+                 gp.ui.addMessage("You're too tired to gift me! (Need 80 energy)");
+            }else if (!currentNPC.canMarryToday()) {
+                    gp.ui.addMessage("You need to wait until tomorrow to marry " + currentNPC.name + "!");
+                    gp.ui.addMessage("Come back on a different day.");
             }
         }
+    }
+    public void weddingDay(){
+        // FORCE BLACK SCREEN ON
+        gp.ui.setForceBlackScreen(true);
+        if(gp instanceof javax.swing.JPanel){
+            gp.repaint();
+        }
+        
+        try {
+            Thread.sleep(1500); // Brief delay to show black screen
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        weddingLogic();
+        // TURN OFF BLACK SCREEN
+        gp.ui.setForceBlackScreen(false);
+        
+        // Return to play state
+        if (gp.gameState != gp.playState && gp.gameState != gp.dialogueState) {
+            gp.gameState = gp.playState;
+        } else if (gp.gameState != gp.dialogueState) { 
+            gp.gameState = gp.playState;
+        }
+
+        // WEDDING COMPLETION MESSAGES
+        gp.ui.addMessage("🏠 After a perfect wedding day, you return home in the evening.");
+        gp.ui.addMessage("💍 What a wonderful day spent with your new spouse!");
+
+        // Force repaint to show normal screen
+        if (gp instanceof javax.swing.JPanel) {
+            gp.repaint();
+        }
+    }
+    public void weddingLogic(){
+        gp.ui.addMessage("Having a magical wedding day together...");
+        
+        // TELEPORT PLAYER TO HOUSE (NPC stays where they are)
+        gp.currentMap = 2; // House map
+        gp.player.worldX = gp.tileSize * 11; // Center of house
+        gp.player.worldY = gp.tileSize * 12;
+        
+        // Refresh house map objects and NPCs
+        gp.aSetter.setObject();
+        gp.aSetter.setNPC();
+        // TIME SKIP TO 22:00 (10 PM)
+        gp.eManager.setTime(22, 0);
+        
     }
     public void giftToNPC(int npcIndex) {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
@@ -1070,7 +1177,7 @@ public class Player extends Entity {
                 if (removed) {
                     currentNPC.giveGift(itemToGive);
                     energy -= 5;
-                    
+                    gp.eManager.addMinutesToTime(10);
                     // Show feedback
                     gp.ui.addMessage("You gave " + itemToGive + " to " + currentNPC.name + " (-5 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
@@ -1085,7 +1192,7 @@ public class Player extends Entity {
     // Helper method untuk cek Proposal Ring
     public boolean hasProposalRing() {
         for (Inventory.InventoryItem invItem : inventory.getInventory()) {
-            if (invItem.item.name.equals("Proposal Ring")) {
+            if (invItem.item.name.equals("Ring")) {
                 return true; // FOUND! Tapi JANGAN di-remove (reusable)
             }
         }
