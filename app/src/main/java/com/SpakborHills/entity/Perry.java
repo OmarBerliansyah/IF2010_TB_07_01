@@ -47,10 +47,10 @@ public class Perry extends NPC {
     }
     
     protected void setDialogue() {
-        dialogue[0] = "Oh, hello... I'm Perry.";
-        dialogue[1] = "I just published my first book!";
-        dialogue[2] = "I moved here for peace and quiet to write.";
-        dialogue[3] = "I love berries, but please... no fish.";
+        dialogue[0] ="Oh, hello... I'm Perry.\n" +
+                      "I just published my first book!\n" +
+                      "I moved here for peace and quiet to write.\n" +
+                      "I love berries, but please... no fish.";
     }
     
     @Override

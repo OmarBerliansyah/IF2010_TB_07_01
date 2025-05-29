@@ -30,10 +30,10 @@ public class Mayor extends NPC{
     }
 
     public void setDialogue(){
-        dialogue[0]="Welcome to Spakbor Hills!";
-        dialogue[1]="As mayor, I only appreciate the finest things.";
-        dialogue[2]="Legendary items and rare fish are my passion.";
-        dialogue[3]="Please, don't insult me with common items.";
+        dialogue[0]="Welcome to Spakbor Hills!\n" +
+                      "As mayor, I only appreciate the finest things.\n" +
+                      "Legendary items and rare fish are my passion.\n" +
+                      "Please, don't insult me with common items.";
     }
 
     @Override

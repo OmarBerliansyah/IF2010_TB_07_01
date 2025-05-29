@@ -122,9 +122,7 @@ public class Cooking {
         
         // Check fuel (Wood or Coal)
          // Check fuel (Wood, Coal, or Deposit)
-        if (coalCookingDeposit < 0 || !hasEnoughItems("Wood", 1) || !hasEnoughItems("Coal", 1)) {
-            return false;
-        }
+        if (getFuelChoice() == FuelChoice.NO_FUEL) { return false; }
         return true;
     }
 

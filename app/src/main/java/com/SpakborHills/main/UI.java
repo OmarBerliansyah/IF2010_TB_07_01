@@ -168,6 +168,9 @@ public class UI {
             }
             if (isInNPCHouse()) {
                 drawNPCInteractionInfo();
+                if (currentDialogue != null && !currentDialogue.isEmpty()) {
+                        drawDialogueScreen(); 
+                }
             }
         }
         if(gp.gameState == gp.characterState){
@@ -1024,7 +1027,7 @@ public class UI {
             // Propose action
             if (gp.player.hasProposalRing()) {
                 if (houseNPC.getHeartPoints() >= 150 && 
-                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.SINGLE) {
+                    houseNPC.getRelationshipStatus() == NPC.RelationshipStatus.FRIEND) {
                     g2.setColor(Color.GREEN);
                     g2.drawString("R: Propose (Ready!)", x, y);
                 } else {

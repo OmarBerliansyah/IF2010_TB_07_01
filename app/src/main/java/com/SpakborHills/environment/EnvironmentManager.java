@@ -1,8 +1,8 @@
 package com.SpakborHills.environment;
 
-import com.SpakborHills.main.GamePanel;
+import java.awt.Graphics2D;
 
-import java.awt.*;
+import com.SpakborHills.main.GamePanel;
 
 public class EnvironmentManager {
 
@@ -24,6 +24,9 @@ public class EnvironmentManager {
 
     public void setTime(int hour, int minute){
         lighting.setTime(hour, minute);
+    }
+    public void addMinutesToTime(int minute){
+        lighting.addMinutes(minute);
     }
     public int getHour() {
         if (lighting != null) {
