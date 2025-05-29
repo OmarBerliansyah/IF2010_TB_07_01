@@ -30,10 +30,10 @@ public class Dasco extends NPC{
     }
 
     public void setDialogue(){
-         dialogue[0] = "Welcome to my house! I'm Dasco.";
-        dialogue[1] = "I appreciate only the finest cuisine.";
-        dialogue[2] = "Luxury dining is my passion!";
-        dialogue[3] = "Don't insult me with raw ingredients.";
+        dialogue[0] = "Welcome to my house! I'm Dasco.\n" +
+                      "I appreciate only the finest cuisine.\n" +
+                      "Luxury dining is my passion!\n" +
+                      "Don't insult me with raw ingredients.";
     }
 
     public void setAction(){
