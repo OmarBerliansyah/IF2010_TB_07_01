@@ -4,7 +4,6 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_TheLegendsOfSpakbor extends Entity {
-    public int plusEnergy; 
 
     public OBJ_TheLegendsOfSpakbor(GamePanel gp){
         super(gp);
@@ -14,6 +13,7 @@ public class OBJ_TheLegendsOfSpakbor extends Entity {
         plusEnergy = 100; 
         salePrice = 2000;
         buyPrice = -1;
+        isEdible = true;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

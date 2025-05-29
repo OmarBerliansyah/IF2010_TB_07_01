@@ -4,7 +4,6 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_PumpkinPie extends Entity {
-    public int plusEnergy; 
 
     public OBJ_PumpkinPie(GamePanel gp){
         super(gp);
@@ -14,6 +13,7 @@ public class OBJ_PumpkinPie extends Entity {
         plusEnergy = 35; 
         buyPrice = 120;
         salePrice = 100;
+        isEdible = true;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }

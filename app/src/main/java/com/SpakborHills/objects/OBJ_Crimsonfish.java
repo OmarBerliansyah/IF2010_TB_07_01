@@ -31,5 +31,7 @@ public class OBJ_Crimsonfish extends Entity {
         availableStartTimes.add(8);
         availableEndTimes.add(20);
         category = "Legendary"; 
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

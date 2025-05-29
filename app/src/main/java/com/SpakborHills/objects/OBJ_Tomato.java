@@ -14,5 +14,7 @@ public class OBJ_Tomato extends Entity {
         buyPrice = 90;
         salePrice = 60;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

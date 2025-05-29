@@ -2,6 +2,7 @@ package com.SpakborHills.main; // Package declaration for the main class
 
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
+import com.SpakborHills.entity.Entity;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
@@ -243,7 +244,6 @@ public class KeyHandler implements KeyListener {
             }
         }
 
-                    
         if (gp.gameState == gp.shippingBinState) {
             if (code == KeyEvent.VK_ESCAPE) {
                 escPressed = true;
@@ -303,7 +303,7 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_SPACE){
             useToolPressed = false; // Reset the useToolPressed flag when the space key is released
         }
-         if (code == KeyEvent.VK_G) {
+        if (code == KeyEvent.VK_G) {
             giftPressed = false;
         }
         if (code == KeyEvent.VK_R) {
@@ -316,7 +316,7 @@ public class KeyHandler implements KeyListener {
             escPressed = false;
         }
         if (gp.gameState == gp.characterState) {
-            if (code == KeyEvent.VK_E) {
+            if (code == KeyEvent.VK_ENTER) {
                 int selectedIndex = gp.ui.getItemIndexOnSLot();
                 if (selectedIndex >= 0 && selectedIndex < gp.player.inventory.getInventory().size()) {
                     if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(selectedIndex).item) {
@@ -326,6 +326,20 @@ public class KeyHandler implements KeyListener {
                     }
                 }
             }
+            if (code == KeyEvent.VK_E) {
+                gp.player.eating(); // biar semua logika ada di 1 tempat
+            }
+
+            /*if (code == KeyEvent.VK_E) {
+                Entity equippedItem = gp.player.getEquippedItem();
+                if (equippedItem != null && equippedItem.isEdible) {
+                    gp.player.eating();
+                } else if (equippedItem != null && !equippedItem.isEdible) {
+                    gp.ui.addMessage("This equipped item cannot be eaten!");
+                } else {
+                    gp.ui.addMessage("No item equipped to eat!");
+                }
+            }*/
         }
-}
+    }
 }

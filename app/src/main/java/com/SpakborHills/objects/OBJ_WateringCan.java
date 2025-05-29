@@ -11,5 +11,6 @@ public class OBJ_WateringCan extends Entity {
         down1 = setup("objects/wateringcan", gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nAlat yang digunakan \nuntuk menyiram tanaman."; 
         isPickable = true;
+        isEdible = false;
     }
 }

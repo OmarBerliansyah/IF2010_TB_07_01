@@ -31,5 +31,7 @@ public class OBJ_SuperCucumber extends Entity {
         availableStartTimes.add(18);
         availableEndTimes.add(2);
         category = "Regular"; 
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

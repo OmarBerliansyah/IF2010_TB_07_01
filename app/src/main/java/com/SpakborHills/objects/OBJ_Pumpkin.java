@@ -14,5 +14,7 @@ public class OBJ_Pumpkin extends Entity {
         buyPrice = 300;
         salePrice = 250;
         cropCount = 1; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

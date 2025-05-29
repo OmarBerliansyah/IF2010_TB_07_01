@@ -11,12 +11,14 @@ public abstract class NPC extends Entity {
     protected List<String> likedItems;
     protected List<String> hatedItems;
     protected RelationshipStatus relationshipStatus;
-    
+    protected int engagementDay = -1; // MASI SINGLE
+    protected boolean canMarryTomorrow = false;
     // Statistics for end game
     protected int chattingFrequency;
     protected int giftingFrequency;
     protected int visitingFrequency;
     public boolean dialogueInProgress = false;
+    // protected boolean isStatic = true; buat testing
     
     public enum RelationshipStatus {
         FRIEND, FIANCE, SPOUSE
@@ -33,6 +35,7 @@ public abstract class NPC extends Entity {
         this.chattingFrequency = 0;
         this.giftingFrequency = 0;
         this.visitingFrequency = 0;
+        //this.isStatic = true;
         
         initializePreferences();
     }
@@ -83,6 +86,7 @@ public abstract class NPC extends Entity {
         if (heartPoints >= 150 && relationshipStatus == RelationshipStatus.FRIEND) {
             relationshipStatus = RelationshipStatus.FIANCE;
             gp.ui.addMessage(name + " accepted your proposal! You are now engaged!");
+            engagementDay = gp.eManager.getHari();// NGE KEEP HARI BERHASIL TUNANGAN 
             return true;
         } else {
             gp.ui.addMessage(name + " rejected your proposal. We need to be closer first.");
@@ -92,7 +96,7 @@ public abstract class NPC extends Entity {
     
     // Method untuk menikah
     public boolean marry() {
-        if (relationshipStatus == RelationshipStatus.FIANCE) {
+        if (relationshipStatus == RelationshipStatus.FIANCE ) {
             relationshipStatus = RelationshipStatus.SPOUSE;
             gp.ui.addMessage("You married to " + name + "! Congratulations!");
             return true;
@@ -138,6 +142,53 @@ public abstract class NPC extends Entity {
             case "left": direction = "right"; break;
             case "right": direction = "left"; break;
         }
+    }
+     /*@Override
+    public void update(){
+        if (!isStatic) {
+            // Only do movement if not static
+            setAction();
+
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+            gp.cChecker.checkObject(this, false);
+            gp.cChecker.checkPlayer(this);
+
+            // Movement code
+            if(collisionOn == false){
+                switch(direction){
+                    case "up": worldY -= speed; break;
+                    case "down": worldY += speed; break;
+                    case "left": worldX -= speed;break;
+                    case "right": worldX += speed; break;
+                }
+            }
+            
+            // Sprite animation
+            spriteCounter++;
+            if(spriteCounter > 12){
+                if(spriteNum == 1){
+                    spriteNum = 2;
+                }
+                else if (spriteNum == 2){
+                    spriteNum = 1;
+                }
+                spriteCounter = 0;
+            }
+        }
+        // If static, NPC just stays in place - no movement, no animation
+    } */
+    
+     public boolean canMarryToday() {
+        if (relationshipStatus != RelationshipStatus.FIANCE) {
+            return false;
+        }
+        
+        int currentDay = gp.eManager.getHari();
+        
+        // Can marry if current day is different from engagement day
+        // YANG PENTING BEDA HARI SAMA HARI ENGAGEMENT
+        return currentDay != engagementDay;
     }
     // Getters
     public int getHeartPoints() { 

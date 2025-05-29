@@ -13,6 +13,7 @@ public class OBJ_Keset extends Entity {
         down1 = setup("objects/keset", gp.tileSize, gp.tileSize); 
         collision = false;
         isPickable = false;
+        isEdible = false;
     }
     @Override
     public void draw(Graphics2D g2){
