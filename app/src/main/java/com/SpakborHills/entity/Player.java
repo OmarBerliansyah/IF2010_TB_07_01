@@ -1,24 +1,27 @@
 package com.SpakborHills.entity;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-
 import com.SpakborHills.data.ItemDefinition;
+import com.SpakborHills.entity.Entity.FishableProperties;
+import com.SpakborHills.environment.Location;
+import com.SpakborHills.environment.Season;
+import com.SpakborHills.environment.Weather;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
-import com.SpakborHills.main.UI;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.*;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_Parsnip;
+import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.TileType;
-import com.SpakborHills.environment.*;
-import com.SpakborHills.entity.Entity.FishableProperties;
 
 
 public class Player extends Entity {
@@ -1260,6 +1263,11 @@ public class Player extends Entity {
             } else {
                 itemToGive = inventory.getInventory().get(0).item.name;
             }
+            if (itemToGive.equals("Ring")) {
+                gp.ui.addMessage("You can't give away your Proposal Ring!");
+                gp.ui.addMessage("Choose a different item to gift.");
+                return; 
+            }
             boolean hasItem = false;
             for (Inventory.InventoryItem invItem : inventory.getInventory()) {
                 if (invItem.item.name.equals(itemToGive) && invItem.count > 0) {
@@ -1277,8 +1285,10 @@ public class Player extends Entity {
                     // Show feedback
                     gp.ui.addMessage("You gave " + itemToGive + " to " + currentNPC.name + " (-5 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
+                    return;
                 } else {
                     gp.ui.addMessage("Failed to give item!");
+                    return;
                 }
             } else {
                 gp.ui.addMessage("You don't have " + itemToGive + " to give!");
