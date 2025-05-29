@@ -991,7 +991,7 @@ public class Player extends Entity {
     public void proposeToNPC(int npcIndex){
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
-            if (hasProposalRing()) {
+            if (hasProposalRing() && energy>=20) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
                 boolean accepted = currentNPC.propose();
                 if (accepted) {
                     // LAMARAN DITERIMA
@@ -1018,7 +1018,7 @@ public class Player extends Entity {
         if (npcIndex != 999 && gp.NPC[npcIndex] instanceof NPC) {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
             
-            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE) {
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80) {
                 boolean married = currentNPC.marry();
                 
                 if (married) {
@@ -1040,6 +1040,10 @@ public class Player extends Entity {
             NPC currentNPC = (NPC) gp.NPC[npcIndex];
             if (inventory.getInventory().isEmpty()) {
                 gp.ui.addMessage("You have no items to give!");
+                return;
+            }
+            if (energy<5){
+                gp.ui.addMessage("You're too tired to gift me! (Need 5 energy)");
                 return;
             }
             // Get the equipped item, or first item if nothing equipped
