@@ -10,18 +10,18 @@ import java.util.HashMap;
 
 import javax.swing.JPanel;
 
+import com.SpakborHills.data.ItemManager;
+import com.SpakborHills.entity.Abigail;
+import com.SpakborHills.entity.Caroline;
+import com.SpakborHills.entity.Dasco;
+import com.SpakborHills.entity.Emily;
 import com.SpakborHills.entity.Entity;
+import com.SpakborHills.entity.Mayor;
+import com.SpakborHills.entity.NPC;
+import com.SpakborHills.entity.Perry;
 import com.SpakborHills.entity.Player;
 import com.SpakborHills.environment.EnvironmentManager;
 import com.SpakborHills.tile.TileManager;
-import com.SpakborHills.entity.NPC;
-import com.SpakborHills.entity.Emily;
-import com.SpakborHills.entity.Dasco;
-import com.SpakborHills.entity.Mayor;
-import com.SpakborHills.entity.Caroline;
-import com.SpakborHills.entity.Abigail;
-import com.SpakborHills.entity.Perry;
-import com.SpakborHills.data.ItemManager;
 
 public class GamePanel extends JPanel implements Runnable {
     // SCREEN SETTINGS
@@ -338,7 +338,13 @@ public class GamePanel extends JPanel implements Runnable {
             if(gameState == shippingBinState) {
                 ui.drawShippingBinInterface(g2);
             }
-
+        if (gameState == cookingState) {
+            if (ui.showingFuelSelectionDialog) {
+                ui.drawFuelSelectionDialog(g2);
+            } else {
+                ui.drawCookingInterface(g2);
+            }
+        }
             g2.dispose();
         }
 
