@@ -4,5 +4,6 @@ public enum TileType {
     NONE, // Default type
     TILLABLE,
     TILLED,
-    PLANTED
+    PLANTED,
+    WATER,
 }

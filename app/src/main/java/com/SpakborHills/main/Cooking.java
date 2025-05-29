@@ -162,17 +162,17 @@ public class Cooking {
         if (fuelType == FuelType.DEPOSIT) {
             // Use deposit (no fuel consumed)
             coalCookingDeposit--;
-            gp.ui.addMessage("🔥 Using coal deposit! Remaining: " + coalCookingDeposit);
+            gp.ui.addMessage(" Using coal deposit! Remaining: " + coalCookingDeposit);
         } else if (fuelType == FuelType.WOOD) {
             // Normal wood cooking
             removeItems("Wood", 1);
-            gp.ui.addMessage("🪵 Wood consumed for cooking!");
+            gp.ui.addMessage(" Wood consumed for cooking!");
         } else if (fuelType == FuelType.COAL) {
             // Coal cooking - consume coal and add deposit
             removeItems("Coal", 1);
             coalCookingDeposit += 1; // Add 1 free cooking
-            gp.ui.addMessage("⚫ Coal consumed! Added 1 cooking deposit!");
-            gp.ui.addMessage("🔥 Coal deposit: " + coalCookingDeposit + " free cooks available!");
+            gp.ui.addMessage("Coal consumed! Added 1 cooking deposit!");
+            gp.ui.addMessage("Coal deposit: " + coalCookingDeposit + " free cooks available!");
         }
         
         // Consume energy
@@ -191,7 +191,7 @@ public class Cooking {
         }
         
         // Success messages
-        gp.ui.addMessage("🍳 Cooked " + recipe.name + "! (-10 energy, +1 hour)");
+        gp.ui.addMessage("Cooked " + recipe.name + "! (-10 energy, +1 hour)");
         gp.playSE(1);
         
         return true;

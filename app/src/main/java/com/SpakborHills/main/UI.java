@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.entity.NPC;
 import com.SpakborHills.entity.ShippingBinItem;
+import com.SpakborHills.entity.Entity;
 
 public class UI {
     GamePanel gp;
@@ -1088,7 +1089,7 @@ public class UI {
         // === TITLE ===
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
         g2.setColor(Color.WHITE);
-        String title = "🍳 KITCHEN 🍳";
+        String title = "KITCHEN";
         int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
         g2.drawString(title, titleX, y + 40);
         
@@ -1347,4 +1348,112 @@ public class UI {
         }
         return false;
     }
+
+        public void processFishingMinigameInput(){
+        if (!gp.player.inFishingMinigame){
+            return;
+        }
+
+        if (gp.keyH.newCharTypedFishing){
+            int maxInputLength =3;
+            if (gp.player.fishBeingFishedProto != null && gp.player.fishingRangeString != null){
+                String range = gp.player.fishingRangeString;
+                if (range.endsWith("10")){
+                    maxInputLength = 2;
+                }
+
+                if (gp.fishingInputBuffer.length() < maxInputLength) {
+                    gp.fishingInputBuffer += gp.keyH.lastTypeCharFishing;
+                }
+                gp.keyH.newCharTypedFishing = false;
+                gp.keyH.lastTypeCharFishing = '\0'; // Reset after processing
+            }
+
+            if (gp.keyH.backspacePressedFishing){
+                if (gp.fishingInputBuffer.length() > 0) {
+                    gp.fishingInputBuffer = gp.fishingInputBuffer.substring(0, gp.fishingInputBuffer.length() - 1);
+                }
+                gp.keyH.backspacePressedFishing = false; // Reset after processing
+            }
+
+            if (gp.keyH.enterPressed){
+                if (!gp.fishingInputBuffer.isEmpty()){
+                    try {
+                        int guessNumber = Integer.parseInt(gp.fishingInputBuffer);
+                        gp.player.processPlayerGuess(guessNumber);
+                    } catch (NumberFormatException nfe){
+                        addMessage("Invalid input! Please enter a number.");
+                    }
+                    gp.fishingInputBuffer = ""; // Reset input buffer after processing
+                } else  {
+
+                }
+                gp.keyH.enterPressed = false; // Reset after processing
+            }
+        }
+    }
+
+    public void drawFishingMinigameUI(){
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2;
+        int width = gp.screenWidth - (gp.tileSize * 6);
+        int height = gp.tileSize * 7;
+
+        drawSubWindow(x, y, width, height);
+
+        if (confirmationFont == null){
+            confirmationFont = new Font("Arial", Font.PLAIN, 24);
+        }
+        g2.setFont(confirmationFont);
+        g2.setColor(Color.white);
+
+        int textX = x + gp.tileSize /2;
+        int textY = y + gp.tileSize;
+        int lineHeight = 35;
+
+        if (gp.player.fishBeingFishedProto != null && gp.player.fishBeingFishedProto instanceof Entity.FishableProperties){
+            Entity.FishableProperties fishProps = (Entity.FishableProperties) gp.player.fishBeingFishedProto;
+            String fishInfo = "On the line: " + fishProps.getFishName() + " ( " + fishProps.getFishCategory() + " )";
+            g2.drawString(fishInfo, textX, textY);
+            textY += lineHeight;
+        } else if (gp.player.inFishingMinigame){
+            g2.drawString("Determining fish...", textX, textY);
+            textY += lineHeight;
+        }
+
+        if (gp.player.inFishingMinigame){
+            String prompt = "Guess (" + gp.player.fishingRangeString + "):" + gp.fishingInputBuffer;
+
+            int maxInputLengthForCursor = 3;
+            if (gp.player.fishingRangeString != null){
+                if (gp.player.fishingRangeString.endsWith("10")){
+                    maxInputLengthForCursor = 2; // Adjust for range ending with "10"
+                }
+
+                if (System.currentTimeMillis()/ 500 % 2 == 0 && gp.fishingInputBuffer.length() < maxInputLengthForCursor) { // Blink effect
+                    prompt += "_"; // Add cursor blink
+                }
+
+                g2.drawString(prompt, textX, textY);
+                textY += lineHeight;
+
+                int triesLeft = gp.player.maxFishingTries - gp.player.currentFishingTry;
+                g2.drawString("Tries left: " + triesLeft + "/" + gp.player.maxFishingTries, textX, textY);
+                textY += lineHeight;
+                textY += lineHeight /2;
+
+                // instruksi
+                g2.setFont(confirmationFont.deriveFont(18F)); // Font lebih kecil untuk instruksi
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.drawString("Enter: Submit Guess", textX, textY);
+                textY += 25;
+                g2.drawString("Backspace: Delete Character", textX, textY);
+                textY += 25;
+                g2.drawString("Esc: Cancel Fishing (Optional)", textX, textY);
+            } else {
+                g2.drawString("Casting line...", textX, textY);
+            }
+        }
+    }
+
 }

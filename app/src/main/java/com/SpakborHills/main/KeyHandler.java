@@ -8,19 +8,32 @@ public class KeyHandler implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
+
+    public boolean backspacePressedFishing = false;
+    public char lastTypeCharFishing = '\0';
+    public boolean newCharTypedFishing = false;
+
     public KeyHandler(GamePanel gp){
 
         this.gp = gp;
     }
     @Override
     public void keyTyped(KeyEvent e) {
+        char c = e.getKeyChar();
          // INPUT TEXT HANDLING untuk title screen
         if (gp.gameState == gp.titleState && gp.ui.titleScreenState == 1) {
-            char c = e.getKeyChar();
+
             // Only allow letters, numbers, and spaces
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || 
                 (c >= '0' && c <= '9') || c == ' ') {
                 gp.ui.addCharacterToInput(c);
+            }
+        }
+
+        else if (gp.gameState == gp.fishingMinigameState){
+            if (Character.isDigit(c)){
+                lastTypeCharFishing = c;
+                newCharTypedFishing = true; // Set the flag to indicate a new character was typed
             }
         }
     }
