@@ -4,7 +4,6 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_FishandChips extends Entity {
-    public int plusEnergy; 
 
     public OBJ_FishandChips(GamePanel gp){
         super(gp);
@@ -14,6 +13,7 @@ public class OBJ_FishandChips extends Entity {
         plusEnergy = 50; 
         buyPrice = 50;
         salePrice = 35;
+        isEdible = true;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy;
     }
 }
