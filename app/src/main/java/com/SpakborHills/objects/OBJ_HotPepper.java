@@ -12,6 +12,7 @@ public class OBJ_HotPepper extends Entity {
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;
         salePrice = 40;
+        buyPrice = -1;
         cropCount = 1; 
     }
 }
