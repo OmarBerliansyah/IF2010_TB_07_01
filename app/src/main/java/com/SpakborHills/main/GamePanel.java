@@ -195,7 +195,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             eManager.update();
-            if (ui.showingSleepConfirmDialog) {
+            if(ui.showingSleepConfirmDialog) {
                 ui.processSleepConfirmationInput();                                             // Pastikan player.update() di atas tidak memproses gerakan jika dialog aktif
             }
         }
@@ -205,6 +205,14 @@ public class GamePanel extends JPanel implements Runnable {
         else if(gameState == dialogueState){
             if(ui.showingSleepConfirmDialog){
                 ui.processSleepConfirmationInput();
+            }
+            else if(ui.showingWatchTV){
+                if (keyH.enterPressed) {
+                    ui.showingWatchTV = false;
+                    keyH.enterPressed = false;
+                    eHandler.canTouchEvent = true; 
+                    gameState = playState;
+                }
             }
         }
         else if (gameState == shippingBinState) {

@@ -12,6 +12,7 @@ public class OBJ_Cranberry extends Entity {
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;
         salePrice = 25;
+        buyPrice = -1;
         cropCount = 10; 
     }
 }

@@ -7,7 +7,7 @@ public class EventHandler {
     EventRect eventRect[][][];
 
     int previousEventX, previousEventY;
-    boolean canTouchEvent = true;
+    public boolean canTouchEvent = true;
     int tempMap, tempCol, tempRow;
 
     public EventHandler(GamePanel gp){
@@ -181,6 +181,15 @@ public class EventHandler {
                     gp.ui.showCookingInterface();
                 } else {
                     gp.ui.addMessage("Not enough energy to cook!");
+                }
+            }
+            else if(hit(2, 13, 6, "any") == true){
+                if(!gp.ui.showingWatchTV){
+                    gp.gameState = gp.dialogueState;
+                    canTouchEvent = false;
+                    gp.keyH.enterPressed = false;
+                    gp.player.watching();
+                    gp.ui.showingWatchTV = true;
                 }
             }
             // // NPC MERCHANT

@@ -12,6 +12,7 @@ public class OBJ_SpakborSalad extends Entity {
         down1 = setup("objects/SpakborSalad",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 70; 
+        buyPrice = -1;
         salePrice = 250;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }

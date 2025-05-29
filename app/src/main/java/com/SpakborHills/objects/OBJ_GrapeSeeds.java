@@ -1,9 +1,13 @@
 package com.SpakborHills.objects;
 
+import java.util.EnumSet;
+
 import com.SpakborHills.entity.Entity;
+import com.SpakborHills.environment.Season;
 import com.SpakborHills.main.GamePanel;
 
 public class OBJ_GrapeSeeds extends Entity {
+    public EnumSet<Season> availableSeasons;
 
     public OBJ_GrapeSeeds(GamePanel gp){
         super(gp);
@@ -13,5 +17,7 @@ public class OBJ_GrapeSeeds extends Entity {
         isPickable = true;
         daysToHarvest = 3; 
         buyPrice = 60; 
+        salePrice = 30;
+        availableSeasons = EnumSet.of(Season.FALL);
     }
 }

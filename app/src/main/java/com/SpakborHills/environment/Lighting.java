@@ -100,7 +100,7 @@ public class Lighting {
                 gp.player.sleeping();
             }
         }
-        
+
         updateFilterAlphaByTime();
 
         if(hour>=6 && hour<18){
@@ -153,6 +153,10 @@ public class Lighting {
 
     public String getSeasonName(){
         return this.season.name();
+    }
+
+    public String getWeatherName(){
+        return this.currentWeather.name();
     }
 
     public void incrementDayAndAdvanceWeather() {

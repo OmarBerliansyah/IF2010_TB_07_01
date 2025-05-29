@@ -59,6 +59,7 @@ public class UI {
     public boolean showingFuelSelectionDialog = false;
     public int fuelSelectionIndex = 0;
     public String pendingRecipeId = null;
+    public boolean showingWatchTV = false;
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -136,7 +137,7 @@ public class UI {
         if(forceBlackScreenActive){
             g2.setColor(Color.black);
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-            return; // Skip drawing anything else if black screen is forced
+            return; 
         }
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -163,7 +164,7 @@ public class UI {
                 drawSleepConfirmationDialog(g2);
             }
             else{
-                drawDialogueScreen();
+                drawTVScreen();
             }
             if (isInNPCHouse()) {
                 drawNPCInteractionInfo();
@@ -242,31 +243,27 @@ public class UI {
 
     public void drawSleepConfirmationDialog(Graphics2D g2) {
         if (!showingSleepConfirmDialog) return;
-        int windowWidth = gp.tileSize * 9;    // Sesuaikan lebar
-        int windowHeight = gp.tileSize * 4;   // Sesuaikan tinggi
+        int windowWidth = gp.tileSize * 9;  
+        int windowHeight = gp.tileSize * 4;  
         int x = gp.screenWidth / 2 - windowWidth / 2;
         int y = gp.screenHeight / 2 - windowHeight / 2;
         drawSubWindow(x, y, windowWidth, windowHeight);
-        // 4. Gambar teks pertanyaan
-        g2.setFont(confirmationFont); // Gunakan font yang sudah disiapkan
+        
+        g2.setFont(confirmationFont); 
         g2.setColor(Color.white);
         String question = "Want to sleep for the night?";
         int qx = getXforCenteredTextInWindow(question, x, windowWidth, g2, confirmationFont);
-        int qy = y + gp.tileSize + (gp.tileSize/2); // Posisi Y pertanyaan
+        int qy = y + gp.tileSize + (gp.tileSize/2); 
 
         g2.drawString(question, qx, qy);
-
-        // 5. Gambar opsi "Yes" dan "No"
-        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F)); // Sedikit lebih besar untuk opsi
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F));
 
         String yesText = "Yes";
         String noText = "No";
 
-        // Posisi untuk "Yes" (kiri)
         int yesX = x + windowWidth / 4 - getHalfTextWidth(yesText, g2, g2.getFont()) ;
         int optionY = qy + gp.tileSize + (gp.tileSize/2) ;
 
-        // Posisi untuk "No" (kanan)
         int noX = x + (windowWidth / 4 * 3) - getHalfTextWidth(noText, g2, g2.getFont());
 
 
@@ -488,6 +485,66 @@ public class UI {
         }
     }
 
+
+    public void drawTVScreen(){
+        // Gambar layar TV
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2;
+        int width = gp.tileSize * 10;
+        int height = gp.tileSize * 7;
+
+        drawSubWindow(x, y, width, height);
+
+        // Gambar teks di dalam layar TV
+        g2.setColor(Color.white);
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 36F));
+        FontMetrics fm = g2.getFontMetrics(); 
+        int lineHeight = fm.getHeight()+8;
+
+        int currentMinute = gp.eManager.getMinute();
+        int currentHour = gp.eManager.getHour();
+        String timeString = String.format("Waktu : %02d : %02d", currentHour, currentMinute);
+
+        String weatherString = "Cuaca : " + gp.eManager.getWeatherName();
+        String seasonString = "Musim : " + gp.eManager.getSeasonName();
+
+        String programLine1 = "Selamat Datang di TV Spakbor!";
+        String programLine2 = "Informasi Hari Ini";
+
+        int numberOfLine = 5;
+        int totalTextHeight = lineHeight * numberOfLine;
+
+        int currentTextY = y + (height - totalTextHeight) / 2 + fm.getAscent();
+        int textX_Program1 = x + (width - fm.stringWidth(programLine1)) / 2; // Tengah horizontal
+        g2.drawString(programLine1, textX_Program1, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Program2 = x + (width - fm.stringWidth(programLine2)) / 2;
+        g2.drawString(programLine2, textX_Program2, currentTextY);
+        currentTextY += lineHeight + 5;
+
+        int textX_Time = x + (width - fm.stringWidth(timeString)) / 2;
+        g2.drawString(timeString, textX_Time, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Weather = x + (width - fm.stringWidth(weatherString)) / 2;
+        g2.drawString(weatherString, textX_Weather, currentTextY);
+        currentTextY += lineHeight;
+
+        int textX_Season = x + (width - fm.stringWidth(seasonString)) / 2;
+        g2.drawString(seasonString, textX_Season, currentTextY);
+
+        String closeMessage = "[Tekan Enter untuk Kembali]";
+        Font closeFont = confirmationFont.deriveFont(Font.PLAIN, 18F); // Font lebih kecil
+        g2.setFont(closeFont);
+        FontMetrics fmClose = g2.getFontMetrics();
+        int closeX = x + (width - fmClose.stringWidth(closeMessage)) / 2;
+        // Posisikan di bawah, sedikit di atas batas bawah subWindow
+        int closeY = y + height - (gp.tileSize / 3) - fmClose.getDescent(); 
+        g2.drawString(closeMessage, closeX, closeY);
+
+        gp.ui.showingWatchTV = false;
+    }
 
     public void drawTitleScreen(){
         if (titleScreenState == 0) {

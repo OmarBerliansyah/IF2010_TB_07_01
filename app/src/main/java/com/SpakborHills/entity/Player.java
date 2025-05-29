@@ -192,6 +192,10 @@ public class Player extends Entity {
         if(gp.ui.showingSleepConfirmDialog) {
             return;
         }
+        if(gp.ui.showingWatchTV) {
+            gp.eHandler.canTouchEvent = true;
+            return;
+        }
         if(tilling){
             tilling();
             return;
@@ -208,22 +212,6 @@ public class Player extends Entity {
             recoverLand();
             return;
         }
-        // if (sleeping){
-        //     sleeping();
-        //     return;
-        // }
-        // if (watching){
-        //     watching();
-        //     return;
-        // }
-        // if (proposing){
-        //     proposing();
-        //     return;
-        // }
-        // if (marry){
-        //     marry();
-        //     return;
-        // }
         if(moving){
             handleMovement();
         }
@@ -778,7 +766,7 @@ public class Player extends Entity {
         sleepLogic();
 
         try{
-            Thread.sleep(1000); // Delay 1 second to simulate sleep transition
+            Thread.sleep(3000); // Delay 1 second to simulate sleep transition
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -830,15 +818,8 @@ public class Player extends Entity {
     }
 
     public void watching(){
-        
-    }
-
-    public void proposing(){
-
-    }
-
-    public void marry(){
-
+        gp.ui.showingWatchTV = true;
+        gp.gameState = gp.dialogueState;
     }
 
     public void interactNPC(int i){

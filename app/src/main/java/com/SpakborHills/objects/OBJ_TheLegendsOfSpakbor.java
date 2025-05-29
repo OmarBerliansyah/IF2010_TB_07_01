@@ -13,6 +13,7 @@ public class OBJ_TheLegendsOfSpakbor extends Entity {
         isPickable = true;
         plusEnergy = 100; 
         salePrice = 2000;
+        buyPrice = -1;
         description = "[" + name + "]\nDapat memulihkan energi\nsebanyak " + plusEnergy; 
     }
 }
