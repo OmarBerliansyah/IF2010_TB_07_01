@@ -37,6 +37,12 @@ public class Player extends Entity {
     private List<ShippingBinItem> shippingBinItems = new ArrayList<>();
     private int maxShippingSlots = 16;
 
+    public boolean jumping = false;
+    public int jumpTimer = 0;
+    public int jumpDuration = 20; 
+    public int jumpHeight = 24; 
+    public int jumpOffsetY = 0;
+
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
         this.keyH = keyH;
@@ -221,6 +227,16 @@ public class Player extends Entity {
         // }
         if(moving){
             handleMovement();
+        }
+        if(jumping){
+            jumpTimer++;
+            double t = (double)(jumpTimer/jumpDuration);
+            jumpOffsetY = (int)(-4 * jumpHeight * t * (t -1));
+            if (jumpTimer >= jumpDuration){
+                jumping = false;
+                jumpTimer = 0;
+                jumpOffsetY = 0;
+            }
         }
         else{
             handleInput();

@@ -360,60 +360,61 @@ public class AssetSetter {
         return 24; // default
     }
 
+
      public void setNPC(){
         // Clear all NPCs first
-    for (int i = 0; i < gp.NPC.length; i++) {
-        gp.NPC[i] = null;
-    }
-    
-    // Spawn NPC based on current map
-        switch (gp.currentMap) {
-            case 5: // Emily's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Emily", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Emily spawned at house map");
-                break;
-                
-            case 6: // Perry's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Perry", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Perry spawned at house map");
-                break;
-                
-            case 7: // Dasco's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Dasco", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Dasco spawned at house map");
-                break;
-                
-            case 8: // Abigail's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Abigail", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Abigail spawned at house map");
-                break;
-                
-            case 9: // Mayor's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Mayor", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Mayor Tedi spawned at house map");
-                break;
-                
-            case 10: // Caroline's House
-                gp.NPC[0] = GamePanel.getOrCreateNPC("Caroline", gp);
-                gp.NPC[0].worldX = gp.tileSize * 12;
-                gp.NPC[0].worldY = gp.tileSize * 12;
-                System.out.println("Caroline spawned at house map");
-                break;
-                
-            default:
-                // For other maps, no NPCs or set different NPCs
-                System.out.println("No NPCs for map " + gp.currentMap);
-                break;
+        for (int i = 0; i < gp.NPC.length; i++) {
+            gp.NPC[i] = null;
         }
-    }
+        
+        // Spawn NPC based on current map
+            switch (gp.currentMap) {
+                case 5: // Emily's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Emily", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Emily spawned at house map");
+                    break;
+                    
+                case 6: // Perry's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Perry", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Perry spawned at house map");
+                    break;
+                    
+                case 7: // Dasco's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Dasco", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Dasco spawned at house map");
+                    break;
+                    
+                case 8: // Abigail's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Abigail", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Abigail spawned at house map");
+                    break;
+                    
+                case 9: // Mayor's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Mayor", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Mayor Tedi spawned at house map");
+                    break;
+                    
+                case 10: // Caroline's House
+                    gp.NPC[0] = GamePanel.getOrCreateNPC("Caroline", gp);
+                    gp.NPC[0].worldX = gp.tileSize * 12;
+                    gp.NPC[0].worldY = gp.tileSize * 12;
+                    System.out.println("Caroline spawned at house map");
+                    break;
+                    
+                default:
+                    // For other maps, no NPCs or set different NPCs
+                    System.out.println("No NPCs for map " + gp.currentMap);
+                    break;
+            }
+        }
 }

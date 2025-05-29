@@ -22,15 +22,11 @@ public class OBJ_CarolineHouse extends Entity {
     
     @Override
     public void draw(Graphics2D g2){
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        
-        if(worldX + (6 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
-           worldX - (6 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
-           worldY + (6 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
-           worldY - (6 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
-            
-            g2.drawImage(down1, screenX, screenY, 6 * gp.tileSize, 6 * gp.tileSize, null);
+        int drawX = worldX - gp.clampedCameraX;
+        int drawY = worldY - gp.clampedCameraY;
+
+        if (drawX + (6 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (6 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 6 * gp.tileSize, 6 * gp.tileSize, null);
         }
     }
 }

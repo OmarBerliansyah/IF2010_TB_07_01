@@ -21,15 +21,11 @@ public class OBJ_TV extends Entity {
     }
 
     public void draw(Graphics2D g2){
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        
-        if(worldX + (1 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
-           worldX - (1 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
-           worldY + (1 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
-           worldY - (1 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
-            
-            g2.drawImage(down1, screenX, screenY, 1 * gp.tileSize, 1 * gp.tileSize, null);
+        int drawX = worldX - gp.clampedCameraX;
+        int drawY = worldY - gp.clampedCameraY;
+
+        if (drawX + (1 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (1 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 1 * gp.tileSize, 1 * gp.tileSize, null);
         }
     }
 }

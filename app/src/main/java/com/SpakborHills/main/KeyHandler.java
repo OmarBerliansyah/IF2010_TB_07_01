@@ -176,6 +176,10 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_M && !marryPressed) {
                 marryPressed = true;
             }
+            if (code == KeyEvent.VK_J && !gp.player.jumping) {
+                gp.player.jumping = true;
+                gp.player.jumpTimer = 0;
+            }
         }
 
         //PAUSE STATE

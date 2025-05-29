@@ -36,15 +36,11 @@ public class OBJ_ShippingBin extends Entity {
     
     @Override
     public void draw(Graphics2D g2){
-        int screenX = worldX - gp.player.worldX + gp.player.screenX;
-        int screenY = worldY - gp.player.worldY + gp.player.screenY;
-        
-        if(worldX + (3 * gp.tileSize) > gp.player.worldX - gp.player.screenX &&
-           worldX - (3 * gp.tileSize) < gp.player.worldX + gp.player.screenX &&
-           worldY + (2 * gp.tileSize) > gp.player.worldY - gp.player.screenY &&
-           worldY - (2 * gp.tileSize) < gp.player.worldY + gp.player.screenY){
-            
-            g2.drawImage(down1, screenX, screenY, 3 * gp.tileSize, 2 * gp.tileSize, null);
+        int drawX = worldX - gp.clampedCameraX;
+        int drawY = worldY - gp.clampedCameraY;
+
+        if (drawX + (3 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (2 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 3 * gp.tileSize, 2 * gp.tileSize, null);
         }
     }
 }
