@@ -184,13 +184,15 @@ public class EventHandler {
                 }
             }
             else if(hit(2, 13, 6, "any") == true){
-                if(!gp.ui.showingWatchTV){
-                    gp.gameState = gp.dialogueState;
-                    canTouchEvent = false;
-                    gp.keyH.enterPressed = false;
-                    gp.player.watching();
-                    gp.ui.showingWatchTV = true;
+                if(gp.player.energy < 5){
+                        canTouchEvent = false;
+                        gp.ui.addMessage("Not enough energy to watch TV!");
+                        return;
                 }
+                gp.gameState = gp.dialogueState;
+                canTouchEvent = false;
+                gp.keyH.enterPressed = false;
+                gp.ui.showingWatchTV = true;
             }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {

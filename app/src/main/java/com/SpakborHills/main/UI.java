@@ -163,7 +163,7 @@ public class UI {
             if(showingSleepConfirmDialog){
                 drawSleepConfirmationDialog(g2);
             }
-            else{
+            if(showingWatchTV){
                 drawTVScreen();
             }
             if (isInNPCHouse()) {
@@ -543,7 +543,8 @@ public class UI {
         int closeY = y + height - (gp.tileSize / 3) - fmClose.getDescent(); 
         g2.drawString(closeMessage, closeX, closeY);
 
-        gp.ui.showingWatchTV = false;
+        // gp.ui.showingWatchTV = false;
+        // gp.eHandler.canTouchEvent = true;
     }
 
     public void drawTitleScreen(){

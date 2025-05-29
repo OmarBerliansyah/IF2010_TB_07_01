@@ -193,8 +193,12 @@ public class Player extends Entity {
             return;
         }
         if(gp.ui.showingWatchTV) {
-            gp.eHandler.canTouchEvent = true;
-            return;
+            if (gp.keyH.enterPressed) {
+                gp.gameState = gp.playState;
+                gp.ui.showingWatchTV = false;
+                gp.keyH.enterPressed = false;
+                gp.eHandler.canTouchEvent = true;
+        }
         }
         if(tilling){
             tilling();

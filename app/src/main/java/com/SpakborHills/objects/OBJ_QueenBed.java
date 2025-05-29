@@ -24,8 +24,8 @@ public class OBJ_QueenBed extends Entity {
         int drawX = worldX - gp.clampedCameraX;
         int drawY = worldY - gp.clampedCameraY;
 
-        if (drawX + (6 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (6 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
-            g2.drawImage(down1, drawX, drawY, 6 * gp.tileSize, 6 * gp.tileSize, null);
+        if (drawX + (4 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (6 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 4 * gp.tileSize, 6 * gp.tileSize, null);
         }
     }
 }
