@@ -53,9 +53,13 @@ public class EnvironmentManager {
         return "SPRING"; // Nilai default
     }
 
-    /**
-     * Mendelegasikan panggilan untuk memajukan hari, musim, dan cuaca ke instance Lighting.
-     */
+    public String getWeatherName(){
+        if( lighting != null) {
+            return lighting.getWeatherName(); // Asumsi getWeatherName() ada di Lighting.java
+        }
+        return "SUNNY";
+    }
+
     public void incrementDayAndAdvanceWeather() {
         if (lighting != null) {
             lighting.incrementDayAndAdvanceWeather(); // Panggil metode yang ada di Lighting.java
