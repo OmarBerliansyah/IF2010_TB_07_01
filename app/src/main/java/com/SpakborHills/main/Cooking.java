@@ -122,8 +122,8 @@ public class Cooking {
         
         // Check fuel (Wood or Coal)
          // Check fuel (Wood, Coal, or Deposit)
-        if (coalCookingDeposit < 0 || !hasEnoughItems("Wood", 1) || !hasEnoughItems("Coal", 1)) {
-            return false;
+        if (coalCookingDeposit > 0 || hasEnoughItems("Wood", 1) || hasEnoughItems("Coal", 1)) {
+            return true;
         }
         return true;
     }
