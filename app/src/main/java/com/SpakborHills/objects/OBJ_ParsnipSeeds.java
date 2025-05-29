@@ -20,4 +20,9 @@ public class OBJ_ParsnipSeeds extends Entity {
         salePrice = 10;
         availableSeasons = EnumSet.of(Season.SPRING); 
     }
+
+    @Override
+    public EnumSet<Season> getAvailableSeasons() {
+        return availableSeasons;
+    }
 }

@@ -21,9 +21,10 @@ public class Entity {
     public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
     public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
     public BufferedImage parsnipSeeds, cauliflowerSeeds, potatoSeeds, wheatSeeds;
-    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds;
+    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds, eggplantSeeds;
     public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
+    public EntityType type;
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
@@ -91,6 +92,10 @@ public class Entity {
                 direction = "left";
                 break;
         }
+    }
+
+    public EnumSet<Season> getAvailableSeasons(){
+        return EnumSet.noneOf(Season.class);
     }
 
     public void update(){

@@ -10,7 +10,7 @@ import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
 import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.*;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.TileType;
@@ -157,6 +157,7 @@ public class Player extends Entity {
         cranberrySeeds = setup("player/PlayerCranberrySeeds", gp.tileSize, gp.tileSize);
         pumpkinSeeds = setup("player/PlayerPumpkinSeeds", gp.tileSize, gp.tileSize);
         grapeSeeds = setup("player/PlayerGrapeSeeds", gp.tileSize, gp.tileSize);
+        eggplantSeeds = setup("player/PlayerEggplantSeeds", gp.tileSize, gp.tileSize);
     }
 
     public void getPlayerPickAxeImage(){
@@ -454,9 +455,12 @@ public class Player extends Entity {
                 gp.ui.addMessage("You can't till this tile!");
             }
         }
-        else if (currentTool instanceof OBJ_ParsnipSeeds) {
+        else if (currentTool instanceof Entity && currentTool.type == EntityType.SEED) {
             Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
             if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
+                Entity equippedSeed = equippedInventoryItem.item;
+                if (equippedSeed.type == EntityType.SEED &&
+                equippedSeed.getAvailableSeasons().contains(gp.eManager.currentSeason))
                 if(energy >= 5 && canPlant()){
                     planting = true;
                     energy -= 5;
