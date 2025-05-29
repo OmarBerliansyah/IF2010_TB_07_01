@@ -44,6 +44,7 @@ public class Entity {
     public int buyPrice; 
     public int salePrice;
     public boolean isEdible; 
+    public int plusEnergy;
     public int cropCount; //Jumlah Crop per Panen
     public boolean collision = false;
     boolean tilling = false;

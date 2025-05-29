@@ -31,5 +31,7 @@ public class OBJ_Chub extends Entity {
         availableStartTimes.add(0);
         availableEndTimes.add(24);
         category = "Common"; 
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

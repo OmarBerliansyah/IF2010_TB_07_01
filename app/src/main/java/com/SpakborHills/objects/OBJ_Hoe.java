@@ -11,5 +11,6 @@ public class OBJ_Hoe extends Entity {
         down1 = setup("objects/Hoe",gp.tileSize, gp.tileSize );
         description = "[" + name + "]\nDigunakan untuk \nmengolah tanah untuk \nkeperluan pertanian."; 
         isPickable = true;
+        isEdible = false;
     }
 }

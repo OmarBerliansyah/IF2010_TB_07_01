@@ -50,7 +50,7 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_FishStew(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_CookedPigHead(gp), 5));
     }
 
     public void addItem(Entity item) {

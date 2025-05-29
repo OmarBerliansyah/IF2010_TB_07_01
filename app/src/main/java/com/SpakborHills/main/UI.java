@@ -60,7 +60,6 @@ public class UI {
     public int fuelSelectionIndex = 0;
     public String pendingRecipeId = null;
 
-
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
@@ -172,6 +171,7 @@ public class UI {
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
+            drawEating();
         }
         if (gp.gameState == gp.shippingBinState) {
             drawShippingBinInterface(g2);
@@ -183,6 +183,7 @@ public class UI {
                 drawCookingInterface(g2);
             }
         }
+        drawEating();
     }
     private boolean isInNPCHouse() {
         return gp.currentMap >= 5 && gp.currentMap <= 10;
@@ -198,7 +199,7 @@ public class UI {
 
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32f));
 
-        for (int i = 0; i < message.size(); i++) {
+        for (int i = message.size() - 1; i >= 0; i--) {
             if (message.get(i) != null) {
                 g2.setColor(Color.black);
                 g2.drawString(message.get(i), messageX + 2, messageY + 2);
@@ -216,7 +217,8 @@ public class UI {
                     messageCounter.remove(i);
                 }
             }
-        }
+}
+
     }
 
     public void setForceBlackScreen(boolean active) {
@@ -287,6 +289,33 @@ public class UI {
             g2.setColor(Color.white);
         }
         g2.drawString(noText, noX, optionY);
+    }
+
+    public void drawEating(){
+        int messageX = 20;
+        int messageY = 400; // Atur posisi sesuai keinginan
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        for (int i = 0; i < message.size(); i++) {
+            if (message.get(i) != null) {
+                g2.setColor(new Color(0, 0, 0, 150)); // latar semi-transparan
+                g2.fillRoundRect(messageX - 10, messageY - 20, gp.tileSize * 5, 30, 10, 10);
+
+                g2.setColor(Color.white);
+                g2.drawString(message.get(i), messageX, messageY);
+
+                int counter = messageCounter.get(i) + 1;
+                messageCounter.set(i, counter);
+                messageY += 40;
+
+                if (messageCounter.get(i) > 120) { // muncul selama 2 detik jika 60 FPS
+                    message.remove(i);
+                    messageCounter.remove(i);
+                    i--;
+                }
+            }
+        }
+
     }
 
      // Helper untuk mendapatkan posisi X agar teks terpusat di dalam area window

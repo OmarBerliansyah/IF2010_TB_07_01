@@ -13,6 +13,8 @@ public class OBJ_Blueberry extends Entity {
         isPickable = true;
         buyPrice = 150;
         salePrice = 40;
+        isEdible = true; 
         cropCount = 3; 
+        plusEnergy = 3;
     }
 }

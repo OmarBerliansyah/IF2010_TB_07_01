@@ -18,6 +18,7 @@ public class OBJ_CauliflowerSeeds extends Entity {
         daysToHarvest = 5; 
         buyPrice = 80; 
         salePrice = 40;
+        isEdible = false;
         availableSeasons = EnumSet.of(Season.SPRING);
     }
 }

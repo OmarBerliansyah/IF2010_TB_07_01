@@ -14,5 +14,7 @@ public class OBJ_Cranberry extends Entity {
         salePrice = 25;
         buyPrice = -1;
         cropCount = 10; 
+        isEdible = true;
+        plusEnergy = 3;
     }
 }

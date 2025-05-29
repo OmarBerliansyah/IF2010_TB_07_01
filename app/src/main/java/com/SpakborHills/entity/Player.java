@@ -8,11 +8,9 @@ import java.util.List;
 import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
+import com.SpakborHills.main.UI;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.*;
 import com.SpakborHills.tile.TileType;
 
 public class Player extends Entity {
@@ -242,6 +240,10 @@ public class Player extends Entity {
         }
 
         if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
+            return;
+        }
+        if(gp.gameState == gp.characterState){
+            eating();
             return;
         }
  
@@ -1231,6 +1233,24 @@ public class Player extends Entity {
         // Method helper untuk mencari item definition berdasarkan nama
         // Implementasi tergantung pada struktur ItemManager Anda
         return gp.itemManager.getDefinitionByName(itemName);
+    }
+    public void eating() {
+        if (equippedItem == null) {
+            gp.ui.addMessage("No item selected to eat!");
+            return;
+        }
+        if (equippedItem.isEdible) {
+            this.energy += equippedItem.plusEnergy;
+            if (this.energy > 100) this.energy = 100;
+
+            gp.ui.addMessage("Ate " + equippedItem.name + " and restored " + equippedItem.plusEnergy + " energy!");
+
+            removeItemFromInventory(equippedItem.name);
+            unEquipItem();
+
+        } else {
+            gp.ui.addMessage("Its not edible!");
+        }
     }
 }
 

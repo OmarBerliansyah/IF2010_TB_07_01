@@ -31,5 +31,7 @@ public class OBJ_Salmon extends Entity {
         availableStartTimes.add(6);
         availableEndTimes.add(18);
         category = "Regular";
+        isEdible = true;
+        plusEnergy = 1;
     }
 }

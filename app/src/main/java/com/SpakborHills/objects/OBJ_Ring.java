@@ -12,5 +12,6 @@ public class OBJ_Ring extends Entity {
         down1 = setup("objects/Ring",gp.tileSize, gp.tileSize);
         isPickable = false;
         description = "[" + name + "]\nUntuk Melamar dan Menikah "; 
+        isEdible = false;
     }
 }
