@@ -59,6 +59,7 @@ public class GamePanel extends JPanel implements Runnable {
     public UI ui = new UI(this, keyH);
     public EventHandler eHandler = new EventHandler(this);
     public EnvironmentManager eManager = new EnvironmentManager(this);
+    public Cooking cooking;
     Thread gameThread;
 
     //ENTITY AND OBJECT
@@ -78,6 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogueState = 3;
     public final int characterState = 4;
     public final int shippingBinState = 5;
+    public final int cookingState = 6;
 
     // Variabel untuk menyimpan posisi kamera yang sudah dibatasi (clamped)
     public int clampedCameraX;
@@ -101,6 +103,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setNPC();    // Mengisi array NPC
         playMusic(0);
         eManager.setup();
+        cooking = new Cooking(this);
         gameState = titleState;
     }
 
@@ -206,6 +209,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if (gameState == shippingBinState) {
             ui.processShippingBinInput();
+        }
+        else if (gameState == cookingState) {
+            ui.processCookingInput();
         }
     }
 

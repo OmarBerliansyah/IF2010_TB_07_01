@@ -52,6 +52,13 @@ public class UI {
     public boolean showingShippingBinInterface = false;
     public int shippingBinSelectedIndex = 0;
     public int shippingBinQuantity = 1;
+    public boolean showingCookingInterface = false;
+    public int cookingSelectedIndex = 0;
+    public boolean coalBatchMode = false;
+    public String coalBatchFirstRecipe = null;
+    public boolean showingFuelSelectionDialog = false;
+    public int fuelSelectionIndex = 0;
+    public String pendingRecipeId = null;
 
 
     public UI(GamePanel gp, KeyHandler keyH) {
@@ -168,6 +175,13 @@ public class UI {
         }
         if (gp.gameState == gp.shippingBinState) {
             drawShippingBinInterface(g2);
+        }
+        if (gp.gameState == gp.cookingState) {
+            if (showingFuelSelectionDialog) {
+                drawFuelSelectionDialog(g2);
+            } else {
+                drawCookingInterface(g2);
+            }
         }
     }
     private boolean isInNPCHouse() {
@@ -990,5 +1004,306 @@ public class UI {
             return "(+0♥, -5⚡) Neutral";
         }
     }
-
+    public void showCookingInterface() {
+        showingCookingInterface = true;
+        cookingSelectedIndex = 0;
+        coalBatchMode = false;
+        coalBatchFirstRecipe = null;
+    }
+    
+    public void closeCookingInterface() {
+        showingCookingInterface = false;
+        coalBatchMode = false;
+        coalBatchFirstRecipe = null;
+        showingFuelSelectionDialog = false;
+        gp.gameState = gp.playState;
+    }
+    public void drawCookingInterface(Graphics2D g2) {
+        if (!showingCookingInterface) return;
+        
+        int windowWidth = gp.tileSize * 14;
+        int windowHeight = gp.tileSize * 10;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        // === TITLE ===
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.WHITE);
+        String title = coalBatchMode ? 
+            "🔥 Coal Batch Cooking - Select 2nd Recipe" : 
+            "🍳 Cooking Station";
+        int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
+        g2.drawString(title, titleX, y + 40);
+        
+        // === COAL BATCH STATUS ===
+        if (coalBatchMode && coalBatchFirstRecipe != null) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+            g2.setColor(Color.ORANGE);
+            String firstRecipe = "First recipe: " + gp.cooking.getRecipe(coalBatchFirstRecipe).name;
+            g2.drawString(firstRecipe, x + 20, y + 70);
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Select second recipe for coal batch cooking:", x + 20, y + 90);
+        }
+        
+        // === FUEL STATUS ===
+        if (!coalBatchMode) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+            g2.setColor(Color.CYAN);
+            String fuelStatus = gp.cooking.getFuelStatus();
+            g2.drawString("⛽ " + fuelStatus, x + 20, y + 90);
+        }
+        
+        // === RECIPE LIST ===
+        List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
+        
+        if (recipes.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+            g2.setColor(Color.GRAY);
+            String noRecipes = "No recipes unlocked yet!";
+            int noRecipesX = getXforCenteredTextInWindow(noRecipes, x, windowWidth, g2, g2.getFont());
+            g2.drawString(noRecipes, noRecipesX, y + windowHeight / 2);
+            return;
+        }
+        
+        int listStartY = coalBatchMode ? y + 120 : y + 120;
+        int itemHeight = 45;
+        int maxVisibleItems = 6;
+        
+        for (int i = 0; i < Math.min(recipes.size(), maxVisibleItems); i++) {
+            Cooking.Recipe recipe = recipes.get(i);
+            int itemY = listStartY + (i * itemHeight);
+            
+            // === SELECTION HIGHLIGHT ===
+            if (i == cookingSelectedIndex) {
+                g2.setColor(new Color(255, 215, 0, 120));
+                g2.fillRect(x + 10, itemY - 20, windowWidth - 20, itemHeight - 2);
+                g2.setColor(Color.YELLOW);
+                g2.drawString("▶", x + 15, itemY);
+            }
+            
+            // === RECIPE INFO ===
+            boolean canCook = gp.cooking.canCook(recipe.id);
+            g2.setColor(canCook ? Color.WHITE : Color.GRAY);
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+            
+            String recipeInfo = recipe.name + " (⚡+" + recipe.energyRestore + ")";
+            g2.drawString(recipeInfo, x + 40, itemY);
+            
+            // === INGREDIENTS INFO ===
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+            g2.setColor(canCook ? Color.LIGHT_GRAY : Color.DARK_GRAY);
+            
+            StringBuilder ingredients = new StringBuilder("📦 Needs: ");
+            for (int j = 0; j < recipe.ingredients.size(); j++) {
+                Cooking.Ingredient ing = recipe.ingredients.get(j);
+                ingredients.append(ing.itemName).append(" x").append(ing.quantity);
+                if (j < recipe.ingredients.size() - 1) ingredients.append(", ");
+            }
+            g2.drawString(ingredients.toString(), x + 40, itemY + 18);
+        }
+        
+        // === INSTRUCTIONS ===
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String instructions = coalBatchMode ? 
+            "ENTER: Select 2nd Recipe | ESC: Cancel Batch" : 
+            "ENTER: Cook Recipe | ESC: Close | ↑↓: Navigate";
+        g2.drawString(instructions, x + 20, y + windowHeight - 30);
+    }
+    
+    public void drawFuelSelectionDialog(Graphics2D g2) {
+        int windowWidth = gp.tileSize * 8;
+        int windowHeight = gp.tileSize * 6;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        // === QUESTION ===
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.WHITE);
+        String question = "Choose Fuel Type:";
+        int qx = getXforCenteredTextInWindow(question, x, windowWidth, g2, g2.getFont());
+        g2.drawString(question, qx, y + gp.tileSize);
+        
+        // === FUEL OPTIONS ===
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+        
+        String[] fuelOptions = {"🪵 Wood (1 recipe)", "⚫ Coal (2 recipes)"};
+        String[] fuelDescriptions = {"Single recipe cooking", "Just batch cooking (more efficient)"};
+        
+        int optionY = y + gp.tileSize + 40;
+        int optionSpacing = 50;
+        
+        for (int i = 0; i < fuelOptions.length; i++) {
+            int currentY = optionY + (i * optionSpacing);
+            
+            // Check if fuel is available
+            boolean hasThisFuel = (i == 0) ? hasEnoughItems("Wood", 1) : hasEnoughItems("Coal", 1);
+            
+            if (!hasThisFuel) {
+                g2.setColor(Color.DARK_GRAY);
+            } else if (fuelSelectionIndex == i) {
+                g2.setColor(Color.YELLOW);
+                g2.drawString("▶", x + 20, currentY);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            
+            g2.drawString(fuelOptions[i], x + 50, currentY);
+            
+            // Description
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+            g2.setColor(hasThisFuel ? Color.LIGHT_GRAY : Color.DARK_GRAY);
+            g2.drawString(fuelDescriptions[i], x + 50, currentY + 18);
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+        }
+        
+        // === INSTRUCTIONS ===
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.drawString("ENTER: Select | ESC: Cancel", x + 20, y + windowHeight - 20);
+    }
+    
+    public void processCookingInput() {
+        if (showingFuelSelectionDialog) {
+            processFuelSelectionInput();
+            return;
+        }
+        
+        if (!showingCookingInterface) return;
+        
+        List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
+        
+        if (recipes.isEmpty()) {
+            if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+                closeCookingInterface();
+                gp.keyH.enterPressed = false;
+                gp.keyH.escPressed = false;
+            }
+            return;
+        }
+        
+        // NAVIGATION
+        if (gp.keyH.upPressed) {
+            cookingSelectedIndex--;
+            if (cookingSelectedIndex < 0) {
+                cookingSelectedIndex = recipes.size() - 1;
+            }
+            gp.keyH.upPressed = false;
+        }
+        
+        if (gp.keyH.downPressed) {
+            cookingSelectedIndex++;
+            if (cookingSelectedIndex >= recipes.size()) {
+                cookingSelectedIndex = 0;
+            }
+            gp.keyH.downPressed = false;
+        }
+        
+        // SELECTION
+        if (gp.keyH.enterPressed) {
+            if (cookingSelectedIndex < recipes.size()) {
+                Cooking.Recipe selectedRecipe = recipes.get(cookingSelectedIndex);
+                
+                if (coalBatchMode) {
+                    // FINISH COAL BATCH COOKING
+                    boolean success = gp.cooking.finishCoalBatchCooking(coalBatchFirstRecipe, selectedRecipe.id);
+                    if (success) {
+                        coalBatchMode = false;
+                        coalBatchFirstRecipe = null;
+                        closeCookingInterface();
+                    }
+                } else {
+                    // NORMAL COOKING - Check fuel choice
+                    Cooking.FuelChoice fuelChoice = gp.cooking.getFuelChoice();
+                    
+                    if (fuelChoice == Cooking.FuelChoice.BOTH_AVAILABLE) {
+                        // Show fuel selection dialog
+                        showFuelSelectionDialog(selectedRecipe.id);
+                    } else if (fuelChoice == Cooking.FuelChoice.WOOD_ONLY) {
+                        boolean success = gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.WOOD);
+                        if (success) closeCookingInterface();
+                    } else if (fuelChoice == Cooking.FuelChoice.COAL_ONLY) {
+                        gp.cooking.cookRecipe(selectedRecipe.id, Cooking.FuelType.COAL); // Starts batch mode
+                    } else {
+                        gp.ui.addMessage("No fuel available!");
+                    }
+                }
+            }
+            gp.keyH.enterPressed = false;
+        }
+        
+        // ESCAPE
+        if (gp.keyH.escPressed) {
+            if (coalBatchMode) {
+                coalBatchMode = false;
+                coalBatchFirstRecipe = null;
+            }
+            closeCookingInterface();
+            gp.keyH.escPressed = false;
+        }
+    }
+    
+    public void showFuelSelectionDialog(String recipeId) {
+        showingFuelSelectionDialog = true;
+        pendingRecipeId = recipeId;
+        fuelSelectionIndex = 0;
+    }
+    
+    public void processFuelSelectionInput() {
+        if (gp.keyH.upPressed) {
+            fuelSelectionIndex--;
+            if (fuelSelectionIndex < 0) fuelSelectionIndex = 1;
+            gp.keyH.upPressed = false;
+        }
+        
+        if (gp.keyH.downPressed) {
+            fuelSelectionIndex++;
+            if (fuelSelectionIndex > 1) fuelSelectionIndex = 0;
+            gp.keyH.downPressed = false;
+        }
+        
+        if (gp.keyH.enterPressed) {
+            if (fuelSelectionIndex == 0) {
+                // Wood selected
+                if (hasEnoughItems("Wood", 1)) {
+                    boolean success = gp.cooking.cookRecipe(pendingRecipeId, Cooking.FuelType.WOOD);
+                    if (success) {
+                        showingFuelSelectionDialog = false;
+                        closeCookingInterface();
+                    }
+                } else {
+                    gp.ui.addMessage("Not enough wood!");
+                }
+            } else {
+                // Coal selected
+                if (hasEnoughItems("Coal", 1)) {
+                    gp.cooking.cookRecipe(pendingRecipeId, Cooking.FuelType.COAL); // Starts batch mode
+                    showingFuelSelectionDialog = false;
+                } else {
+                    gp.ui.addMessage("Not enough coal!");
+                }
+            }
+            gp.keyH.enterPressed = false;
+        }
+        
+        if (gp.keyH.escPressed) {
+            showingFuelSelectionDialog = false;
+            gp.keyH.escPressed = false;
+        }
+    }
+    
+    private boolean hasEnoughItems(String itemName, int quantity) {
+        int count = 0;
+        for (Inventory.InventoryItem item : gp.player.inventory.getInventory()) {
+            if (item.item.name.equals(itemName)) {
+                count += item.count;
+                if (count >= quantity) return true;
+            }
+        }
+        return false;
+    }
 }

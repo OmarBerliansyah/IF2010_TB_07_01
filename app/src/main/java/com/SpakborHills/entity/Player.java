@@ -1,7 +1,6 @@
 package com.SpakborHills.entity;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -403,6 +402,22 @@ public class Player extends Entity {
 
     public void useTool(){
         Entity currentTool = equippedItem;
+        if (gp.currentMap == 2) { // In house
+            int playerTileX = (worldX + solidArea.x + solidArea.width / 2) / gp.tileSize;
+            int playerTileY = (worldY + solidArea.y + solidArea.height / 2) / gp.tileSize;
+            
+            // Check if near cooking station (adjust coordinates as needed)
+            if (Math.abs(playerTileX - 8) <= 1 && Math.abs(playerTileY - 8) <= 1) {
+                if (energy >= 10) {
+                    gp.gameState = gp.cookingState;
+                    gp.ui.showCookingInterface();
+                    return;
+                } else {
+                    gp.ui.addMessage("Not enough energy to cook! (Need 10 energy)");
+                    return;
+                }
+            }
+        }
         if (currentTool instanceof OBJ_Hoe) {
             tilling = true;
             if(this.energy >= 5){

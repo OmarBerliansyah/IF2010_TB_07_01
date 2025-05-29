@@ -128,6 +128,7 @@ public class KeyHandler implements KeyListener {
                     } else if(gp.ui.inputState == 3) {
                         gp.ui.startGame();
                     }
+
 //                    if(gp.ui.commandNum == 1){
 //                        //implement nanti
 //                    }
@@ -238,6 +239,21 @@ public class KeyHandler implements KeyListener {
                 upPressed = true;
             }
             if (code == KeyEvent.VK_DOWN) {
+                downPressed = true;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
+        }
+        // cooking state
+        if (gp.gameState == gp.cookingState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                escPressed = true;
+            }
+            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                upPressed = true;
+            }
+            if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
                 downPressed = true;
             }
             if (code == KeyEvent.VK_ENTER) {
