@@ -216,7 +216,12 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         else if (gameState == shippingBinState) {
-            ui.processShippingBinInput();
+            if (ui.showShippingBinConfirmDialog) {
+                ui.processShippingBinConfirmInput();
+            } 
+            else {
+                ui.processShippingBinInput();
+            }
         }
         else if (gameState == cookingState) {
             ui.processCookingInput();

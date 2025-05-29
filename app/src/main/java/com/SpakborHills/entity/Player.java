@@ -10,6 +10,7 @@ import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
 import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_Parsnip;
 import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
@@ -1216,9 +1217,79 @@ public class Player extends Entity {
         return sellableItems;
     }
 
+    public boolean takeBackFromShippingBin(String itemName, int quantity) {
+        ShippingBinItem target = null;
+        for (ShippingBinItem item : shippingBinItems) {
+            if (item.itemName.equals(itemName)) {
+                target = item;
+                break;
+            }
+        }
+        if (target == null || target.quantity < quantity) {
+            gp.ui.addMessage("No such item in shipping bin!");
+            return false;
+        }
+        
+        // Remove from shipping bin first
+        target.quantity -= quantity;
+        if (target.quantity <= 0) {
+            shippingBinItems.remove(target);
+        }
+        
+        // Add back to inventory
+        boolean found = false;
+        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
+            if (invItem.item.name.equals(itemName)) {
+                invItem.count += quantity;
+                found = true;
+                break;
+            }
+        }
+        
+        // If item not found in inventory, create new inventory item
+        if (!found) {
+            Entity newItem = createItemByName(itemName);
+            if (newItem != null) {
+                inventory.getInventory().add(new Inventory.InventoryItem(newItem, quantity));
+                found = true;
+            }
+        }
+        
+        if (!found) {
+            boolean existsInBin = false;
+            for (ShippingBinItem binItem : shippingBinItems) {
+                if (binItem.itemName.equals(itemName)) {
+                    binItem.quantity += quantity;
+                    existsInBin = true;
+                    break;
+                }
+            }
+            if (!existsInBin) {
+                ItemDefinition itemDef = gp.itemManager.getDefinitionByName(itemName);
+                if (itemDef != null) {
+                    shippingBinItems.add(new ShippingBinItem(itemDef.id, itemName, quantity, itemDef.sellPrice));
+                }
+            }
+            gp.ui.addMessage("Can't create item: " + itemName);
+            return false;
+        }
+        
+        gp.ui.addMessage("Took back " + quantity + " " + itemName + " from shipping bin!");
+        return true;
+    }
+
+    private Entity createItemByName(String itemName) {
+        switch (itemName) {
+            case "Parsnip Seeds":
+                return new OBJ_ParsnipSeeds(gp);
+            case "Parsnip":
+                return new OBJ_Parsnip(gp);
+            default:
+                return null;
+        }
+    }
+
     private ItemDefinition findItemDefinitionByName(String itemName) {
-        // Method helper untuk mencari item definition berdasarkan nama
-        // Implementasi tergantung pada struktur ItemManager Anda
         return gp.itemManager.getDefinitionByName(itemName);
     }
 }
