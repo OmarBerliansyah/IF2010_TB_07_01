@@ -17,6 +17,7 @@ public class TileManager {
     public int mapTileNum[][][];
     public int mapCols[] = new int[20];
     public int mapRows[] = new int[20];
+    public SoilTile[][][] soilMap;
 
     public TileManager(GamePanel gp){
         this.gp = gp;
@@ -61,7 +62,8 @@ public class TileManager {
         loadMap("maps/MayorMap.txt", 9);//mayor house
         loadMap("maps/CarolineMap.txt", 10);// caroline house
         loadMap("maps/MountainLake.txt", 11);
-        
+
+        initSoilMap(gp.maxMap, mapCols[0], mapRows[0]); // Inisialisasi soilMap
     }
 
     public void getTileImage() {
@@ -265,6 +267,22 @@ public class TileManager {
         }
         catch(Exception e){
             e.printStackTrace();
+        }
+    }
+
+    public void initSoilMap(int mapCount, int cols, int rows) {
+        if (soilMap == null) {
+            soilMap = new SoilTile[mapCount][cols][rows];
+        }
+
+        for (int m = 0; m < mapCount; m++) {
+            for (int c = 0; c < cols; c++) {
+                for (int r = 0; r < rows; r++) {
+                    if (soilMap[m][c][r] == null) {
+                        soilMap[m][c][r] = new SoilTile();
+                    }
+                }
+            }
         }
     }
 

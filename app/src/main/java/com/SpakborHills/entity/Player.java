@@ -22,6 +22,7 @@ import com.SpakborHills.objects.OBJ_ParsnipSeeds;
 import com.SpakborHills.objects.OBJ_Pickaxe;
 import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.TileType;
+import com.SpakborHills.tile.SoilTile;
 
 
 public class Player extends Entity {
@@ -58,6 +59,7 @@ public class Player extends Entity {
     public int jumpHeight = 24; 
     public int jumpOffsetY = 0;
     public boolean tillWithoutEnergy = false;
+    public Inventory.InventoryItem plantingSeedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -440,7 +442,7 @@ public class Player extends Entity {
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE && gp.currentMap == 0) {
                 tilling = true;
                 energy-=5;
                 tillWithoutEnergy = false;
@@ -462,7 +464,8 @@ public class Player extends Entity {
                 Entity equippedSeed = equippedInventoryItem.item;
                 if (equippedSeed.type == EntityType.SEED &&
                 equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
-                    if(energy >= 5 && canPlant()){
+                    if(energy >= 5 && canPlant() && gp.currentMap == 0){
+                        plantingSeedItem = equippedInventoryItem;
                         planting = true;
                         energy -= 5;
                         equippedInventoryItem.count--;
@@ -516,7 +519,7 @@ public class Player extends Entity {
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10 && gp.currentMap == 0) {
                 watering = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk menyiram adalah 5
@@ -557,7 +560,7 @@ public class Player extends Entity {
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED && gp.currentMap == 0) {
                 recoverLand = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
@@ -626,6 +629,25 @@ public class Player extends Entity {
         return false;
     }
 
+    public int indexOfEmptyTile() {
+        Entity[] objects = gp.getCurrentMapObjects();
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == null) {
+                return i;
+            }
+        }
+        return -1; // full
+    }
+
+    public int indexOf(Entity e) {
+        Entity[] objects = gp.getCurrentMapObjects();
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == e) return i;
+        }
+        return -1;
+    }
+
+
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
         Entity[] currentMapObjects = gp.getCurrentMapObjects();
@@ -692,6 +714,27 @@ public class Player extends Entity {
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
+                        gp.ui.addMessage(""+plantingSeedItem);
+                        if (plantingSeedItem != null){
+                            Entity seed = plantingSeedItem.item.copy();
+                            gp.ui.addMessage(seed.name);
+
+                            SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
+                            soilTile.isTilled = true;
+                            soilTile.isSeedPlanted = true;
+                            soilTile.seedType = plantingSeedItem.item.name;
+                            soilTile.plantedDay = gp.eManager.getDayCount();
+
+                            gp.ui.addMessage("Seed planted at: (" + targetCol + "," + targetRow + ")");
+                            gp.ui.addMessage("Seed type: " + soilTile.seedType);
+                            gp.ui.addMessage("Planted day: " + soilTile.plantedDay);
+                            gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
+                            gp.ui.addMessage("Planted SoilTile" + soilTile);
+
+                            plantingSeedItem = null;
+                        } else {
+                            gp.ui.addMessage("No seed selected to plant!"); 
+                        }
                         // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraCangkul);
                     }
@@ -704,7 +747,16 @@ public class Player extends Entity {
             tillWithoutEnergy = false; 
             planting = false;
         }
+        for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
+            for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
+                SoilTile t = gp.tileM.soilMap[gp.currentMap][c][r];
+                if (t != null && t.isSeedPlanted) {
+                    System.out.println("DEBUG AFTER PLANTING: (" + c + "," + r + ") = " + t.seedType + ", day=" + t.plantedDay);
+                }
+            }
+        }
     }
+    
 
     public void tilling(){
         spriteCounter++;

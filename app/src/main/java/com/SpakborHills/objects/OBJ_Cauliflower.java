@@ -8,7 +8,7 @@ public class OBJ_Cauliflower extends Entity {
     public OBJ_Cauliflower(GamePanel gp){
         super(gp);
         name = "Cauliflower";
-        down1 = setup("objects/CaulOBJ_Cauliflower",gp.tileSize, gp.tileSize);
+        down1 = setup("objects/OBJ_Cauliflower",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nDapat dijual, di-gift, atau \ndimasak sesuai dengan \nkeperluan resep masakan."; 
         isPickable = true;
         buyPrice = 200;
@@ -16,5 +16,10 @@ public class OBJ_Cauliflower extends Entity {
         cropCount = 1; 
         isEdible = true;
         plusEnergy = 3;
+    }
+
+    @Override
+    public Entity copy(){
+        return new OBJ_Cauliflower(gp);
     }
 }
