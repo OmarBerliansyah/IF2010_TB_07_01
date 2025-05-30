@@ -75,27 +75,25 @@ public class KeyHandler implements KeyListener {
                     gp.ui.isTyping = false; // Stop typing when navigating
                     gp.ui.inputState--;
                     if(gp.ui.inputState < 0){
-                        gp.ui.inputState = 3; // Wrap to last option
+                        gp.ui.inputState = 4; // Wrap to last option
                     }
                 }if (code == KeyEvent.VK_DOWN) {
                     gp.ui.isTyping = false; // Stop typing when navigating
                     gp.ui.inputState++;
-                    if(gp.ui.inputState > 3){
+                    if(gp.ui.inputState > 4){
                         gp.ui.inputState = 0; // Wrap to first option
                     }
                 }if(code == KeyEvent.VK_ENTER){
                     if(gp.ui.inputState == 0) {
-                        // Start typing name
-                        gp.ui.isTyping = true;
+                        gp.ui.isTyping = true;// Start typing name
                     } else if(gp.ui.inputState == 1) {
-                        // Start typing farm name
-                        gp.ui.isTyping = true;
+                        gp.ui.isTyping = true; // Start typing farm name
                     } else if(gp.ui.inputState == 2) {
-                        // Toggle gender
-                        gp.ui.toggleGender();
-                    } else if(gp.ui.inputState == 3) {
-                        // Start game
-                        gp.ui.startGame();
+                        gp.ui.toggleGender(); // Toggle gender
+                    } else if (gp.ui.inputState == 3) {
+                        gp.ui.isTyping = true;
+                    }else if(gp.ui.inputState == 4) { 
+                        gp.ui.startGame();// Start game
                     }
                 }if(code == KeyEvent.VK_DELETE || code == KeyEvent.VK_BACK_SPACE) {
                     gp.ui.removeLastCharacter();
@@ -135,8 +133,10 @@ public class KeyHandler implements KeyListener {
                         gp.ui.isTyping = true;
                     } else if(gp.ui.inputState == 2) {
                         gp.ui.toggleGender();
-                    } else if(gp.ui.inputState == 3) {
-                        gp.ui.startGame();
+                    } else if (gp.ui.inputState == 3) {
+                        gp.ui.isTyping = true;
+                    }else if(gp.ui.inputState == 4) { 
+                        gp.ui.startGame();// Start game
                     }
 
 //                    if(gp.ui.commandNum == 1){

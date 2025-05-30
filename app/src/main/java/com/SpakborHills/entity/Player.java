@@ -38,6 +38,7 @@ public class Player extends Entity {
     public int gold;
     public String gender;
     public String farmName;
+    public String favoriteItem;
     public Entity partner;
     public String location;    
     public Inventory inventory;
@@ -96,9 +97,10 @@ public class Player extends Entity {
         direction = "down";
         energy = 100;//energi awal  & maks
         gold = 0;
-        name = "Player";
-        farmName = "Spakbor Hills";
-        gender = "tes";
+        name = "";
+        farmName = "";
+        gender = "";
+        favoriteItem = "";
         partner = null;
         updateLocation();
  // Initialize partner as null, can be set later
