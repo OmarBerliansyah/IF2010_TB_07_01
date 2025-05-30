@@ -2,14 +2,12 @@ package com.SpakborHills.environment;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
-
-
 
 import javax.swing.ImageIcon;
 
@@ -222,20 +220,44 @@ public class Lighting {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, clampedAlpha));
         g2.drawImage(darknessFilter, 0, 0, null);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-
+         // sub-window dimensions and position (top-right corner)
+        int windowWidth = gp.tileSize * 3;  
+        int windowHeight = gp.tileSize * 3; 
+        int windowX = gp.screenWidth - windowWidth - 20; 
+        int windowY = 20; 
+         // Draw chocolate brown background sub-window
+        Color backgroundColor = new Color(210, 125, 44,230);  // Orange-brown background
+        Color borderColor = new Color(143, 87, 27);           // Darker brown border
+        Color innerBorderColor = new Color(255, 178, 107);    // Lighter inner highlight
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(windowX, windowY, windowWidth, windowHeight, 8, 8);
+         // Draw border
+        g2.setColor(borderColor); // Darker brown for border
+        g2.drawRoundRect(windowX, windowY, windowWidth, windowHeight, 8, 8);
+        // Draw inner border highlight (lighter inner)
+        g2.setColor(innerBorderColor);
+        g2.drawRoundRect(windowX + 1, windowY + 1, windowWidth - 2, windowHeight - 2, 6, 6);
         // Draw the time
         String timeText = String.format("Time: %02d:%02d", hour, minute);
         String dayStr = "Day"+hari;
         String seasonStr = "Season: "+season.name().charAt(0) + season.name().substring(1).toLowerCase();
         String stateStr = "State: "+phase;
 
-        g2.setFont(g2.getFont().deriveFont(30F));
-        g2.setColor(Color.white);
+        Font customFont = gp.ui.getenviFont();
+        g2.setFont(customFont);
+        g2.setColor(new Color(86, 22, 12));
+        int textX = windowX + 25; // 15px padding from left edge of window
+        int textY = windowY + 55;  // Start 30px from top of window
+        int lineSpacing = 30;      // Space between lines
 
-        g2.drawString(timeText, 800, 200);
-        g2.drawString(dayStr,800,300);
-        g2.drawString(seasonStr, 800,  400);
-        g2.drawString(stateStr, 800, 500);
+
+        g2.drawString(timeText, textX, textY);
+        textY+=lineSpacing;
+        g2.drawString(dayStr,textX,textY);
+        textY+=lineSpacing;
+        g2.drawString(seasonStr, textX,  textY);
+        textY+=lineSpacing;
+        g2.drawString(stateStr, textX, textY);
 
         if(currentWeather == Weather.RAINY && rainGif != null && rainGifImage != null){
             g2.drawImage(rainGifImage,0,0,gp.screenWidth, gp.screenHeight, null);

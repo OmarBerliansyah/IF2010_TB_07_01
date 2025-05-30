@@ -30,6 +30,8 @@ public class UI {
     Font selectorFont; 
     Font inputFont;
     Font confirmationFont;
+    Font characterScreenFont;
+    Font enviFont;
 
     public boolean messageOn = false;
     public ArrayList<String> message = new ArrayList<>(); 
@@ -85,8 +87,9 @@ public class UI {
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
                 inputFont = baseFont.deriveFont(Font.PLAIN, 50f);
-                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
-
+                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);  
+                characterScreenFont =  baseFont.deriveFont(Font.PLAIN, 28F);                                                 // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                enviFont = baseFont.deriveFont(Font.PLAIN, 25f);
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
                 System.err.println("ERROR UI: File font kustom '" + fontPath + "' TIDAK DITEMUKAN!");
@@ -99,6 +102,8 @@ public class UI {
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
             inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
             confirmationFont = new Font(Font.SANS_SERIF, Font.PLAIN, 36);
+            characterScreenFont =  new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+            enviFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
         }
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
@@ -208,7 +213,9 @@ public class UI {
         message.add(text);
         messageCounter.add(0);
     }
-
+    public Font getenviFont(){
+        return enviFont;
+    }
     public void drawMessage() {
         int messageX = gp.tileSize;
         int messageY = gp.tileSize * 4;
@@ -985,13 +992,14 @@ public class UI {
 
         //TEXT
         g2.setColor(Color.white);
-        g2.setFont(g2.getFont().deriveFont(24F));
+        g2.setFont(characterScreenFont);
 
         int textX = frameX + 20;
         int textY = frameY + gp.tileSize;
         final int lineHeight = 32;
         final int maxValueWidth = frameWidth - 180;
-
+        g2.drawString("Player Info", textX+87, textY);
+        textY += 50;
         //NAMES
         g2.drawString("Name: ", textX, textY);
         g2.drawString(truncateText(gp.player.name, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.name, maxValueWidth), padding), textY);
@@ -1017,6 +1025,7 @@ public class UI {
         } else {
             g2.drawString("None", getXforRightAlignedText("None", padding), textY);
         }
+        textY += lineHeight;
         g2.drawString("Favorite : ", textX, textY);
         if (gp.player.favoriteItem == null || gp.player.favoriteItem.trim().isEmpty()) {
             gp.player.favoriteItem = "None";
