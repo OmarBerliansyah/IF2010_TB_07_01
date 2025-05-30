@@ -17,4 +17,9 @@ public class OBJ_Blueberry extends Entity {
         cropCount = 3; 
         plusEnergy = 3;
     }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_Blueberry(gp);
+    }
 }

@@ -16,7 +16,9 @@ public class OBJ_PumpkinSeeds extends Entity {
         down1 = setup("objects/PumpkinSeeds",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nBenih yang dapat\nditanam pada saat\nfall."; 
         isPickable = true;
-        daysToHarvest = 7; 
+        daysToHarvest = 7;
+        this.harvestProduct = new OBJ_Pumpkin(gp);
+        cropCount = 1; 
         buyPrice = 150; 
         salePrice = 75;
         isEdible = false;
@@ -27,5 +29,10 @@ public class OBJ_PumpkinSeeds extends Entity {
     @Override
     public EnumSet<Season> getAvailableSeasons() {
         return availableSeasons;
+    }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_PumpkinSeeds(gp);
     }
 }

@@ -124,6 +124,13 @@ public class GamePanel extends JPanel implements Runnable {
         return mapObjects[currentMap];
     }
 
+    public Entity[] getMapObjects(int mapIndex){
+        if (mapIndex >= 0 && mapIndex < maxMap) {
+            return mapObjects[mapIndex];
+        }
+        return null;
+    }
+
     public void setUpGame() {
         initializeAllMapObjects();
         aSetter.setObject(); // Pastikan ini mengisi mapObjects[currentMap] dengan benar

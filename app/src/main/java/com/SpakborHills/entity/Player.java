@@ -21,6 +21,7 @@ import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
 import com.SpakborHills.objects.*;
 import com.SpakborHills.tile.TileType;
+import com.SpakborHills.tile.SoilTile;
 
 
 public class Player extends Entity{
@@ -72,6 +73,7 @@ public class Player extends Entity{
     private int totalDaysPlayed;
     private int totalCropHarvested;
     private List<FishableProperties> fishCaught;
+    public Inventory.InventoryItem plantingSeedItem;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
@@ -298,11 +300,8 @@ public class Player extends Entity{
         }
 
         if (gp.gameState == gp.fishingMinigameState){
-            System.out.println("DEBUG: Fishing minigame sedang berlangsung.");
 
             if (gp.keyH.useToolPressed) {
-                // logika untuk mengecek hasil tebak angka, dll
-                System.out.println("DEBUG: Input Enter diterima di fishingMinigameState");
 
                 if (!gp.fishingInputBuffer.isBlank()){
                     try{
@@ -310,17 +309,11 @@ public class Player extends Entity{
 
                         this.processPlayerGuess(guessNumber);
                     } catch (NumberFormatException e) {
-                        System.out.println("DEBUG: Input bukan angka yang valid.");
                         gp.ui.addMessage("Please enter a valid number!");
                     }
                 } else {
 
                 } 
-                gp.keyH.useToolPressed = false;
-                // gp.ui.addMessage("You caught the fish!"); // atau gagal, tergantung logic
-                // this.inFishingMinigame = false;
-                // gp.keyH.enterPressed = false;
-                // gp.gameState = gp.playState; // kembali ke mode normal
                 
             }
             if (gp.keyH.enterPressed){
@@ -520,7 +513,7 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE && gp.currentMap == 0) {
                 tilling = true;
                 energy-=5;
                 tillWithoutEnergy = false;
@@ -542,7 +535,8 @@ public class Player extends Entity{
                 Entity equippedSeed = equippedInventoryItem.item;
                 if (equippedSeed.type == EntityType.SEED &&
                 equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
-                    if(energy >= 5 && canPlant()){
+                    if(energy >= 5 && canPlant() && gp.currentMap == 0){
+                        plantingSeedItem = equippedInventoryItem;
                         planting = true;
                         energy -= 5;
                         equippedInventoryItem.count--;
@@ -596,7 +590,7 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10 && gp.currentMap == 0) {
                 watering = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk menyiram adalah 5
@@ -637,7 +631,7 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED) {
+            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED && gp.currentMap == 0) {
                 recoverLand = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
@@ -706,6 +700,25 @@ public class Player extends Entity{
         return false;
     }
 
+    public int indexOfEmptyTile() {
+        Entity[] objects = gp.getCurrentMapObjects();
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == null) {
+                return i;
+            }
+        }
+        return -1; // full
+    }
+
+    public int indexOf(Entity e) {
+        Entity[] objects = gp.getCurrentMapObjects();
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == e) return i;
+        }
+        return -1;
+    }
+
+
     //KALO MAU PICKUP OBJECT
     public void pickUpObject(int i){
         Entity[] currentMapObjects = gp.getCurrentMapObjects();
@@ -772,6 +785,27 @@ public class Player extends Entity{
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
+                        gp.ui.addMessage(""+plantingSeedItem);
+                        if (plantingSeedItem != null){
+                            Entity seed = plantingSeedItem.item.copy();
+                            gp.ui.addMessage(seed.name);
+
+                            SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
+                            soilTile.isTilled = true;
+                            soilTile.isSeedPlanted = true;
+                            soilTile.seedType = plantingSeedItem.item.name;
+                            soilTile.plantedDay = gp.eManager.getDayCount();
+
+                            gp.ui.addMessage("Seed planted at: (" + targetCol + "," + targetRow + ")");
+                            gp.ui.addMessage("Seed type: " + soilTile.seedType);
+                            gp.ui.addMessage("Planted day: " + soilTile.plantedDay);
+                            gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
+                            gp.ui.addMessage("Planted SoilTile" + soilTile);
+
+                            plantingSeedItem = null;
+                        } else {
+                            gp.ui.addMessage("No seed selected to plant!"); 
+                        }
                         // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraCangkul);
                     }
@@ -784,7 +818,16 @@ public class Player extends Entity{
             tillWithoutEnergy = false; 
             planting = false;
         }
+        for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
+            for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
+                SoilTile t = gp.tileM.soilMap[gp.currentMap][c][r];
+                if (t != null && t.isSeedPlanted) {
+                    System.out.println("DEBUG AFTER PLANTING: (" + c + "," + r + ") = " + t.seedType + ", day=" + t.plantedDay);
+                }
+            }
+        }
     }
+    
 
     public void tilling(){
         spriteCounter++;
@@ -1582,10 +1625,7 @@ public class Player extends Entity{
     }
 
     public void startFishing(){
-        System.out.println("DEBUG: Player.startFishing() - AWAL");
         if (energy < 5){
-            gp.ui.addMessage("Not enough energy to fish!");
-            System.out.println("DEBUG: Player.startFishing() - Gagal: Energi kurang");
             return;
         } 
         if (!isPlayerFacingWater()){
@@ -1595,7 +1635,7 @@ public class Player extends Entity{
 
         energy -= 5;
         gp.eManager.addMinutesToTime(15);
-        gp.ui.addMessage("You cast your fishing rod...");
+    
 
         this.fishBeingFishedProto = selectFishToCatch();
 
@@ -1605,7 +1645,6 @@ public class Player extends Entity{
         }
 
         if (!(this.fishBeingFishedProto instanceof FishableProperties)){
-            gp.ui.addMessage("Error: Selected fish is not fishable!");
             this.fishBeingFishedProto = null;
             return;
         }
@@ -1628,7 +1667,6 @@ public class Player extends Entity{
                 this.maxFishingTries = 7;
                 break;
             default:
-                gp.ui.addMessage("Unknown fish category: " + category);
                 this.fishBeingFishedProto = null;
                 return;
         }
@@ -1639,8 +1677,7 @@ public class Player extends Entity{
         this.inFishingMinigame = true;
 
         gp.gameState = gp.fishingMinigameState;
-        gp.ui.addMessage("A " + category + " " + this.fishBeingFishedProto.name + " is on the line!");
-        // gp.ui.addMessage("Guess the number (" +this.fishingRangeString + "). Tries: " + (this.maxFishingTries - this.currentFishingTry));
+
 
     }
 
@@ -1711,20 +1748,20 @@ public class Player extends Entity{
         String fishName = (this.fishBeingFishedProto != null) ? this.fishBeingFishedProto.name : "fish";
 
         if (guessNumber == this.numberToGuess){
-            gp.ui.addMessage("ANJAY! The number was " + this.numberToGuess + ".");
-            gp.ui.addMessage("You caught a " + fishName + "!");
+            gp.ui.addMessage("So Cool! You caught a " + fishName + "!");
             addCaughtFishToInventory();
             endFishingMinigame(true);
             this.fishingGuessHint = "";
         } else {
             if(this.currentFishingTry >= this.maxFishingTries){
                 gp.ui.addMessage("Out of Tries!");
+                
                 gp.ui.addMessage("The correct number was " + this.numberToGuess + ".");
                 endFishingMinigame(false);
                 this.fishingGuessHint = "";
             } else {
                 this.fishingGuessHint = (guessNumber < this.numberToGuess) ? "higher" : "lower";
-                gp.ui.addMessage("Wrong guess.... ");
+                
 
             }
         }
@@ -1762,11 +1799,7 @@ public class Player extends Entity{
             gp.gameState = gp.playState;
             gp.fishingInputBuffer = "";
 
-            if (success){
-                gp.ui.addMessage("Fishing ended succesfully");
-            } else {
-                gp.ui.addMessage("Fishing ended");
-            }
+    
         }
 
         public Location getCurrentPlayerLocationEnum(){
@@ -1802,6 +1835,7 @@ public class Player extends Entity{
                        ", Season: " + currSeason +
                        ", Weather: " + curWeather +
                        ", Hour: " + currentHour);
+
             List<Entity> potentialCatches = new ArrayList<>();
 
             if (mapLocation != null){
@@ -1850,26 +1884,34 @@ public class Player extends Entity{
          * @return true jika ikan bisa ditangkap, false jika tidak
          */
 
-        private boolean canCatchThisFish(FishableProperties fish, Location pLoc, Season pSeason, Weather pWeather, int pHour) {
-            System.out.println("canCatchThisFish - Checking: " + fish.getFishName() + " for Location: " + pLoc +
-                       ", Season: " + pSeason + ", Weather: " + pWeather + ", Hour: " + pHour);
+         private boolean canCatchThisFish(FishableProperties fish, Location pLoc, Season pSeason, Weather pWeather, int pHour) {
+            EnumSet<Location> fishLocations = fish.getAvailableLocations();
 
-            if (fish.getAvailableLocations() == null || fish.getAvailableLocations().isEmpty()) {
-                return false; // Tidak ada lokasi yang valid
+            if (!(fishLocations.contains(pLoc))){
+                return false;
+            }
+
+            if (fishLocations == null || fishLocations.isEmpty()){
+                return false;
             }
 
             EnumSet<Season> fishSeasons = fish.getAvailableSeasons();
-            if (fishSeasons != null && !fishSeasons.isEmpty() && fishSeasons.size() < Season.values().length){
-                if (!fishSeasons.contains(pSeason)){
-                    return false;
-                }
+
+            if (!(fishSeasons.contains(pSeason))){
+                return false;
+            }
+
+            if (fishSeasons == null || fishSeasons.isEmpty()){
+                return false;
             }
 
             EnumSet<Weather> fishWeathers = fish.getAvailableWeathers();
-            if (fishWeathers != null && !fishWeathers.isEmpty() && fishWeathers.size() < Weather.values().length){
-                if (!fishWeathers.contains(pWeather)){
-                    return false;
-                }
+            if (!(fishWeathers.contains(pWeather))){
+                return false;
+            }
+
+            if (fishWeathers == null || fishWeathers.isEmpty()){
+                return false;
             }
 
             List<Integer> startTimes = fish.getAvailableStartTimes();

@@ -68,6 +68,8 @@ public class Entity {
 
 
     public boolean isPickable = true;
+    public Entity harvestProduct;
+    public int plantedDay;
 
     // ITEM ATTRIBUTES 
     public String description = "";
@@ -104,6 +106,10 @@ public class Entity {
                 direction = "left";
                 break;
         }
+    }
+
+    public Entity copy(){
+        return null;
     }
 
     public EnumSet<Season> getAvailableSeasons(){

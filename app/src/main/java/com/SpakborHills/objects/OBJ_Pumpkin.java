@@ -17,4 +17,9 @@ public class OBJ_Pumpkin extends Entity {
         isEdible = true;
         plusEnergy = 3;
     }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_Pumpkin(gp);
+    }
 }

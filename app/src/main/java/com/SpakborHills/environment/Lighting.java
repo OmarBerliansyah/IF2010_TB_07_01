@@ -12,6 +12,9 @@ import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 
 import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.entity.*;
+import com.SpakborHills.objects.*;
+import com.SpakborHills.tile.SoilTile;
 
 public class Lighting {
 
@@ -19,7 +22,7 @@ public class Lighting {
     BufferedImage darknessFilter;
     ImageIcon rainGif;
     Image rainGifImage;
-    int dayCounter;
+    public int dayCount = 1;
     float filterAlpha = 0f;
 
     final int day = 0;
@@ -118,6 +121,7 @@ public class Lighting {
         if(dayFrameCounter >= 17280){ //coba
             dayFrameCounter =0;
             hari++;
+            dayCount++;
             if(hari > 10){
                 hari = 1;
                 season = season.next();
@@ -197,6 +201,8 @@ public class Lighting {
     }
 
     public void nextDay(int currentDayInSeason){
+        updateEachDay();
+
         if(currentDayInSeason >= 30){
             rainyDayCount = 0;
         }
@@ -208,6 +214,86 @@ public class Lighting {
                 rainyDayCount++;
             } else{
                 currentWeather = Weather.SUNNY;
+            }
+        }
+    }
+
+    public void updateEachDay(){
+        gp.ui.addMessage("hi");
+        for(int mapi = 0; mapi < gp.tileM.soilMap.length; mapi++){
+            for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
+                for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
+                    SoilTile tile = gp.tileM.soilMap[gp.currentMap][c][r];
+                    if (tile.isSeedPlanted) {
+                        int dayDiff = gp.eManager.getDayCount() - tile.plantedDay;
+                        int requiredDays = getGrowthDays(tile.seedType);
+                        gp.ui.addMessage("Seed planted at: (" + c + "," + r + ")");
+
+                        if (dayDiff >= requiredDays) {
+                            gp.ui.addMessage("Seed type: " + tile.seedType);
+                            gp.ui.addMessage("Planted day: " + tile.plantedDay);
+                            // gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
+                            Entity grownPlant = createGrownPlant(tile.seedType);
+                            grownPlant.worldX = c * gp.tileSize;
+                            grownPlant.worldY = r * gp.tileSize;
+
+                            insertToMapObjects(gp.currentMap, grownPlant); // Taruh ke world
+                            tile.isSeedPlanted = false;
+
+                            System.out.println("Tile: (" + c + "," + r + ")");
+                            System.out.println("Planted day: " + tile.plantedDay);
+                            System.out.println("Current day: " + gp.eManager.getDayCount());
+                            System.out.println("Diff: " + dayDiff + ", Required: " + requiredDays);
+                            System.out.println("Plant grown at (" + c + "," + r + ") : " + tile.seedType);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public int getGrowthDays(String seedType){
+        return switch(seedType){
+            case "Parsnip Seeds" -> 1;
+            case "Cauliflower Seeds" -> 5;
+            case "Potato Seeds" -> 3;
+            case "Wheat Seeds" -> 1;
+            case "Blueberry Seeds" -> 7;
+            case "Tomato Seeds" -> 3;
+            case "Hot Pepper Seeds" -> 1;
+            case "Melon Seeds" -> 4;
+            case "Cranberry Seeds" -> 2;
+            case "Pumpkin Seeds" -> 7;
+            case "Grape Seeds" -> 3;
+            case "Eggplant Seeds" -> 5;
+            default -> 0; // Default jika tidak ada yang cocok
+        };
+    }
+
+    public Entity createGrownPlant(String seedType) {
+        return switch (seedType) {
+            case "Parsnip Seeds" -> new OBJ_Parsnip(gp);
+            case "Cauliflower Seeds" -> new OBJ_Cauliflower(gp);
+            case "Potato Seeds" -> new OBJ_Potato(gp);
+            case "Wheat Seeds" -> new OBJ_Wheat(gp);
+            case "Blueberry Seeds" -> new OBJ_Blueberry(gp);
+            case "Tomato Seeds" -> new OBJ_Tomato(gp);
+            case "Hot Pepper Seeds" -> new OBJ_HotPepper(gp);
+            case "Melon Seeds" -> new OBJ_Melon(gp);
+            case "Cranberry Seeds" -> new OBJ_Cranberry(gp);
+            case "Pumpkin Seeds" -> new OBJ_Pumpkin(gp);
+            case "Grape Seeds" -> new OBJ_Grape(gp);
+            case "Eggplant Seeds" -> new OBJ_Eggplant(gp);
+            default -> null; // Jika tidak ada yang cocok
+        };
+    }
+
+    public void insertToMapObjects(int mapIndex, Entity e) {
+        Entity[] mapObjects = gp.getMapObjects(mapIndex);
+        for (int i = 0; i < mapObjects.length; i++) {
+            if (mapObjects[i] == null) {
+                mapObjects[i] = e;
+                break;
             }
         }
     }
