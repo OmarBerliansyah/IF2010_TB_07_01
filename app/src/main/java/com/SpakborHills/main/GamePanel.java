@@ -88,8 +88,9 @@ public class GamePanel extends JPanel implements Runnable {
     public Entity NPC[] = new Entity[10];
     private static HashMap<String, NPC> NPCs = new HashMap<>();
     ArrayList<Entity> entityList = new ArrayList<>();
-    public ItemManager itemManager = new ItemManager(this);
+    public ItemManager itemManager = new ItemManager();
     ArrayList<Entity> allFishPrototypes = new ArrayList<>();
+    public Store store;
 
 
 
@@ -105,6 +106,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int fishingMinigameState = 7;
     public final int endGameTriggerState = 8; 
     public final int endGameState = 9;
+    public final int shoppingState = 10;
 
     public String fishingInputBuffer = "";
 
@@ -140,7 +142,7 @@ public class GamePanel extends JPanel implements Runnable {
         cooking = new Cooking(this);
         gameState = titleState;
         initializeFishPrototypes();
-
+        store = new Store(this);
     }
 
     public void startGameThread() {
@@ -291,6 +293,10 @@ public class GamePanel extends JPanel implements Runnable {
             ui.processEndGameStatsInput();
         }
 
+        else if (gameState == shoppingState) {
+            store.update();
+        }
+
         // if (keyH != null) { // Pastikan keyH tidak null
         
         // }
@@ -427,6 +433,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (gameState == endGameState) {
                 ui.drawEndGameStatsInterface(g2);
+            }
+
+            else if (gameState == shoppingState) {
+                store.draw(g2);
             }
 
             g2.dispose();

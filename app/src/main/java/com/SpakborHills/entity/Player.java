@@ -62,7 +62,7 @@ public class Player extends Entity{
     public int endGameCount = 0;
     private boolean hasMarried = false;
     public int totalIncome;
-    private int totalExpenditure;
+    public int totalExpenditure;
     private int totalIncomePerSeason;
     private int totalExpenditurePerSeason;
     private int seasonalIncomeCount;
@@ -70,7 +70,7 @@ public class Player extends Entity{
     private double avgSeasonalIncome;
     private double avgSeasonalExpenditure;
     private int totalDaysPlayed;
-    private int totalCropHarvested;
+    public int totalCropHarvested;
     private List<FishableProperties> fishCaught;
     public Inventory.InventoryItem plantingSeedItem;
 
@@ -746,14 +746,16 @@ public class Player extends Entity{
 
                     if (harvestAmount == 1) {
                         gp.ui.addMessage("Got a " + itemName + "!");
-                    } else {
+                    }
+                    else {
                         gp.ui.addMessage("Got " + harvestAmount + " " + itemName + "!");
                     }
                     
                     currentMapObjects[i] = null;
 
                     gp.player.totalCropHarvested += harvestAmount;
-                } else {
+                } 
+                else {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
             }
@@ -2097,7 +2099,24 @@ public class Player extends Entity{
             return new EndGameStats<>(moneyFlows, seasonalMoneyFlows, npcs, totalCropHarvested, fishCaught, totalDaysPlayed);
         }
 
-
+            public void checkStoreInteraction() {
+                if (gp.currentMap == 5) { 
+                    int playerTileX = (gp.player.worldX + gp.player.solidArea.x + gp.player.solidArea.width/2) / gp.tileSize;
+                    int playerTileY = (gp.player.worldY + gp.player.solidArea.y + gp.player.solidArea.height/2) / gp.tileSize;
+                    
+                    if (Math.abs(playerTileX - 8) <= 1 && Math.abs(playerTileY - 8) <= 1) {
+                        if (gp.keyH.enterPressed) {
+                            for (int i = 0; i < gp.NPC.length; i++) {
+                                if (gp.NPC[i] != null && gp.NPC[i].name.equals("Emily")) {
+                                    ((Emily)gp.NPC[i]).interactWithTable();
+                                    break;
+                                }
+                            }
+                            gp.keyH.enterPressed = false;
+                        }
+                    }
+                }
+            }
 
         //Testing End Game Stats
         public void cheatMoney(int amount) {
@@ -2119,6 +2138,5 @@ public class Player extends Entity{
             hasMarried = true;
             gp.ui.addMessage("Cheat activated: You are now married to " + npcName + "!");
         }
-
 }
 

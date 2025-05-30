@@ -1,5 +1,7 @@
 package com.SpakborHills.main;
 
+import com.SpakborHills.entity.Emily;
+
 // import java.awt.*;
 
 public class EventHandler {
@@ -197,6 +199,13 @@ public class EventHandler {
                 gp.keyH.enterPressed = false;
                 gp.ui.showingWatchTV = true;
                 gp.player.energy -= 5;
+            }
+
+            else if (gp.currentMap == 5 && hit(5, 17, 18, "any") || hit(5, 16, 19, "any")) {
+                gp.ui.addMessage("Welcome to Emily's Store!");
+                gp.gameState = gp.shoppingState;
+                gp.keyH.enterPressed = false;
+                // canTouchEvent = false;
             }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
