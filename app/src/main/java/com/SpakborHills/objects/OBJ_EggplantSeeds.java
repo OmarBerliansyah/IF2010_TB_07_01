@@ -7,19 +7,18 @@ import com.SpakborHills.entity.EntityType;
 import com.SpakborHills.environment.Season;
 import com.SpakborHills.main.GamePanel;
 
-public class OBJ_PumpkinSeeds extends Entity {
+public class OBJ_EggplantSeeds extends Entity {
     public EnumSet<Season> availableSeasons;
 
-    public OBJ_PumpkinSeeds(GamePanel gp){
+    public OBJ_EggplantSeeds(GamePanel gp){
         super(gp);
-        name = "Pumpkin Seeds";
-        down1 = setup("objects/PumpkinSeeds",gp.tileSize, gp.tileSize);
+        name = "Eggplant Seeds";
+        down1 = setup("objects/EggplantSeeds",gp.tileSize, gp.tileSize);
         description = "[" + name + "]\nBenih yang dapat\nditanam pada saat\nfall."; 
         isPickable = true;
-        daysToHarvest = 7; 
-        buyPrice = 150; 
-        salePrice = 75;
-        isEdible = false;
+        daysToHarvest = 2; 
+        buyPrice = 100; 
+        salePrice = 50;
         availableSeasons = EnumSet.of(Season.FALL);
         type = EntityType.SEED;
     }

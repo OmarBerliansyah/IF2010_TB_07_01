@@ -17,9 +17,9 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import com.SpakborHills.data.ItemDefinition;
+import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.NPC;
 import com.SpakborHills.entity.ShippingBinItem;
-import com.SpakborHills.entity.Entity;
 
 public class UI {
     GamePanel gp;
@@ -45,7 +45,8 @@ public class UI {
     public String inputPlayerName = "";
     public String inputFarmName = "";
     public String inputGender = "Male"; // Default Male
-    public int inputState = 0; // 0 = name, 1 = farm name, 2 = gender, 3 = done
+    public String inputFavoriteItem = "";
+    public int inputState = 0; // 0 = name, 1 = farm name, 2 = gender, 3 = favorite item, 4 = done
     public boolean isTyping = false;
     public boolean showingSleepConfirmDialog = false;
     public int sleepConfirmCommandNum = 0; // 0 = Yes, 1 = No
@@ -181,7 +182,6 @@ public class UI {
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
-            drawEating();
         }
         if (gp.gameState == gp.shippingBinState) {
             drawShippingBinInterface(g2);
@@ -194,6 +194,7 @@ public class UI {
             }
         }
 
+        drawMessage();
         drawEating();
         if (gp.gameState == gp.fishingMinigameState){
             drawFishingMinigameUI();
@@ -211,11 +212,32 @@ public class UI {
     public void drawMessage() {
         int messageX = gp.tileSize;
         int messageY = gp.tileSize * 4;
+        int eatingMessageX = gp.tileSize; 
+        int eatingMessageY = gp.screenHeight - gp.tileSize * 4;
 
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32f));
 
         for (int i = message.size() - 1; i >= 0; i--) {
             if (message.get(i) != null) {
+                if (message.get(i).startsWith("Ate ") || message.get(i).equals("No item selected to eat!") || message.get(i).equals("Its not edible!")) {
+                g2.setColor(new Color(0, 0, 0, 150)); 
+                g2.fillRoundRect(eatingMessageX - 10, eatingMessageY - 20, gp.tileSize * 8, 30, 10, 10); 
+
+                g2.setColor(Color.WHITE);
+                g2.drawString(message.get(i), eatingMessageX, eatingMessageY);
+
+                int counter = messageCounter.get(i) + 1;
+                messageCounter.set(i, counter);
+                eatingMessageY += 35; 
+
+                if (messageCounter.get(i) > 120) {
+                    message.remove(i);
+                    messageCounter.remove(i);
+                    i--;
+                }
+
+            } else {
+                g2.setFont(g2.getFont()); 
                 g2.setColor(Color.black);
                 g2.drawString(message.get(i), messageX + 2, messageY + 2);
 
@@ -232,8 +254,8 @@ public class UI {
                     messageCounter.remove(i);
                 }
             }
-}
-
+            }
+        }
     }
 
     public void setForceBlackScreen(boolean active) {
@@ -300,33 +322,6 @@ public class UI {
             g2.setColor(Color.white);
         }
         g2.drawString(noText, noX, optionY);
-    }
-
-    public void drawEating(){
-        int messageX = 20;
-        int messageY = 400; // Atur posisi sesuai keinginan
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
-
-        for (int i = 0; i < message.size(); i++) {
-            if (message.get(i) != null) {
-                g2.setColor(new Color(0, 0, 0, 150)); // latar semi-transparan
-                g2.fillRoundRect(messageX - 10, messageY - 20, gp.tileSize * 5, 30, 10, 10);
-
-                g2.setColor(Color.white);
-                g2.drawString(message.get(i), messageX, messageY);
-
-                int counter = messageCounter.get(i) + 1;
-                messageCounter.set(i, counter);
-                messageY += 40;
-
-                if (messageCounter.get(i) > 120) { // muncul selama 2 detik jika 60 FPS
-                    message.remove(i);
-                    messageCounter.remove(i);
-                    i--;
-                }
-            }
-        }
-
     }
 
      // Helper untuk mendapatkan posisi X agar teks terpusat di dalam area window
@@ -806,7 +801,7 @@ public class UI {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
             int centerX = gp.screenWidth / 2;
-            int startY = gp.tileSize * 3;
+            int startY =  gp.tileSize * 2;
             int lineSpacing = gp.tileSize * 2;
 
             // PLAYER NAME INPUT
@@ -832,18 +827,27 @@ public class UI {
             g2.setColor(inputState == 2 ? Color.YELLOW : Color.WHITE);
             int genderX = getXforCenteredText(genderText);
             g2.drawString(genderText, genderX, startY + lineSpacing * 2);
+            
+            // INPUT SELECTION
+            String favoriteText = "Favorite Item: " + inputFavoriteItem;
+            if (inputState == 3 && isTyping) {
+                favoriteText += "_";
+            }
+            g2.setColor(inputState == 3 ? Color.YELLOW : Color.WHITE);
+            int favoriteX = getXforCenteredText(favoriteText);
+            g2.drawString(favoriteText, favoriteX, startY + lineSpacing * 3);
 
             // START GAME BUTTON
-            g2.setColor(inputState == 3 ? Color.YELLOW : Color.WHITE);
+            g2.setColor(inputState == 4 ? Color.YELLOW : Color.WHITE);
             String startText = "START GAME";
             int startX = getXforCenteredText(startText);
-            g2.drawString(startText, startX, startY + lineSpacing * 3);
-            if(inputState == 3){
-                g2.drawString(">", startX - gp.tileSize, startY + lineSpacing * 3);
+            g2.drawString(startText, startX, startY + lineSpacing * 4);
+            if(inputState == 4){
+                g2.drawString(">", startX - gp.tileSize, startY + lineSpacing * 4);
             }
 
             // INSTRUCTIONS
-            g2.setFont(g2.getFont().deriveFont(18F));
+            g2.setFont(g2.getFont().deriveFont(16F));
             g2.setColor(Color.LIGHT_GRAY);
             String instruction = "Use UP/DOWN to navigate, ENTER to select, Type to input text";
             int instrX = getXforCenteredText(instruction);
@@ -854,12 +858,16 @@ public class UI {
         if (!isTyping) return;
         
         if (inputState == 0) { // Player name
-            if (inputPlayerName.length() < 12) { // Max 12 characters
+            if (inputPlayerName.length() < 10) { // Max 10 characters
                 inputPlayerName += c;
             }
         } else if (inputState == 1) { // Farm name
-            if (inputFarmName.length() < 15) { // Max 15 characters
+            if (inputFarmName.length() < 10) { // Max 10 characters
                 inputFarmName += c;
+            }
+        }else if (inputState == 3) { // Favorite item
+            if (inputFavoriteItem.length() < 15) { // Max 15 characters, ntar ke cut juga si sama truncate text jadi yang ditampilin cuma 10
+                inputFavoriteItem += c;
             }
         }
     }
@@ -870,6 +878,8 @@ public class UI {
             inputPlayerName = inputPlayerName.substring(0, inputPlayerName.length() - 1);
         } else if (inputState == 1 && inputFarmName.length() > 0) {
             inputFarmName = inputFarmName.substring(0, inputFarmName.length() - 1);
+        } else if (inputState == 3 && inputFavoriteItem.length() > 0) { 
+            inputFavoriteItem = inputFavoriteItem.substring(0, inputFavoriteItem.length() - 1);
         }
     }
     public void toggleGender() {
@@ -886,12 +896,15 @@ public class UI {
         }
         if (inputFarmName.isEmpty()) {
             inputFarmName = "My Farm";
+        } if (inputFavoriteItem.isEmpty()) {
+            inputFavoriteItem = "Parsnip"; 
         }
         
         // Apply ke player
         gp.player.name = inputPlayerName;
         gp.player.farmName = inputFarmName;
         gp.player.gender = inputGender;
+        gp.player.favoriteItem = inputFavoriteItem;
 
         // Reset title screen state
         titleScreenState = 0;
@@ -1004,6 +1017,11 @@ public class UI {
         } else {
             g2.drawString("None", getXforRightAlignedText("None", padding), textY);
         }
+        g2.drawString("Favorite : ", textX, textY);
+        if (gp.player.favoriteItem == null || gp.player.favoriteItem.trim().isEmpty()) {
+            gp.player.favoriteItem = "None";
+        }
+        g2.drawString(truncateText(gp.player.favoriteItem, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.favoriteItem, maxValueWidth), padding), textY);
         //masih atur-atur ye . disini 
     }
     

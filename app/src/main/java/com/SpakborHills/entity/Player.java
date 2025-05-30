@@ -1,24 +1,27 @@
 package com.SpakborHills.entity;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-
 import com.SpakborHills.data.ItemDefinition;
+import com.SpakborHills.entity.Entity.FishableProperties;
+import com.SpakborHills.environment.Location;
+import com.SpakborHills.environment.Season;
+import com.SpakborHills.environment.Weather;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
-import com.SpakborHills.main.UI;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.*;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_Parsnip;
+import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.TileType;
-import com.SpakborHills.environment.*;
-import com.SpakborHills.entity.Entity.FishableProperties;
 
 
 public class Player extends Entity {
@@ -35,6 +38,7 @@ public class Player extends Entity {
     public int gold;
     public String gender;
     public String farmName;
+    public String favoriteItem;
     public Entity partner;
     public String location;    
     public Inventory inventory;
@@ -95,9 +99,10 @@ public class Player extends Entity {
         direction = "down";
         energy = 100;//energi awal  & maks
         gold = 0;
-        name = "Player";
-        farmName = "Spakbor Hills";
-        gender = "tes";
+        name = "";
+        farmName = "";
+        gender = "";
+        favoriteItem = "";
         partner = null;
         updateLocation();
  // Initialize partner as null, can be set later
@@ -173,6 +178,7 @@ public class Player extends Entity {
         cranberrySeeds = setup("player/PlayerCranberrySeeds", gp.tileSize, gp.tileSize);
         pumpkinSeeds = setup("player/PlayerPumpkinSeeds", gp.tileSize, gp.tileSize);
         grapeSeeds = setup("player/PlayerGrapeSeeds", gp.tileSize, gp.tileSize);
+        eggplantSeeds = setup("player/PlayerEggplantSeeds", gp.tileSize, gp.tileSize);
     }
 
     public void getPlayerPickAxeImage(){
@@ -382,6 +388,7 @@ public class Player extends Entity {
              if (npcIndex != 999) {
                 giftToNPC(npcIndex);
             }
+            keyH.giftPressed = false;
         }
         if (keyH.proposePressed && !inFishingMinigame) {
         // Propose ke NPC
@@ -488,24 +495,33 @@ public class Player extends Entity {
                 gp.ui.addMessage("You can't till this tile!");
             }
         }
-        else if (currentTool instanceof OBJ_ParsnipSeeds) {
+        else if (currentTool.type == EntityType.SEED) {
             Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
             if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
-                if(energy >= 5 && canPlant()){
-                    planting = true;
-                    energy -= 5;
-                    equippedInventoryItem.count--;
-                    tillWithoutEnergy = false;
-                }
-                else if (energy < 5){
-                    tillWithoutEnergy = true;
-                    planting = true;
-                    gp.ui.addMessage("Not enough energy to plant!");
+                Entity equippedSeed = equippedInventoryItem.item;
+                if (equippedSeed.type == EntityType.SEED &&
+                equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
+                    if(energy >= 5 && canPlant()){
+                        planting = true;
+                        energy -= 5;
+                        equippedInventoryItem.count--;
+                        tillWithoutEnergy = false;
+                    }
+                    else if (energy < 5){
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("Not enough energy to plant!");
+                    }
+                    else{
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("You can't plant here!");
+                    }
                 }
                 else{
                     tillWithoutEnergy = true;
                     planting = true;
-                    gp.ui.addMessage("You can't plant here!");
+                    gp.ui.addMessage("This seed cannot be planted in this season!");
                 }
             }
             else{
@@ -1020,7 +1036,11 @@ public class Player extends Entity {
                 } else if (planting) {
                     // ... (logika sprite untuk planting)
                     if (spriteNum == 1) imageToDraw = up1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2) {
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     // ... (logika sprite untuk watering)
                     if (spriteNum == 1) imageToDraw = up1;
@@ -1041,7 +1061,11 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingDown;
                 } else if (planting) {
                     if (spriteNum == 1) imageToDraw = down1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = down1;
                     if (spriteNum == 2) imageToDraw = wateringDown;
@@ -1059,8 +1083,12 @@ public class Player extends Entity {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = tillingLeft;
                 } else if (planting) {
-                     if (spriteNum == 1) imageToDraw = left1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = wateringLeft;
@@ -1079,7 +1107,11 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingRight;
                 } else if (planting) {
                      if (spriteNum == 1) imageToDraw = right1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = right1;
                     if (spriteNum == 2) imageToDraw = wateringRight;
@@ -1124,6 +1156,24 @@ public class Player extends Entity {
         // Opsional: Gambar solidArea untuk debug (gunakan screenX, screenY dari Player)
         // g2.setColor(java.awt.Color.BLUE);
         // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+    }
+
+    private BufferedImage getSeedImageByName(String name){
+        switch (name){
+            case "Parsnip Seeds": return parsnipSeeds;
+            case "Cauliflower Seeds": return cauliflowerSeeds;
+            case "Potato Seeds": return potatoSeeds;
+            case "Wheat Seeds": return wheatSeeds;
+            case "Blueberry Seeds": return blueberrySeeds;
+            case "Tomato Seeds": return tomatoSeeds;
+            case "HotPepper Seeds": return hotPepperSeeds;
+            case "Melon Seeds": return melonSeeds;
+            case "Cranberry Seeds": return cranberrySeeds;
+            case "Pumpkin Seeds": return pumpkinSeeds;
+            case "Grape Seeds": return grapeSeeds;
+            case "Eggplant Seeds": return eggplantSeeds;
+        }
+        return parsnipSeeds;
     }
     public boolean isInRelationship() {
         return partner != null;
@@ -1294,7 +1344,13 @@ public class Player extends Entity {
             if (equippedItem != null) {
                 itemToGive = equippedItem.name;
             } else {
-                itemToGive = inventory.getInventory().get(0).item.name;
+                gp.ui.addMessage("You don't pick any item to gift");
+                return;
+            }
+            if (itemToGive.equals("Ring")) {
+                gp.ui.addMessage("You can't give away your Proposal Ring!");
+                gp.ui.addMessage("Choose a different item to gift.");
+                return; 
             }
             boolean hasItem = false;
             for (Inventory.InventoryItem invItem : inventory.getInventory()) {
@@ -1313,8 +1369,10 @@ public class Player extends Entity {
                     // Show feedback
                     gp.ui.addMessage("You gave " + itemToGive + " to " + currentNPC.name + " (-5 energy)");
                     gp.ui.addMessage("Heart points: " + currentNPC.getHeartPoints() + "/150");
+                    return;
                 } else {
                     gp.ui.addMessage("Failed to give item!");
+                    return;
                 }
             } else {
                 gp.ui.addMessage("You don't have " + itemToGive + " to give!");
