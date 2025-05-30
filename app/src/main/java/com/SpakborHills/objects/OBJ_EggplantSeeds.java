@@ -7,7 +7,7 @@ import com.SpakborHills.entity.EntityType;
 import com.SpakborHills.environment.Season;
 import com.SpakborHills.main.GamePanel;
 
-public class OBJ_CranberrySeeds extends Entity {
+public class OBJ_EggplantSeeds extends Entity {
     public EnumSet<Season> availableSeasons;
 
     public OBJ_EggplantSeeds(GamePanel gp){

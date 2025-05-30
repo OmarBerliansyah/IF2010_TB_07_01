@@ -453,27 +453,33 @@ public class Player extends Entity {
                 gp.ui.addMessage("You can't till this tile!");
             }
         }
-        else if (currentTool instanceof Entity && currentTool.type == EntityType.SEED) {
+        else if (currentTool.type == EntityType.SEED) {
             Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
             if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
                 Entity equippedSeed = equippedInventoryItem.item;
                 if (equippedSeed.type == EntityType.SEED &&
-                equippedSeed.getAvailableSeasons().contains(gp.eManager.currentSeason))
-                if(energy >= 5 && canPlant()){
-                    planting = true;
-                    energy -= 5;
-                    equippedInventoryItem.count--;
-                    tillWithoutEnergy = false;
-                }
-                else if (energy < 5){
-                    tillWithoutEnergy = true;
-                    planting = true;
-                    gp.ui.addMessage("Not enough energy to plant!");
+                equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
+                    if(energy >= 5 && canPlant()){
+                        planting = true;
+                        energy -= 5;
+                        equippedInventoryItem.count--;
+                        tillWithoutEnergy = false;
+                    }
+                    else if (energy < 5){
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("Not enough energy to plant!");
+                    }
+                    else{
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("You can't plant here!");
+                    }
                 }
                 else{
                     tillWithoutEnergy = true;
                     planting = true;
-                    gp.ui.addMessage("You can't plant here!");
+                    gp.ui.addMessage("This seed cannot be planted in this season!");
                 }
             }
             else{
@@ -988,7 +994,11 @@ public class Player extends Entity {
                 } else if (planting) {
                     // ... (logika sprite untuk planting)
                     if (spriteNum == 1) imageToDraw = up1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2) {
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     // ... (logika sprite untuk watering)
                     if (spriteNum == 1) imageToDraw = up1;
@@ -1009,7 +1019,11 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingDown;
                 } else if (planting) {
                     if (spriteNum == 1) imageToDraw = down1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = down1;
                     if (spriteNum == 2) imageToDraw = wateringDown;
@@ -1027,8 +1041,12 @@ public class Player extends Entity {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = tillingLeft;
                 } else if (planting) {
-                     if (spriteNum == 1) imageToDraw = left1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = wateringLeft;
@@ -1047,7 +1065,11 @@ public class Player extends Entity {
                     if (spriteNum == 2) imageToDraw = tillingRight;
                 } else if (planting) {
                      if (spriteNum == 1) imageToDraw = right1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = right1;
                     if (spriteNum == 2) imageToDraw = wateringRight;
@@ -1092,6 +1114,24 @@ public class Player extends Entity {
         // Opsional: Gambar solidArea untuk debug (gunakan screenX, screenY dari Player)
         // g2.setColor(java.awt.Color.BLUE);
         // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+    }
+
+    private BufferedImage getSeedImageByName(String name){
+        switch (name){
+            case "Parsnip Seeds": return parsnipSeeds;
+            case "Cauliflower Seeds": return cauliflowerSeeds;
+            case "Potato Seeds": return potatoSeeds;
+            case "Wheat Seeds": return wheatSeeds;
+            case "Blueberry Seeds": return blueberrySeeds;
+            case "Tomato Seeds": return tomatoSeeds;
+            case "HotPepper Seeds": return hotPepperSeeds;
+            case "Melon Seeds": return melonSeeds;
+            case "Cranberry Seeds": return cranberrySeeds;
+            case "Pumpkin Seeds": return pumpkinSeeds;
+            case "Grape Seeds": return grapeSeeds;
+            case "Eggplant Seeds": return eggplantSeeds;
+        }
+        return parsnipSeeds;
     }
     public boolean isInRelationship() {
         return partner != null;
