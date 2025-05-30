@@ -195,7 +195,7 @@ public class UI {
         }
 
         drawMessage();
-        drawEating();
+        
         if (gp.gameState == gp.fishingMinigameState){
             drawFishingMinigameUI();
         }
