@@ -19,12 +19,7 @@ import com.SpakborHills.environment.Weather;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_FishingRod;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_Parsnip;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.*;
 import com.SpakborHills.tile.TileType;
 
 
@@ -64,7 +59,6 @@ public class Player extends Entity{
     public boolean endGame = false;
     public boolean endGameForIncome = false;
     public boolean endGameForMarriage = false;
-    public boolean endGameDisplayed = false;
     public int endGameCount = 0;
     private boolean hasMarried = false;
     public int totalIncome;
@@ -221,13 +215,11 @@ public class Player extends Entity{
 
     public void seasonalStatsChange(){
         if (gp.eManager.getCurrentSeason() != null) {
-            totalIncomePerSeason += totalIncome;
-            totalExpenditurePerSeason += totalExpenditure;
             avgSeasonalIncome = (double) totalIncomePerSeason / seasonalIncomeCount;
             avgSeasonalExpenditure = (double) totalExpenditurePerSeason / seasonalExpenditureCount;
         }
-        totalIncome = 0;
-        totalExpenditure = 0;
+        totalIncomePerSeason = 0;
+        totalExpenditurePerSeason = 0;
         seasonalIncomeCount = 0;
         seasonalExpenditureCount = 0;
     }
@@ -1541,6 +1533,7 @@ public class Player extends Entity{
         
         gold += totalEarnings;
         totalIncome += totalEarnings;
+        totalIncomePerSeason += totalEarnings;
         seasonalIncomeCount++;
         shippingBinItems.clear();
         
@@ -1564,75 +1557,6 @@ public class Player extends Entity{
         }
         
         return sellableItems;
-    }
-
-    public boolean takeBackFromShippingBin(String itemName, int quantity) {
-        ShippingBinItem target = null;
-        for (ShippingBinItem item : shippingBinItems) {
-            if (item.itemName.equals(itemName)) {
-                target = item;
-                break;
-            }
-        }
-        if (target == null || target.quantity < quantity) {
-            gp.ui.addMessage("No such item in shipping bin!");
-            return false;
-        }
-        
-        target.quantity -= quantity;
-        if (target.quantity <= 0) {
-            shippingBinItems.remove(target);
-        }
-        
-        boolean found = false;
-        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
-            if (invItem.item.name.equals(itemName)) {
-                invItem.count += quantity;
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found) {
-            Entity newItem = createItemByName(itemName);
-            if (newItem != null) {
-                inventory.getInventory().add(new Inventory.InventoryItem(newItem, quantity));
-                found = true;
-            }
-        }
-        
-        if (!found) {
-            boolean existsInBin = false;
-            for (ShippingBinItem binItem : shippingBinItems) {
-                if (binItem.itemName.equals(itemName)) {
-                    binItem.quantity += quantity;
-                    existsInBin = true;
-                    break;
-                }
-            }
-            if (!existsInBin) {
-                ItemDefinition itemDef = gp.itemManager.getDefinitionByName(itemName);
-                if (itemDef != null) {
-                    shippingBinItems.add(new ShippingBinItem(itemDef.id, itemName, quantity, itemDef.sellPrice));
-                }
-            }
-            gp.ui.addMessage("Can't create item: " + itemName);
-            return false;
-        }
-        
-        gp.ui.addMessage("Took back " + quantity + " " + itemName + " from shipping bin!");
-        return true;
-    }
-
-    private Entity createItemByName(String itemName) {
-        switch (itemName) {
-            case "Parsnip Seeds":
-                return new OBJ_ParsnipSeeds(gp);
-            case "Parsnip":
-                return new OBJ_Parsnip(gp);
-            default:
-                return null;
-        }
     }
 
     private ItemDefinition findItemDefinitionByName(String itemName) {
@@ -2093,10 +2017,13 @@ public class Player extends Entity{
         }
 
 
-        //Testing
+
+        //Testing End Game Stats
         public void cheatMoney(int amount) {
             gold += amount;
             totalIncome += amount; 
+            totalIncomePerSeason += amount;
+            seasonalIncomeCount++;
             gp.ui.addMessage("Cheat activated: Money increased by " + amount + "g. New gold: " + gold + "g");
         }
 
