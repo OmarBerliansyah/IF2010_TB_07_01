@@ -257,11 +257,8 @@ public class Player extends Entity {
         }
 
         if (gp.gameState == gp.fishingMinigameState){
-            System.out.println("DEBUG: Fishing minigame sedang berlangsung.");
 
             if (gp.keyH.useToolPressed) {
-                // logika untuk mengecek hasil tebak angka, dll
-                System.out.println("DEBUG: Input Enter diterima di fishingMinigameState");
 
                 if (!gp.fishingInputBuffer.isBlank()){
                     try{
@@ -269,17 +266,11 @@ public class Player extends Entity {
 
                         this.processPlayerGuess(guessNumber);
                     } catch (NumberFormatException e) {
-                        System.out.println("DEBUG: Input bukan angka yang valid.");
                         gp.ui.addMessage("Please enter a valid number!");
                     }
                 } else {
 
                 } 
-                gp.keyH.useToolPressed = false;
-                // gp.ui.addMessage("You caught the fish!"); // atau gagal, tergantung logic
-                // this.inFishingMinigame = false;
-                // gp.keyH.enterPressed = false;
-                // gp.gameState = gp.playState; // kembali ke mode normal
                 
             }
             if (gp.keyH.enterPressed){
@@ -1608,10 +1599,7 @@ public class Player extends Entity {
     }
 
     public void startFishing(){
-        System.out.println("DEBUG: Player.startFishing() - AWAL");
         if (energy < 5){
-            gp.ui.addMessage("Not enough energy to fish!");
-            System.out.println("DEBUG: Player.startFishing() - Gagal: Energi kurang");
             return;
         } 
         if (!isPlayerFacingWater()){
@@ -1621,7 +1609,7 @@ public class Player extends Entity {
 
         energy -= 5;
         gp.eManager.addMinutesToTime(15);
-        gp.ui.addMessage("You cast your fishing rod...");
+    
 
         this.fishBeingFishedProto = selectFishToCatch();
 
@@ -1631,7 +1619,6 @@ public class Player extends Entity {
         }
 
         if (!(this.fishBeingFishedProto instanceof FishableProperties)){
-            gp.ui.addMessage("Error: Selected fish is not fishable!");
             this.fishBeingFishedProto = null;
             return;
         }
@@ -1654,7 +1641,6 @@ public class Player extends Entity {
                 this.maxFishingTries = 7;
                 break;
             default:
-                gp.ui.addMessage("Unknown fish category: " + category);
                 this.fishBeingFishedProto = null;
                 return;
         }
@@ -1665,8 +1651,7 @@ public class Player extends Entity {
         this.inFishingMinigame = true;
 
         gp.gameState = gp.fishingMinigameState;
-        gp.ui.addMessage("A " + category + " " + this.fishBeingFishedProto.name + " is on the line!");
-        // gp.ui.addMessage("Guess the number (" +this.fishingRangeString + "). Tries: " + (this.maxFishingTries - this.currentFishingTry));
+
 
     }
 
@@ -1737,20 +1722,20 @@ public class Player extends Entity {
         String fishName = (this.fishBeingFishedProto != null) ? this.fishBeingFishedProto.name : "fish";
 
         if (guessNumber == this.numberToGuess){
-            gp.ui.addMessage("ANJAY! The number was " + this.numberToGuess + ".");
-            gp.ui.addMessage("You caught a " + fishName + "!");
+            gp.ui.addMessage("So Cool! You caught a " + fishName + "!");
             addCaughtFishToInventory();
             endFishingMinigame(true);
             this.fishingGuessHint = "";
         } else {
             if(this.currentFishingTry >= this.maxFishingTries){
                 gp.ui.addMessage("Out of Tries!");
+                
                 gp.ui.addMessage("The correct number was " + this.numberToGuess + ".");
                 endFishingMinigame(false);
                 this.fishingGuessHint = "";
             } else {
                 this.fishingGuessHint = (guessNumber < this.numberToGuess) ? "higher" : "lower";
-                gp.ui.addMessage("Wrong guess.... ");
+                
 
             }
         }
@@ -1787,11 +1772,7 @@ public class Player extends Entity {
             gp.gameState = gp.playState;
             gp.fishingInputBuffer = "";
 
-            if (success){
-                gp.ui.addMessage("Fishing ended succesfully");
-            } else {
-                gp.ui.addMessage("Fishing ended");
-            }
+    
         }
 
         public Location getCurrentPlayerLocationEnum(){
@@ -1827,6 +1808,7 @@ public class Player extends Entity {
                        ", Season: " + currSeason +
                        ", Weather: " + curWeather +
                        ", Hour: " + currentHour);
+
             List<Entity> potentialCatches = new ArrayList<>();
 
             if (mapLocation != null){
@@ -1876,25 +1858,33 @@ public class Player extends Entity {
          */
 
          private boolean canCatchThisFish(FishableProperties fish, Location pLoc, Season pSeason, Weather pWeather, int pHour) {
-            System.out.println("canCatchThisFish - Checking: " + fish.getFishName() + " for Location: " + pLoc +
-                       ", Season: " + pSeason + ", Weather: " + pWeather + ", Hour: " + pHour);
+            EnumSet<Location> fishLocations = fish.getAvailableLocations();
 
-            if (fish.getAvailableLocations() == null || fish.getAvailableLocations().isEmpty()) {
-                return false; // Tidak ada lokasi yang valid
+            if (!(fishLocations.contains(pLoc))){
+                return false;
+            }
+
+            if (fishLocations == null || fishLocations.isEmpty()){
+                return false;
             }
 
             EnumSet<Season> fishSeasons = fish.getAvailableSeasons();
-            if (fishSeasons != null && !fishSeasons.isEmpty() && fishSeasons.size() < Season.values().length){
-                if (!fishSeasons.contains(pSeason)){
-                    return false;
-                }
+
+            if (!(fishSeasons.contains(pSeason))){
+                return false;
+            }
+
+            if (fishSeasons == null || fishSeasons.isEmpty()){
+                return false;
             }
 
             EnumSet<Weather> fishWeathers = fish.getAvailableWeathers();
-            if (fishWeathers != null && !fishWeathers.isEmpty() && fishWeathers.size() < Weather.values().length){
-                if (!fishWeathers.contains(pWeather)){
-                    return false;
-                }
+            if (!(fishWeathers.contains(pWeather))){
+                return false;
+            }
+
+            if (fishWeathers == null || fishWeathers.isEmpty()){
+                return false;
             }
 
             List<Integer> startTimes = fish.getAvailableStartTimes();

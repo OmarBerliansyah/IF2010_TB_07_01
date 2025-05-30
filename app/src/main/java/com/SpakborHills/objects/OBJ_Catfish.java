@@ -32,7 +32,7 @@ public class OBJ_Catfish extends Entity implements Entity.FishableProperties { /
         this.category = "Regular";
         this.availableSeasons = EnumSet.of(Season.SPRING, Season.SUMMER, Season.FALL);
         this.availableWeathers = EnumSet.of(Weather.RAINY); // Hanya saat hujan
-        this.availableLocations = EnumSet.of(Location.FOREST_RIVER, Location.POND);
+        this.availableLocations = EnumSet.of(Location.FOREST_RIVER, Location.FARM);
         
         this.availableStartTimes = new ArrayList<>();
         this.availableEndTimes = new ArrayList<>();

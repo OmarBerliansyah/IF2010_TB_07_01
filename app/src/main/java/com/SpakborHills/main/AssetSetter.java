@@ -109,6 +109,7 @@ public class AssetSetter {
         // Place fixed ponds
         placePondForMap(mapIndex, 28, 25);
         
+        
         // Generate dan simpan house position jika belum ada
         if(!mapHousePositions.containsKey(mapIndex)) {
             int[][] possibleHouseLocations = {

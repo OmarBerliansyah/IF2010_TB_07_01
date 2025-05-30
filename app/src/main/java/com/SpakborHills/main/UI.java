@@ -1507,7 +1507,7 @@ public class UI {
     }
 
     public void processFishingMinigameInput(){
-        System.out.println("DEBUG: UI.processFishingMinigameInput() - AWAL. Input buffer: " + gp.fishingInputBuffer);
+        
 
         // kondisi awal
         if (!gp.player.inFishingMinigame){
@@ -1576,13 +1576,13 @@ public class UI {
         int windowX = gp.tileSize *3;
         int windowY = gp.tileSize * 2;
         int windowWidth = gp.screenWidth - (gp.tileSize * 6);
-        int windowHeight = gp.tileSize * 8;
+        int windowHeight = gp.tileSize * 5;
 
         drawSubWindow(windowX, windowY, windowWidth, windowHeight);
 
-        Font baseFontForMinigame = (inputFont != null) ? inputFont.deriveFont(36f) : new Font("Arial", Font.BOLD, 28); // Contoh ukuran
+        Font baseFontForMinigame = (inputFont != null) ? inputFont.deriveFont(36f) : new Font("SDV", Font.BOLD, 28); // Contoh ukuran
         if (confirmationFont == null) { // Fallback jika font utama belum ada
-            confirmationFont = new Font("Arial", Font.PLAIN, 24);
+            confirmationFont = new Font("SDV", Font.PLAIN, 24);
         }
         g2.setFont(baseFontForMinigame);
         g2.setColor(Color.white);
