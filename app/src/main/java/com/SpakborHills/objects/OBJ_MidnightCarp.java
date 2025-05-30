@@ -32,7 +32,7 @@ public class OBJ_MidnightCarp extends Entity implements Entity.FishablePropertie
         this.category = "Regular";
         this.availableSeasons = EnumSet.of(Season.WINTER, Season.FALL);
         this.availableWeathers = EnumSet.allOf(Weather.class);        // "Any" Weather
-        this.availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE, Location.POND); // Lokasi spesifik
+        this.availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE, Location.FARM); // Lokasi spesifik
         this.availableStartTimes = new ArrayList<>();
         this.availableEndTimes = new ArrayList<>();
         this.availableStartTimes.add(20);  // Dari jam 20:00 (8 PM)

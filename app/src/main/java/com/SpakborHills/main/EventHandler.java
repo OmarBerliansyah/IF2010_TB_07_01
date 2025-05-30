@@ -147,13 +147,13 @@ public class EventHandler {
             }
 
             // TELEPORT TO MOUNTAIN LAKE
-            else if (hit(0, 26, 0, "any") == true) {
+            else if (hit(0, 28, 0, "any") == true) {
                 teleport(11, 8, 2);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM MOUNTAIN LAKE
             else if (hit(11, 8, 2, "any") == true) {
-                teleport(0, 26, 0);
+                teleport(0, 28, 0);
             }
 
             // Interact with Bed

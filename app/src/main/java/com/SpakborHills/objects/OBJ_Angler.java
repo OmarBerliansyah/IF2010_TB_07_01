@@ -32,7 +32,7 @@ public class OBJ_Angler extends Entity implements Entity.FishableProperties { //
         this.category = "Legendary";
         this.availableSeasons = EnumSet.of(Season.FALL);              // Hanya Fall
         this.availableWeathers = EnumSet.allOf(Weather.class);        // "Any" Weather
-        this.availableLocations = EnumSet.of(Location.POND);          // Hanya di Pond
+        this.availableLocations = EnumSet.of(Location.FARM);          // Hanya di Pond
         
         this.availableStartTimes = new ArrayList<>();
         this.availableEndTimes = new ArrayList<>();

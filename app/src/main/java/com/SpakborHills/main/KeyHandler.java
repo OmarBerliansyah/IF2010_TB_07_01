@@ -299,16 +299,26 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_ENTER){
                 enterPressed = true;
             }
+            if (code == KeyEvent.VK_ESCAPE) {
+                escPressed = true;
+            }
         }
 
         if (gp.gameState == gp.endGameState){
             if (code == KeyEvent.VK_ESCAPE) {
-                escPressed = true; // Set the escPressed flag to true
+                escPressed = true;
             }
             if (code == KeyEvent.VK_ENTER) {
-                enterPressed = true; // Set the enterPressed flag to true
+                enterPressed = true; 
+            }
+            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                upPressed = true; 
+            }
+            if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
+                downPressed = true; 
             }
         }
+
 }
 
     @Override
