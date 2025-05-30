@@ -271,8 +271,12 @@ public class TileManager {
     }
 
     public void initSoilMap(int mapCount, int cols, int rows) {
+        System.out.println("=== INITIALIZING SOIL MAP ===");
+        System.out.println("Map count: " + mapCount + ", Cols: " + cols + ", Rows: " + rows);
+        
         if (soilMap == null) {
             soilMap = new SoilTile[mapCount][cols][rows];
+            System.out.println("Created new soilMap array");
         }
 
         for (int m = 0; m < mapCount; m++) {
@@ -284,6 +288,7 @@ public class TileManager {
                 }
             }
         }
+        System.out.println("SoilMap initialization completed");
     }
 
 
