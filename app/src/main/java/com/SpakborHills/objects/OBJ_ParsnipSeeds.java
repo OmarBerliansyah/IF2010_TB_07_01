@@ -3,6 +3,7 @@ package com.SpakborHills.objects;
 import java.util.EnumSet;
 
 import com.SpakborHills.entity.Entity;
+import com.SpakborHills.entity.EntityType;
 import com.SpakborHills.environment.*;
 import com.SpakborHills.main.GamePanel;
 
@@ -20,5 +21,11 @@ public class OBJ_ParsnipSeeds extends Entity {
         salePrice = 10;
         availableSeasons = EnumSet.of(Season.SPRING); 
         isEdible = false;
+        type = EntityType.SEED;
+    }
+
+    @Override
+    public EnumSet<Season> getAvailableSeasons() {
+        return availableSeasons;
     }
 }

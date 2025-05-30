@@ -30,6 +30,7 @@ public class Entity {
     public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds, eggplantSeeds;
     public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
+    public EntityType type;
 
     public int spriteCounter = 0;
     public int spriteNum = 1;
@@ -103,6 +104,10 @@ public class Entity {
                 direction = "left";
                 break;
         }
+    }
+
+    public EnumSet<Season> getAvailableSeasons(){
+        return EnumSet.noneOf(Season.class);
     }
 
     public void update(){

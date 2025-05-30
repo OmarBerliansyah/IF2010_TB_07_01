@@ -51,12 +51,12 @@ public class KeyHandler implements KeyListener {
                 if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
                     gp.ui.commandNum--;
                     if(gp.ui.commandNum < 0){
-                        gp.ui.commandNum = 2;
+                        gp.ui.commandNum = 1;
                     }
                 }
                 if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
                     gp.ui.commandNum++;
-                    if(gp.ui.commandNum > 2){
+                    if(gp.ui.commandNum > 1){
                         gp.ui.commandNum = 0;
                     }
                 }
@@ -65,9 +65,6 @@ public class KeyHandler implements KeyListener {
                         gp.ui.titleScreenState = 1;
                     }
                     if(gp.ui.commandNum == 1){
-                        //implement nanti
-                    }
-                    if(gp.ui.commandNum == 2){
                         System.exit(0);
                     }
                 }
@@ -81,27 +78,25 @@ public class KeyHandler implements KeyListener {
                     gp.ui.isTyping = false; // Stop typing when navigating
                     gp.ui.inputState--;
                     if(gp.ui.inputState < 0){
-                        gp.ui.inputState = 3; // Wrap to last option
+                        gp.ui.inputState = 4; // Wrap to last option
                     }
                 }if (code == KeyEvent.VK_DOWN) {
                     gp.ui.isTyping = false; // Stop typing when navigating
                     gp.ui.inputState++;
-                    if(gp.ui.inputState > 3){
+                    if(gp.ui.inputState > 4){
                         gp.ui.inputState = 0; // Wrap to first option
                     }
                 }if(code == KeyEvent.VK_ENTER){
                     if(gp.ui.inputState == 0) {
-                        // Start typing name
-                        gp.ui.isTyping = true;
+                        gp.ui.isTyping = true;// Start typing name
                     } else if(gp.ui.inputState == 1) {
-                        // Start typing farm name
-                        gp.ui.isTyping = true;
+                        gp.ui.isTyping = true; // Start typing farm name
                     } else if(gp.ui.inputState == 2) {
-                        // Toggle gender
-                        gp.ui.toggleGender();
-                    } else if(gp.ui.inputState == 3) {
-                        // Start game
-                        gp.ui.startGame();
+                        gp.ui.toggleGender(); // Toggle gender
+                    } else if (gp.ui.inputState == 3) {
+                        gp.ui.isTyping = true;
+                    }else if(gp.ui.inputState == 4) { 
+                        gp.ui.startGame();// Start game
                     }
                 }if(code == KeyEvent.VK_DELETE || code == KeyEvent.VK_BACK_SPACE) {
                     gp.ui.removeLastCharacter();
@@ -141,8 +136,10 @@ public class KeyHandler implements KeyListener {
                         gp.ui.isTyping = true;
                     } else if(gp.ui.inputState == 2) {
                         gp.ui.toggleGender();
-                    } else if(gp.ui.inputState == 3) {
-                        gp.ui.startGame();
+                    } else if (gp.ui.inputState == 3) {
+                        gp.ui.isTyping = true;
+                    }else if(gp.ui.inputState == 4) { 
+                        gp.ui.startGame();// Start game
                     }
 
 //                    if(gp.ui.commandNum == 1){
@@ -284,6 +281,20 @@ public class KeyHandler implements KeyListener {
             }
         }
 
+        // FISHING MINIGAME STATE
+        if (gp.gameState == gp.fishingMinigameState) {
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
+            if (code == KeyEvent.VK_SPACE) {
+                useToolPressed = true;
+            }
+            if (code == KeyEvent.VK_BACK_SPACE) {
+                backspacePressedFishing = true;
+            }
+        }
+
+
         if (gp.gameState == gp.endGameTriggerState){
             if (code == KeyEvent.VK_ENTER){
                 enterPressed = true;
@@ -365,6 +376,17 @@ public class KeyHandler implements KeyListener {
                     gp.ui.addMessage("No item equipped to eat!");
                 }
             }*/
+        }
+        if (gp.gameState == gp.fishingMinigameState) {
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = false;
+            }
+            if (code == KeyEvent.VK_SPACE) {
+                useToolPressed = false;
+            }
+            if (code == KeyEvent.VK_BACK_SPACE) {
+                backspacePressedFishing = false;
+            }
         }
     }
 }

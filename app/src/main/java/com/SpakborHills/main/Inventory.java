@@ -4,17 +4,7 @@ import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
-import com.SpakborHills.objects.OBJ_Coal;
-import com.SpakborHills.objects.OBJ_FishStew;
-import com.SpakborHills.objects.OBJ_FishingRod;
-import com.SpakborHills.objects.OBJ_Grape;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_Parsnip;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_Ring;
-import com.SpakborHills.objects.OBJ_WateringCan;
-import com.SpakborHills.objects.OBJ_Wood;
+import com.SpakborHills.objects.*;
 
 public class Inventory {
     public ArrayList<Inventory.InventoryItem> inventory = new ArrayList<>();    
@@ -54,6 +44,7 @@ public class Inventory {
         inventory.add(new InventoryItem (new OBJ_Grape(gp),6));
         inventory.add(new InventoryItem(new OBJ_Coal(gp),1));
         inventory.add(new InventoryItem(new OBJ_Ring(gp),1));
+        inventory.add(new InventoryItem(new OBJ_BlueberrySeeds(gp),2));
 
     }
 

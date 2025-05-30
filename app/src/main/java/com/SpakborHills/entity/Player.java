@@ -42,6 +42,7 @@ public class Player extends Entity{
     public int gold;
     public String gender;
     public String farmName;
+    public String favoriteItem;
     public Entity partner;
     public String location;    
     public Inventory inventory;
@@ -57,6 +58,7 @@ public class Player extends Entity{
     private int numberToGuess;
 
     public boolean tillWithoutEnergy = false;
+    public String fishingGuessHint = "";
 
     //End Game Statistics
     public boolean endGame = false;
@@ -84,6 +86,7 @@ public class Player extends Entity{
         this.randomGenerator = new Random();
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
+        this.fishingGuessHint = "";
 
         // solidArea = new Rectangle();
 
@@ -115,9 +118,10 @@ public class Player extends Entity{
         direction = "down";
         energy = 100;//energi awal  & maks
         gold = 0;
-        name = "Player";
-        farmName = "Spakbor Hills";
-        gender = "tes";
+        name = "";
+        farmName = "";
+        gender = "";
+        favoriteItem = "";
         partner = null;
         updateLocation();
  // Initialize partner as null, can be set later
@@ -133,35 +137,35 @@ public class Player extends Entity{
 
     public void updateLocation() {
         if (gp.currentMap == 0) {
-            location = "Farm";
+            this.location = "Farm";
         } else if (gp.currentMap == 1) {
-            location = "Ocean";
+            this.location = "Ocean";
         } else if (gp.currentMap == 2) {
-            location = "House";
+            this.location = "House";
         }  else if (gp.currentMap == 3) {
-            location = "Forest";
+            this.location = "Forest";
         }  else if (gp.currentMap == 4) {
-            location = "npcMap";
+            this.location = "npcMap";
         }  else if (gp.currentMap == 5) {
-            location = "EmilyMap";
+            this.location = "EmilyMap";
         }  else if (gp.currentMap == 6) {
-            location = "PerryMap";
+            this.location = "PerryMap";
         }  else if (gp.currentMap == 7) {
-            location = "DascoMap";
+            this.location = "DascoMap";
         }  else if (gp.currentMap == 8) {
-            location = "AbigailMap";
+            this.location = "AbigailMap";
         }  else if (gp.currentMap == 9) {
-            location = "MayorMap";
+            this.location = "MayorMap";
         }  else if (gp.currentMap == 10) {
-            location = "CarolineMap";
+            this.location = "CarolineMap";
         } else if (gp.currentMap == 11) {
-            location = "MountainLake";
+            this.location = "MountainLake";
         }else {
-            location = "Unknown Area";
+            this.location = "Unknown Area";
         }
     }
     public String getCurrentLocation() {
-        return location;
+        return this.location;
     }
 
     public void getPlayerImage(){
@@ -301,6 +305,39 @@ public class Player extends Entity{
             handleInput();
         }
 
+        if (gp.gameState == gp.fishingMinigameState){
+            System.out.println("DEBUG: Fishing minigame sedang berlangsung.");
+
+            if (gp.keyH.useToolPressed) {
+                // logika untuk mengecek hasil tebak angka, dll
+                System.out.println("DEBUG: Input Enter diterima di fishingMinigameState");
+
+                if (!gp.fishingInputBuffer.isBlank()){
+                    try{
+                        int guessNumber = Integer.parseInt(gp.fishingInputBuffer);
+
+                        this.processPlayerGuess(guessNumber);
+                    } catch (NumberFormatException e) {
+                        System.out.println("DEBUG: Input bukan angka yang valid.");
+                        gp.ui.addMessage("Please enter a valid number!");
+                    }
+                } else {
+
+                } 
+                gp.keyH.useToolPressed = false;
+                // gp.ui.addMessage("You caught the fish!"); // atau gagal, tergantung logic
+                // this.inFishingMinigame = false;
+                // gp.keyH.enterPressed = false;
+                // gp.gameState = gp.playState; // kembali ke mode normal
+                
+            }
+            if (gp.keyH.enterPressed){
+                this.endFishingMinigame(false);
+                gp.keyH.enterPressed = false; // Reset the enterPressed flag
+            }
+            return;
+        }
+
         if(gp.ui.showingSleepConfirmDialog && gp.gameState == gp.playState) {
             return;
         }
@@ -308,6 +345,7 @@ public class Player extends Entity{
             eating();
             return;
         }
+
  
     }
 
@@ -399,6 +437,7 @@ public class Player extends Entity{
              if (npcIndex != 999) {
                 giftToNPC(npcIndex);
             }
+            keyH.giftPressed = false;
         }
         if (keyH.proposePressed && !inFishingMinigame) {
         // Propose ke NPC
@@ -505,24 +544,33 @@ public class Player extends Entity{
                 gp.ui.addMessage("You can't till this tile!");
             }
         }
-        else if (currentTool instanceof OBJ_ParsnipSeeds) {
+        else if (currentTool.type == EntityType.SEED) {
             Inventory.InventoryItem equippedInventoryItem = getEquippedInventoryItem();
             if(equippedInventoryItem != null && equippedInventoryItem.count > 0){
-                if(energy >= 5 && canPlant()){
-                    planting = true;
-                    energy -= 5;
-                    equippedInventoryItem.count--;
-                    tillWithoutEnergy = false;
-                }
-                else if (energy < 5){
-                    tillWithoutEnergy = true;
-                    planting = true;
-                    gp.ui.addMessage("Not enough energy to plant!");
+                Entity equippedSeed = equippedInventoryItem.item;
+                if (equippedSeed.type == EntityType.SEED &&
+                equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
+                    if(energy >= 5 && canPlant()){
+                        planting = true;
+                        energy -= 5;
+                        equippedInventoryItem.count--;
+                        tillWithoutEnergy = false;
+                    }
+                    else if (energy < 5){
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("Not enough energy to plant!");
+                    }
+                    else{
+                        tillWithoutEnergy = true;
+                        planting = true;
+                        gp.ui.addMessage("You can't plant here!");
+                    }
                 }
                 else{
                     tillWithoutEnergy = true;
                     planting = true;
-                    gp.ui.addMessage("You can't plant here!");
+                    gp.ui.addMessage("This seed cannot be planted in this season!");
                 }
             }
             else{
@@ -1037,7 +1085,11 @@ public class Player extends Entity{
                 } else if (planting) {
                     // ... (logika sprite untuk planting)
                     if (spriteNum == 1) imageToDraw = up1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2) {
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     // ... (logika sprite untuk watering)
                     if (spriteNum == 1) imageToDraw = up1;
@@ -1058,7 +1110,11 @@ public class Player extends Entity{
                     if (spriteNum == 2) imageToDraw = tillingDown;
                 } else if (planting) {
                     if (spriteNum == 1) imageToDraw = down1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = down1;
                     if (spriteNum == 2) imageToDraw = wateringDown;
@@ -1076,8 +1132,12 @@ public class Player extends Entity{
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = tillingLeft;
                 } else if (planting) {
-                     if (spriteNum == 1) imageToDraw = left1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 1) imageToDraw = left1;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = left1;
                     if (spriteNum == 2) imageToDraw = wateringLeft;
@@ -1096,7 +1156,11 @@ public class Player extends Entity{
                     if (spriteNum == 2) imageToDraw = tillingRight;
                 } else if (planting) {
                      if (spriteNum == 1) imageToDraw = right1;
-                    if (spriteNum == 2) imageToDraw = parsnipSeeds;
+                    if (spriteNum == 2){
+                        if(equippedItem != null && equippedItem.type == EntityType.SEED){
+                            imageToDraw = getSeedImageByName(equippedItem.name);
+                        }
+                    }
                 } else if (watering) {
                     if (spriteNum == 1) imageToDraw = right1;
                     if (spriteNum == 2) imageToDraw = wateringRight;
@@ -1142,6 +1206,24 @@ public class Player extends Entity{
         // g2.setColor(java.awt.Color.BLUE);
         // g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
     }
+
+    private BufferedImage getSeedImageByName(String name){
+        switch (name){
+            case "Parsnip Seeds": return parsnipSeeds;
+            case "Cauliflower Seeds": return cauliflowerSeeds;
+            case "Potato Seeds": return potatoSeeds;
+            case "Wheat Seeds": return wheatSeeds;
+            case "Blueberry Seeds": return blueberrySeeds;
+            case "Tomato Seeds": return tomatoSeeds;
+            case "HotPepper Seeds": return hotPepperSeeds;
+            case "Melon Seeds": return melonSeeds;
+            case "Cranberry Seeds": return cranberrySeeds;
+            case "Pumpkin Seeds": return pumpkinSeeds;
+            case "Grape Seeds": return grapeSeeds;
+            case "Eggplant Seeds": return eggplantSeeds;
+        }
+        return parsnipSeeds;
+    }
     public boolean isInRelationship() {
         return partner != null;
     }
@@ -1164,10 +1246,10 @@ public class Player extends Entity{
                     // Trying to propose to current partner
                     if (getRelationshipStatus().equals("FIANCE")) {
                         gp.ui.addMessage("You're already engaged to " + currentNPC.name + "!");
-                        gp.ui.addMessage("Time to plan the wedding! 💒");
+                        gp.ui.addMessage("Time to plan the wedding! ");
                     } else if (getRelationshipStatus().equals("SPOUSE")) {
-                        gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
-                        gp.ui.addMessage("What a loving couple you are! 💕");
+                        gp.ui.addMessage("You're already married to " + currentNPC.name + "! ");
+                        gp.ui.addMessage("What a loving couple you are! ");
                     }
                 } else {
                     // Trying to propose to someone else - CHEATING!
@@ -1206,13 +1288,13 @@ public class Player extends Entity{
             if (isInRelationship() && getRelationshipStatus().equals("SPOUSE")) {
                 if (partner == currentNPC) {
                     // Trying to marry current spouse again
-                    gp.ui.addMessage("You're already married to " + currentNPC.name + "! 💍");
-                    gp.ui.addMessage("What a sweet reminder of your wedding day! 💕");
-                    gp.ui.addMessage("Maybe bring flowers next time instead? 🌹");
+                    gp.ui.addMessage("You're already married to " + currentNPC.name + "! ");
+                    gp.ui.addMessage("What a sweet reminder of your wedding day! ");
+                    gp.ui.addMessage("Maybe bring flowers next time instead? ");
                 } else {
                     // Trying to marry someone else - BIGAMY!
                     gp.ui.addMessage("Hold up! You're already married to " + partner.name + "!");
-                    gp.ui.addMessage("Bigamy is not allowed in Spakbor Hills! 😤");
+                    gp.ui.addMessage("Bigamy is not allowed in Spakbor Hills! ");
                     gp.ui.addMessage("You can only have one spouse at a time!");
                 }
                 return; // Exit without marrying
@@ -1231,7 +1313,7 @@ public class Player extends Entity{
                     hasMarried = true;
                     
                     gp.ui.addMessage("You married " + currentNPC.name + "! Congratulations!");
-                    gp.ui.addMessage("✨ You spend the entire day together as newlyweds...");
+                    gp.ui.addMessage(" You spend the entire day together as newlyweds...");
                 
                     // CALL WEDDING DAY METHOD (with black screen transition)
                     weddingDay();
@@ -1274,8 +1356,8 @@ public class Player extends Entity{
         }
 
         // WEDDING COMPLETION MESSAGES
-        gp.ui.addMessage("🏠 After a perfect wedding day, you return home in the evening.");
-        gp.ui.addMessage("💍 What a wonderful day spent with your new spouse!");
+        gp.ui.addMessage(" After a perfect wedding day, you return home in the evening.");
+        gp.ui.addMessage(" What a wonderful day spent with your new spouse!");
 
         // Force repaint to show normal screen
         if (gp instanceof javax.swing.JPanel) {
@@ -1313,7 +1395,8 @@ public class Player extends Entity{
             if (equippedItem != null) {
                 itemToGive = equippedItem.name;
             } else {
-                itemToGive = inventory.getInventory().get(0).item.name;
+                gp.ui.addMessage("You don't pick any item to gift");
+                return;
             }
             if (itemToGive.equals("Ring")) {
                 gp.ui.addMessage("You can't give away your Proposal Ring!");
@@ -1575,8 +1658,10 @@ public class Player extends Entity{
     }
 
     public void startFishing(){
+        System.out.println("DEBUG: Player.startFishing() - AWAL");
         if (energy < 5){
             gp.ui.addMessage("Not enough energy to fish!");
+            System.out.println("DEBUG: Player.startFishing() - Gagal: Energi kurang");
             return;
         } 
         if (!isPlayerFacingWater()){
@@ -1631,7 +1716,7 @@ public class Player extends Entity{
 
         gp.gameState = gp.fishingMinigameState;
         gp.ui.addMessage("A " + category + " " + this.fishBeingFishedProto.name + " is on the line!");
-        gp.ui.addMessage("Guess the number (" +this.fishingRangeString + "). Tries: " + (this.maxFishingTries - this.currentFishingTry));
+        // gp.ui.addMessage("Guess the number (" +this.fishingRangeString + "). Tries: " + (this.maxFishingTries - this.currentFishingTry));
 
     }
 
@@ -1706,14 +1791,16 @@ public class Player extends Entity{
             gp.ui.addMessage("You caught a " + fishName + "!");
             addCaughtFishToInventory();
             endFishingMinigame(true);
+            this.fishingGuessHint = "";
         } else {
             if(this.currentFishingTry >= this.maxFishingTries){
                 gp.ui.addMessage("Out of Tries!");
                 gp.ui.addMessage("The correct number was " + this.numberToGuess + ".");
                 endFishingMinigame(false);
+                this.fishingGuessHint = "";
             } else {
-                String hint = (guessNumber < this.numberToGuess) ? "higher" : "lower";
-                gp.ui.addMessage("Wrong. " + hint + "Tries left: "  + (this.maxFishingTries - this.currentFishingTry));
+                this.fishingGuessHint = (guessNumber < this.numberToGuess) ? "higher" : "lower";
+                gp.ui.addMessage("Wrong guess.... ");
 
             }
         }
@@ -1746,6 +1833,7 @@ public class Player extends Entity{
             this.inFishingMinigame = false;
             this.fishBeingFishedProto = null;
             this.fishingRangeString = "N/A";
+            this.fishingGuessHint = "";
 
             gp.gameState = gp.playState;
             gp.fishingInputBuffer = "";
@@ -1801,9 +1889,13 @@ public class Player extends Entity{
                         }
                     }
                 }
+            } else {
+                System.err.println("Player Location is null");
+                return null; // Lokasi tidak valid, tidak ada ikan yang bisa ditangkap
             }
 
-            if (mapLocation == Location.FARM || mapLocation == Location.MOUNTAIN_LAKE){
+
+            if (mapLocation == Location.FARM ){
                 Location pondLocation = Location.POND;
                 for (Entity fishProto : gp.getAllFishPrototypes()){
                     if (fishProto instanceof FishableProperties){

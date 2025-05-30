@@ -7,6 +7,7 @@ import com.SpakborHills.entity.Entity;
 import com.SpakborHills.objects.OBJ_Baguette;
 import com.SpakborHills.objects.OBJ_FishSandwich;
 import com.SpakborHills.objects.OBJ_FishStew;
+import com.SpakborHills.objects.OBJ_FishandChips;
 import com.SpakborHills.objects.OBJ_Fugu;
 import com.SpakborHills.objects.OBJ_PumpkinPie;
 import com.SpakborHills.objects.OBJ_Sashimi;
@@ -27,7 +28,7 @@ public class ItemFactory {
     // Static initialization block - register all items
     static {
         // Cooked Food Items
-        //itemCreators.put("recipe_1", OBJ_FishNChips::new);
+        itemCreators.put("recipe_1", OBJ_FishandChips::new);
         itemCreators.put("recipe_2", OBJ_Baguette::new);
         itemCreators.put("recipe_3", OBJ_Sashimi::new);
         itemCreators.put("recipe_4", OBJ_Fugu::new);
@@ -50,7 +51,6 @@ public class ItemFactory {
                 return creator.create(gp);
             } catch (Exception e) {
                 System.err.println("ItemFactory: Failed to create item for recipe " + recipeId + ": " + e.getMessage());
-                // You might still want to return null here if creation itself fails
                 return null;
             }
         }

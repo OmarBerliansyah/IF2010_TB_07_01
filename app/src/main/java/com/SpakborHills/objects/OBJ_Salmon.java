@@ -6,32 +6,74 @@ import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
-import com.SpakborHills.environment.*;
+import com.SpakborHills.environment.*; // Pastikan ini mengimpor Season, Weather, Location
+import com.SpakborHills.entity.Entity.FishableProperties; // Pastikan path ini benar jika nested
 
-public class OBJ_Salmon extends Entity {
+public class OBJ_Salmon extends Entity implements Entity.FishableProperties { // Implementasikan interface
 
-    public EnumSet<Season> availableSeasons;
-    public EnumSet<Weather> availableWeathers;
-    public List<Integer> availableStartTimes;
-    public List<Integer> availableEndTimes;
-    public EnumSet<Location> availableLocations;
-    public String category; //Common, Regular, Legendary
+    // Field private untuk menyimpan data spesifik Salmon
+    private EnumSet<Season> availableSeasons;
+    private EnumSet<Weather> availableWeathers;
+    private List<Integer> availableStartTimes;
+    private List<Integer> availableEndTimes;
+    private EnumSet<Location> availableLocations;
+    private String category; // Field untuk menyimpan kategori ikan
 
-    public OBJ_Salmon(GamePanel gp){
+    public OBJ_Salmon(GamePanel gp) {
         super(gp);
         name = "Salmon";
-        down1 = setup("objects/Salmon",gp.tileSize, gp.tileSize);
-        description = "[" + name + "]\nMemiliki jenis Regular Fish.";
+        down1 = setup("objects/Salmon", gp.tileSize, gp.tileSize); // Sesuaikan path gambar jika perlu
+        description = "[" + name + "]\nBerenang ke hulu untuk bertelur."; // Deskripsi bisa disesuaikan
         isPickable = true;
-        availableSeasons = EnumSet.of(Season.FALL);
-        availableWeathers = EnumSet.allOf(Weather.class); 
-        availableLocations = EnumSet.of(Location.FOREST_RIVER);
-        availableStartTimes = new ArrayList<>();
-        availableEndTimes = new ArrayList<>();
-        availableStartTimes.add(6);
-        availableEndTimes.add(18);
-        category = "Regular";
-        isEdible = true;
-        plusEnergy = 1;
+        isEdible = true;    // Ikan bisa dimakan
+        plusEnergy = 1;     // Menambah 1 energi saat dimakan
+
+        // Inisialisasi data FishableProperties untuk Salmon
+        this.category = "Regular";
+        this.availableSeasons = EnumSet.of(Season.FALL);              // Hanya Fall
+        this.availableWeathers = EnumSet.allOf(Weather.class);        // "Any" Weather
+        this.availableLocations = EnumSet.of(Location.FOREST_RIVER);  // Hanya di Forest River
+        
+        this.availableStartTimes = new ArrayList<>();
+        this.availableEndTimes = new ArrayList<>();
+        this.availableStartTimes.add(6);  // Dari jam 06:00
+        this.availableEndTimes.add(18); // Sampai sebelum jam 18:00 (artinya 06:00 - 17:59)
+                                        // Sesuai tabel awal: Salmon, Fall, 06.00-18.00, Any, Forest River
+    }
+
+    // Implementasi method dari FishableProperties
+    @Override
+    public String getFishName() {
+        return this.name;
+    }
+
+    @Override
+    public String getFishCategory() {
+        return this.category;
+    }
+
+    @Override
+    public EnumSet<Season> getAvailableSeasons() {
+        return this.availableSeasons;
+    }
+
+    @Override
+    public EnumSet<Weather> getAvailableWeathers() {
+        return this.availableWeathers;
+    }
+
+    @Override
+    public List<Integer> getAvailableStartTimes() {
+        return this.availableStartTimes;
+    }
+
+    @Override
+    public List<Integer> getAvailableEndTimes() {
+        return this.availableEndTimes;
+    }
+
+    @Override
+    public EnumSet<Location> getAvailableLocations() {
+        return this.availableLocations;
     }
 }
