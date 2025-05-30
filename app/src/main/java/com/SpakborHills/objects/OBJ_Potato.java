@@ -17,4 +17,9 @@ public class OBJ_Potato extends Entity {
         isEdible = true;
         plusEnergy = 3;
     }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_Potato(gp);
+    }
 }

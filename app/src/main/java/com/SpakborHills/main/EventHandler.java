@@ -249,6 +249,7 @@ public class EventHandler {
         canTouchEvent = false;
         gp.aSetter.setObject();
         gp.aSetter.setNPC();
+        gp.player.updateLocation();
         // tempMap = map;
         // tempCol = col;
         // tempRow = row;

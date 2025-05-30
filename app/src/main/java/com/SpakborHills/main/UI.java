@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -15,11 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
+import com.SpakborHills.data.EndGameStats;
 import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.NPC;
 import com.SpakborHills.entity.ShippingBinItem;
+import com.SpakborHills.entity.Entity;
+import com.SpakborHills.entity.Entity.FishableProperties;
 
 public class UI {
     GamePanel gp;
@@ -30,6 +35,8 @@ public class UI {
     Font selectorFont; 
     Font inputFont;
     Font confirmationFont;
+    Font characterScreenFont;
+    Font enviFont;
 
     public boolean messageOn = false;
     public ArrayList<String> message = new ArrayList<>(); 
@@ -37,6 +44,7 @@ public class UI {
     public String currentDialogue = "";
     public BufferedImage titleScreenImage;
     public BufferedImage spakborHillsLogo;
+    public Image doctorStrange;
     public int slotCol = 0;
     public int slotRow = 0;
     public int commandNum = 0;
@@ -85,8 +93,9 @@ public class UI {
                 menuFont = baseFont.deriveFont(Font.BOLD, 58f); // Ukuran font menu
                 selectorFont = baseFont.deriveFont(Font.BOLD, 60f); // Ukuran font untuk selector ">", buat lebih besar
                 inputFont = baseFont.deriveFont(Font.PLAIN, 50f);
-                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);                                                  // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
-
+                confirmationFont = baseFont.deriveFont(Font.PLAIN, 32F);  
+                characterScreenFont =  baseFont.deriveFont(Font.PLAIN, 28F);                                                 // Kamu bisa sesuaikan 60f ini (misal 56f, 64f)
+                enviFont = baseFont.deriveFont(Font.PLAIN, 25f);
                 System.out.println("Font kustom '" + fontPath + "' berhasil dimuat.");
             } else {
                 System.err.println("ERROR UI: File font kustom '" + fontPath + "' TIDAK DITEMUKAN!");
@@ -99,6 +108,8 @@ public class UI {
             selectorFont = new Font(Font.SANS_SERIF, Font.BOLD, 60); // Fallback untuk selectorFont
             inputFont = new Font(Font.SANS_SERIF, Font.PLAIN, 42); // Fallback untuk inputFont
             confirmationFont = new Font(Font.SANS_SERIF, Font.PLAIN, 36);
+            characterScreenFont =  new Font(Font.SANS_SERIF, Font.PLAIN, 16);
+            enviFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
         }
 
         // --- PEMUATAN GAMBAR DIPINDAHKAN KE KONSTRUKTOR ---
@@ -126,6 +137,14 @@ public class UI {
             System.err.println("ERROR UI: Gagal memuat gambar untuk title screen.");
             titleScreenImage = null;
             spakborHillsLogo = null;
+        }
+
+        java.net.URL gifIs = getClass().getClassLoader().getResource("endGame/endGame.gif");
+        if (gifIs != null) {
+            doctorStrange = new ImageIcon(gifIs).getImage();                
+        } 
+        else {
+            System.err.println("ERROR UI: End Game GIF not found!");
         }
     }
 
@@ -208,6 +227,10 @@ public class UI {
         message.add(text);
         messageCounter.add(0);
     }
+    public Font getenviFont(){
+        return enviFont;
+    }
+
 
     public void drawMessage() {
         int messageX = gp.tileSize;
@@ -985,13 +1008,14 @@ public class UI {
 
         //TEXT
         g2.setColor(Color.white);
-        g2.setFont(g2.getFont().deriveFont(24F));
+        g2.setFont(characterScreenFont);
 
         int textX = frameX + 20;
         int textY = frameY + gp.tileSize;
         final int lineHeight = 32;
         final int maxValueWidth = frameWidth - 180;
-
+        g2.drawString("Player Info", textX+87, textY);
+        textY += 50;
         //NAMES
         g2.drawString("Name: ", textX, textY);
         g2.drawString(truncateText(gp.player.name, maxValueWidth), getXforRightAlignedText(truncateText(gp.player.name, maxValueWidth), padding), textY);
@@ -1017,6 +1041,7 @@ public class UI {
         } else {
             g2.drawString("None", getXforRightAlignedText("None", padding), textY);
         }
+        textY += lineHeight;
         g2.drawString("Favorite : ", textX, textY);
         if (gp.player.favoriteItem == null || gp.player.favoriteItem.trim().isEmpty()) {
             gp.player.favoriteItem = "None";
@@ -1597,7 +1622,8 @@ public class UI {
             String fishInfo = "On the line: " + fishProps.getFishName() + " ( " + fishProps.getFishCategory() + " )";
             g2.drawString(fishInfo, textX, textY);
             textY += lineHeight;
-        } else if (gp.player.inFishingMinigame){
+        } 
+        else if (gp.player.inFishingMinigame){
             g2.drawString("Determining fish...", textX, textY);
             textY += lineHeight;
         }
@@ -1673,6 +1699,129 @@ public class UI {
                 g2.drawString("Press ENTER to reel in!", 150, 210);
             }
         }
+    }
+
+    public void drawEndGameTriggerInterface(Graphics2D g2) {
+        int windowWidth = gp.tileSize * 12;
+        int windowHeight = gp.tileSize * 10;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        g2.setColor(Color.black);
+        g2.fillRect(x, y, windowWidth, windowHeight);
+        g2.setColor(Color.green);
+        g2.setStroke(new BasicStroke(4));
+        g2.drawRect(x, y, windowWidth, windowHeight);
+        
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 32F));
+        String title = "Tamat kah adik-adik?";
+        FontMetrics fm = g2.getFontMetrics();
+        int titleWidth = fm.stringWidth(title);
+        int titleX = x + (windowWidth - titleWidth) / 2;
+        int titleY = y + fm.getAscent() + 10;
+        g2.drawString(title, titleX, titleY);
+        
+        if (doctorStrange != null) {
+            int gifWidth = windowWidth / 2;
+            int gifHeight = windowHeight / 2;
+            int gifX = x + (windowWidth - gifWidth) / 2;
+            int gifY = y + (windowHeight - gifHeight) / 2;
+            g2.drawImage(doctorStrange, gifX, gifY, gifWidth, gifHeight, null);
+        } 
+        else {
+            g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 24F));
+            g2.drawString("GIF not found.", x + 20, y + windowHeight / 2);
+        }
+        
+        int buttonWidth = windowWidth - 40;
+        int buttonHeight = gp.tileSize;
+        int buttonX = x + 20;
+        int buttonY = y + windowHeight - buttonHeight - 20;
+        
+        g2.setColor(new Color(204, 153, 0)); 
+        g2.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+        
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 24F));
+        String buttonText = "lihat statistik permainan";
+        int btnTextWidth = g2.getFontMetrics().stringWidth(buttonText);
+        int btnTextX = buttonX + (buttonWidth - btnTextWidth) / 2;
+        int btnTextY = buttonY + (buttonHeight + g2.getFontMetrics().getAscent()) / 2 - 4;
+        g2.setColor(Color.black);
+        g2.drawString(buttonText, btnTextX, btnTextY);
+    }
+
+    public void processEndGameTriggerInput() {
+        if (gp.keyH.enterPressed) {
+            gp.gameState = gp.endGameState; 
+            gp.keyH.enterPressed = false;
+        }
+        if (gp.keyH.escPressed) {
+            closeEndGameTrigger();
+            gp.keyH.escPressed = false;
+        }
+    }
+
+    public void closeEndGameTrigger(){
+        gp.gameState = gp.playState; 
+    }
+
+    public void drawEndGameStatsInterface(Graphics2D g2) {
+        int windowWidth = gp.tileSize * 14;
+        int windowHeight = gp.tileSize * 10;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 28F));
+        g2.setColor(Color.green);
+        String header = "Statistik Permainan";
+        int headerX = getXforCenteredTextInWindow(header, x, windowWidth, g2, confirmationFont);
+        int headerY = y + 40;
+        g2.drawString(header, headerX, headerY);
+        
+        if (gp.player.endGameDisplay() != null) {
+            g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 20F));
+            g2.setColor(Color.white);
+            String statsText = gp.player.endGameDisplay().toString();
+            String[] lines = statsText.split("\n");
+            int lineY = headerY + 40;
+            for (String line : lines) {
+                g2.drawString(line, x + 20, lineY);
+                lineY += 24;  
+            }
+        } 
+        else {
+            g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 20F));
+            g2.drawString("No end game statistics available.", x + 20, headerY + 40);
+        }
+        
+        int buttonWidth = windowWidth - 40;
+        int buttonHeight = gp.tileSize;
+        int btnX = x + 20;
+        int btnY = y + windowHeight - buttonHeight - 20;
+        g2.setColor(new Color(204,153,0));
+        g2.fillRect(btnX, btnY, buttonWidth, buttonHeight);
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.black);
+        String btnText = "Keluar End Game";
+        int btnTextWidth = g2.getFontMetrics().stringWidth(btnText);
+        int btnTextX = btnX + (buttonWidth - btnTextWidth) / 2;
+        int btnTextY = btnY + (buttonHeight + g2.getFontMetrics().getAscent()) / 2 - 4;
+        g2.drawString(btnText, btnTextX, btnTextY);
+    }
+
+    public void processEndGameStatsInput() {
+        if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+            closeEndGameStats();
+            gp.keyH.enterPressed = false;
+            gp.keyH.escPressed = false;
+        }
+    }
+
+    public void closeEndGameStats() {
+        gp.gameState = gp.playState;
+        // gp.player.endGame = false;
     }
 
 }

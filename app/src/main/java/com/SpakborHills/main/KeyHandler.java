@@ -2,6 +2,9 @@ package com.SpakborHills.main; // Package declaration for the main class
 
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
+import com.SpakborHills.entity.Entity;
+
+import java.awt.Color;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
@@ -187,9 +190,17 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_M && !marryPressed) {
                 marryPressed = true;
             }
-            if (code == KeyEvent.VK_J && !gp.player.jumping) {
-                gp.player.jumping = true;
-                gp.player.jumpTimer = 0;
+            //Cheat for End Game
+            //Cheat Money
+            if (code == KeyEvent.VK_1) {
+                int inputGold = 17208;
+                gp.player.cheatMoney(inputGold);
+                gp.ui.addMessage("Total Income: " + gp.player.totalIncome);
+
+            }
+            //Cheat Marry 
+            if (code == KeyEvent.VK_2) {
+                gp.player.forceMarry("Abigail");
             }
         }
 
@@ -283,6 +294,21 @@ public class KeyHandler implements KeyListener {
             }
         }
 
+
+        if (gp.gameState == gp.endGameTriggerState){
+            if (code == KeyEvent.VK_ENTER){
+                enterPressed = true;
+            }
+        }
+
+        if (gp.gameState == gp.endGameState){
+            if (code == KeyEvent.VK_ESCAPE) {
+                escPressed = true; // Set the escPressed flag to true
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true; // Set the enterPressed flag to true
+            }
+        }
 }
 
     @Override

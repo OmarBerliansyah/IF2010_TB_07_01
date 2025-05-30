@@ -17,6 +17,8 @@ public class OBJ_ParsnipSeeds extends Entity {
         description = "[" + name + "]\nBenih yang dapat\nditanam pada saat\nspring."; 
         isPickable = true;
         daysToHarvest = 1;
+        this.harvestProduct = new OBJ_Parsnip(gp);
+        cropCount = 1; // Jumlah panen per tanaman
         buyPrice = 20;
         salePrice = 10;
         availableSeasons = EnumSet.of(Season.SPRING); 
@@ -27,5 +29,10 @@ public class OBJ_ParsnipSeeds extends Entity {
     @Override
     public EnumSet<Season> getAvailableSeasons() {
         return availableSeasons;
+    }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_ParsnipSeeds(gp);
     }
 }

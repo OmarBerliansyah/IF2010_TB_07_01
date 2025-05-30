@@ -17,6 +17,8 @@ public class OBJ_BlueberrySeeds extends Entity {
         description = "[" + name + "]\nBenih yang dapat\nditanam pada saat\nsummer."; 
         isPickable = true;
         daysToHarvest = 7; 
+        this.harvestProduct = new OBJ_Blueberry(gp);
+        cropCount = 3; 
         buyPrice = 80; 
         salePrice = 40;
         isEdible = false;
@@ -27,5 +29,10 @@ public class OBJ_BlueberrySeeds extends Entity {
     @Override
     public EnumSet<Season> getAvailableSeasons() {
         return availableSeasons;
+    }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_BlueberrySeeds(gp);
     }
 }

@@ -17,4 +17,9 @@ public class OBJ_Tomato extends Entity {
         isEdible = true;
         plusEnergy = 3;
     }
+
+    @Override
+    public Entity copy() {
+        return new OBJ_Tomato(gp);
+    }
 }

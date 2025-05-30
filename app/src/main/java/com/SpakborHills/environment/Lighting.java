@@ -2,18 +2,19 @@ package com.SpakborHills.environment;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-
-
-
 import javax.swing.ImageIcon;
 
 import com.SpakborHills.main.GamePanel;
+import com.SpakborHills.entity.*;
+import com.SpakborHills.objects.*;
+import com.SpakborHills.tile.SoilTile;
 
 public class Lighting {
 
@@ -21,7 +22,7 @@ public class Lighting {
     BufferedImage darknessFilter;
     ImageIcon rainGif;
     Image rainGifImage;
-    int dayCounter;
+    public int dayCount = 1;
     float filterAlpha = 0f;
 
     final int day = 0;
@@ -120,6 +121,7 @@ public class Lighting {
         if(dayFrameCounter >= 17280){ //coba
             dayFrameCounter =0;
             hari++;
+            dayCount++;
             if(hari > 10){
                 hari = 1;
                 season = season.next();
@@ -187,16 +189,20 @@ public class Lighting {
     public void incrementDayAndAdvanceWeather() {
         hari++;
         dayFrameCounter = 0; 
+        gp.player.addDayPlayed();
 
         if (hari > 10) { 
             hari = 1;
             season = season.next();
             rainyDayCount = 0;  
+            gp.player.seasonalStatsChange();
         }
         nextDay(hari);
     }
 
     public void nextDay(int currentDayInSeason){
+        updateEachDay();
+
         if(currentDayInSeason >= 30){
             rainyDayCount = 0;
         }
@@ -212,6 +218,86 @@ public class Lighting {
         }
     }
 
+    public void updateEachDay(){
+        gp.ui.addMessage("hi");
+        for(int mapi = 0; mapi < gp.tileM.soilMap.length; mapi++){
+            for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
+                for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
+                    SoilTile tile = gp.tileM.soilMap[gp.currentMap][c][r];
+                    if (tile.isSeedPlanted) {
+                        int dayDiff = gp.eManager.getDayCount() - tile.plantedDay;
+                        int requiredDays = getGrowthDays(tile.seedType);
+                        gp.ui.addMessage("Seed planted at: (" + c + "," + r + ")");
+
+                        if (dayDiff >= requiredDays) {
+                            gp.ui.addMessage("Seed type: " + tile.seedType);
+                            gp.ui.addMessage("Planted day: " + tile.plantedDay);
+                            // gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
+                            Entity grownPlant = createGrownPlant(tile.seedType);
+                            grownPlant.worldX = c * gp.tileSize;
+                            grownPlant.worldY = r * gp.tileSize;
+
+                            insertToMapObjects(gp.currentMap, grownPlant); // Taruh ke world
+                            tile.isSeedPlanted = false;
+
+                            System.out.println("Tile: (" + c + "," + r + ")");
+                            System.out.println("Planted day: " + tile.plantedDay);
+                            System.out.println("Current day: " + gp.eManager.getDayCount());
+                            System.out.println("Diff: " + dayDiff + ", Required: " + requiredDays);
+                            System.out.println("Plant grown at (" + c + "," + r + ") : " + tile.seedType);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public int getGrowthDays(String seedType){
+        return switch(seedType){
+            case "Parsnip Seeds" -> 1;
+            case "Cauliflower Seeds" -> 5;
+            case "Potato Seeds" -> 3;
+            case "Wheat Seeds" -> 1;
+            case "Blueberry Seeds" -> 7;
+            case "Tomato Seeds" -> 3;
+            case "Hot Pepper Seeds" -> 1;
+            case "Melon Seeds" -> 4;
+            case "Cranberry Seeds" -> 2;
+            case "Pumpkin Seeds" -> 7;
+            case "Grape Seeds" -> 3;
+            case "Eggplant Seeds" -> 5;
+            default -> 0; // Default jika tidak ada yang cocok
+        };
+    }
+
+    public Entity createGrownPlant(String seedType) {
+        return switch (seedType) {
+            case "Parsnip Seeds" -> new OBJ_Parsnip(gp);
+            case "Cauliflower Seeds" -> new OBJ_Cauliflower(gp);
+            case "Potato Seeds" -> new OBJ_Potato(gp);
+            case "Wheat Seeds" -> new OBJ_Wheat(gp);
+            case "Blueberry Seeds" -> new OBJ_Blueberry(gp);
+            case "Tomato Seeds" -> new OBJ_Tomato(gp);
+            case "Hot Pepper Seeds" -> new OBJ_HotPepper(gp);
+            case "Melon Seeds" -> new OBJ_Melon(gp);
+            case "Cranberry Seeds" -> new OBJ_Cranberry(gp);
+            case "Pumpkin Seeds" -> new OBJ_Pumpkin(gp);
+            case "Grape Seeds" -> new OBJ_Grape(gp);
+            case "Eggplant Seeds" -> new OBJ_Eggplant(gp);
+            default -> null; // Jika tidak ada yang cocok
+        };
+    }
+
+    public void insertToMapObjects(int mapIndex, Entity e) {
+        Entity[] mapObjects = gp.getMapObjects(mapIndex);
+        for (int i = 0; i < mapObjects.length; i++) {
+            if (mapObjects[i] == null) {
+                mapObjects[i] = e;
+                break;
+            }
+        }
+    }
+
     public void draw(Graphics2D g2){
         float clampedAlpha = filterAlpha;
         if (Float.isNaN(filterAlpha)) {
@@ -222,20 +308,44 @@ public class Lighting {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, clampedAlpha));
         g2.drawImage(darknessFilter, 0, 0, null);
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-
+         // sub-window dimensions and position (top-right corner)
+        int windowWidth = gp.tileSize * 3;  
+        int windowHeight = gp.tileSize * 3; 
+        int windowX = gp.screenWidth - windowWidth - 20; 
+        int windowY = 20; 
+         // Draw chocolate brown background sub-window
+        Color backgroundColor = new Color(210, 125, 44,230);  // Orange-brown background
+        Color borderColor = new Color(143, 87, 27);           // Darker brown border
+        Color innerBorderColor = new Color(255, 178, 107);    // Lighter inner highlight
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(windowX, windowY, windowWidth, windowHeight, 8, 8);
+         // Draw border
+        g2.setColor(borderColor); // Darker brown for border
+        g2.drawRoundRect(windowX, windowY, windowWidth, windowHeight, 8, 8);
+        // Draw inner border highlight (lighter inner)
+        g2.setColor(innerBorderColor);
+        g2.drawRoundRect(windowX + 1, windowY + 1, windowWidth - 2, windowHeight - 2, 6, 6);
         // Draw the time
         String timeText = String.format("Time: %02d:%02d", hour, minute);
         String dayStr = "Day"+hari;
         String seasonStr = "Season: "+season.name().charAt(0) + season.name().substring(1).toLowerCase();
         String stateStr = "State: "+phase;
 
-        g2.setFont(g2.getFont().deriveFont(30F));
-        g2.setColor(Color.white);
+        Font customFont = gp.ui.getenviFont();
+        g2.setFont(customFont);
+        g2.setColor(new Color(86, 22, 12));
+        int textX = windowX + 25; // 15px padding from left edge of window
+        int textY = windowY + 55;  // Start 30px from top of window
+        int lineSpacing = 30;      // Space between lines
 
-        g2.drawString(timeText, 800, 200);
-        g2.drawString(dayStr,800,300);
-        g2.drawString(seasonStr, 800,  400);
-        g2.drawString(stateStr, 800, 500);
+
+        g2.drawString(timeText, textX, textY);
+        textY+=lineSpacing;
+        g2.drawString(dayStr,textX,textY);
+        textY+=lineSpacing;
+        g2.drawString(seasonStr, textX,  textY);
+        textY+=lineSpacing;
+        g2.drawString(stateStr, textX, textY);
 
         if(currentWeather == Weather.RAINY && rainGif != null && rainGifImage != null){
             g2.drawImage(rainGifImage,0,0,gp.screenWidth, gp.screenHeight, null);
