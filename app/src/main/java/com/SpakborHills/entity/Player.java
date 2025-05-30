@@ -350,6 +350,7 @@ public class Player extends Entity {
              if (npcIndex != 999) {
                 giftToNPC(npcIndex);
             }
+            keyH.giftPressed = false;
         }
         if (keyH.proposePressed && !inFishingMinigame) {
         // Propose ke NPC
@@ -1305,7 +1306,8 @@ public class Player extends Entity {
             if (equippedItem != null) {
                 itemToGive = equippedItem.name;
             } else {
-                itemToGive = inventory.getInventory().get(0).item.name;
+                gp.ui.addMessage("You don't pick any item to gift");
+                return;
             }
             if (itemToGive.equals("Ring")) {
                 gp.ui.addMessage("You can't give away your Proposal Ring!");
