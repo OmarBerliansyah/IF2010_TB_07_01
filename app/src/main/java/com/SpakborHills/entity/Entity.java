@@ -27,7 +27,7 @@ public class Entity {
     public BufferedImage wateringUp, wateringDown, wateringLeft, wateringRight;
     public BufferedImage recoverLandUp, recoverLandDown, recoverLandLeft, recoverLandRight;
     public BufferedImage parsnipSeeds, cauliflowerSeeds, potatoSeeds, wheatSeeds;
-    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds;
+    public BufferedImage blueberrySeeds, tomatoSeeds, hotPepperSeeds, melonSeeds, eggplantSeeds;
     public BufferedImage cranberrySeeds, pumpkinSeeds, grapeSeeds;
     public String direction = "down";
 
@@ -76,7 +76,9 @@ public class Entity {
         this.gp = gp;
     }
 
-    public void setAction(){}
+    public void setAction(){
+
+    }
 
     public void speak(){
         if(dialogue[dialogueIndex]==null){

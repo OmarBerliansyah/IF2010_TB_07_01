@@ -8,9 +8,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-
-
-
 import javax.swing.ImageIcon;
 
 import com.SpakborHills.main.GamePanel;
@@ -187,11 +184,13 @@ public class Lighting {
     public void incrementDayAndAdvanceWeather() {
         hari++;
         dayFrameCounter = 0; 
+        gp.player.addDayPlayed();
 
         if (hari > 10) { 
             hari = 1;
             season = season.next();
             rainyDayCount = 0;  
+            gp.player.seasonalStatsChange();
         }
         nextDay(hari);
     }
