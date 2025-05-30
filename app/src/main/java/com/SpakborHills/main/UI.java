@@ -219,6 +219,10 @@ public class UI {
             drawFishingMinigameUI();
         }
 
+        if(gp.gameState != gp.titleState){
+            drawEnergyBar(g2);
+        }
+
     }
     private boolean isInNPCHouse() {
         return gp.currentMap >= 5 && gp.currentMap <= 10;
@@ -253,7 +257,7 @@ public class UI {
                 messageCounter.set(i, counter);
                 eatingMessageY += 35; 
 
-                if (messageCounter.get(i) > 120) {
+                if (messageCounter.get(i) > 240) {
                     message.remove(i);
                     messageCounter.remove(i);
                     i--;
@@ -272,7 +276,7 @@ public class UI {
 
                 messageY += 50;
 
-                if (messageCounter.get(i) > 180) {
+                if (messageCounter.get(i) > 300) {
                     message.remove(i);
                     messageCounter.remove(i);
                 }
@@ -300,6 +304,60 @@ public class UI {
                 gp.gameState = gp.playState;
             }
         }
+    }
+
+        // Add this method to draw the energy bar
+    public void drawEnergyBar(Graphics2D g2) {
+        // Energy bar dimensions and position
+        int barX = 20; // Position from left edge
+        int barY = 40; // Position from top edge
+        int barWidth = 300; // Total width of energy bar
+        int barHeight = 30; // Height of energy bar
+        
+        // Assuming max energy is 100 (adjust based on your player's max energy)
+        int maxEnergy = 100; // You might want to get this from gp.player.maxEnergy if available
+        int currentEnergy = gp.player.energy;
+        
+        // Calculate the fill width based on current energy percentage
+        double energyPercentage = (double) currentEnergy / maxEnergy;
+        int fillWidth = (int) (barWidth * energyPercentage);
+        
+        // Draw background (empty bar)
+        g2.setColor(Color.DARK_GRAY);
+        g2.fillRoundRect(barX, barY, barWidth, barHeight, 10, 10);
+        
+        // Draw border
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(barX, barY, barWidth, barHeight, 10, 10);
+        
+        // Draw energy fill with color based on energy level
+        if (energyPercentage > 0.6) {
+            g2.setColor(Color.GREEN); // High energy - green
+        } else if (energyPercentage > 0.3) {
+            g2.setColor(Color.YELLOW); // Medium energy - yellow
+        } else {
+            g2.setColor(Color.RED); // Low energy - red
+        }
+        
+        // Only draw fill if there's energy left
+        if (fillWidth > 0) {
+            g2.fillRoundRect(barX, barY, fillWidth, barHeight, 10, 10);
+        }
+        
+        // Draw energy text
+        g2.setColor(Color.WHITE);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
+        String energyText = currentEnergy + "/" + maxEnergy;
+        FontMetrics fm = g2.getFontMetrics();
+        int textX = barX + (barWidth - fm.stringWidth(energyText)) / 2; // Center text in bar
+        int textY = barY + barHeight / 2 + fm.getAscent() / 2; // Center text vertically
+        g2.drawString(energyText, textX, textY);
+        
+        // Optional: Add "Energy" label above the bar
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Energy", barX, barY - 8);
     }
 
     public void drawSleepConfirmationDialog(Graphics2D g2) {
@@ -1601,7 +1659,7 @@ public class UI {
         int windowX = gp.tileSize *3;
         int windowY = gp.tileSize * 2;
         int windowWidth = gp.screenWidth - (gp.tileSize * 6);
-        int windowHeight = gp.tileSize * 5;
+        int windowHeight = gp.tileSize * 6;
 
         drawSubWindow(windowX, windowY, windowWidth, windowHeight);
 
