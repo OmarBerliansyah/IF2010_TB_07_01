@@ -18,7 +18,10 @@ import com.SpakborHills.environment.Weather;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.*;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
 import com.SpakborHills.tile.SoilTile;
 import com.SpakborHills.tile.TileType;
 
@@ -260,6 +263,11 @@ public class Player extends Entity{
                 gp.eHandler.canTouchEvent = true;
             }
         }
+        if (energy<=-20){
+            gp.ui.addMessage("You're completely exhausted! You collapse and fall asleep...");
+            sleeping();
+            return;
+        }
         if (totalIncome >= 17209 && !endGameForIncome && endGameCount < 2) {
             endGame = true;
             endGameForIncome = true;
@@ -477,7 +485,7 @@ public class Player extends Entity{
             
             // Check if near cooking station (adjust coordinates as needed)
             if (Math.abs(playerTileX - 8) <= 1 && Math.abs(playerTileY - 8) <= 1) {
-                if (energy >= 10) {
+                if (energy >= -15) {
                     gp.gameState = gp.cookingState;
                     gp.ui.showCookingInterface();
                     return;
@@ -512,12 +520,12 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE && gp.currentMap == 0) {
+            if (energy >= -15 && gp.tileM.tile[tileNum].tileType == TileType.TILLABLE && gp.currentMap == 0) {
                 tilling = true;
                 energy-=5;
                 tillWithoutEnergy = false;
             }
-            else if(energy < 5){
+            else if(energy < -15){
                 tillWithoutEnergy = true;
                 tilling = true;
                 gp.ui.addMessage("Not enough energy to use the hoe!");
@@ -534,14 +542,14 @@ public class Player extends Entity{
                 Entity equippedSeed = equippedInventoryItem.item;
                 if (equippedSeed.type == EntityType.SEED &&
                 equippedSeed.getAvailableSeasons().contains(gp.eManager.getCurrentSeason())){
-                    if(energy >= 5 && canPlant() && gp.currentMap == 0){
+                    if(energy >= -15 && canPlant() && gp.currentMap == 0){
                         plantingSeedItem = equippedInventoryItem;
                         planting = true;
                         energy -= 5;
                         equippedInventoryItem.count--;
                         tillWithoutEnergy = false;
                     }
-                    else if (energy < 5){
+                    else if (energy < -15){
                         tillWithoutEnergy = true;
                         planting = true;
                         gp.ui.addMessage("Not enough energy to plant!");
@@ -589,12 +597,12 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10 && gp.currentMap == 0) {
+            if (energy >= -15 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10 && gp.currentMap == 0) {
                 watering = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk menyiram adalah 5
             } 
-            else if(energy < 5) {
+            else if(energy < -15) {
                 watering = true;
                 tillWithoutEnergy = true;
                 gp.ui.addMessage("Not enough energy to use the watering can!");
@@ -630,12 +638,12 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= 5 && gp.tileM.tile[tileNum].tileType == TileType.TILLED && gp.currentMap == 0) {
+            if (energy >= -15 && gp.tileM.tile[tileNum].tileType == TileType.TILLED && gp.currentMap == 0) {
                 recoverLand = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk mencangkul adalah 5
             } 
-            else if (energy < 5) {
+            else if (energy < -15) {
                 recoverLand = true;
                 tillWithoutEnergy = true;
                 gp.ui.addMessage("Not enough energy to recover this tile!");
@@ -646,20 +654,16 @@ public class Player extends Entity{
                 gp.ui.addMessage("Cannot recover this tile!");
             }
         } else if (currentTool instanceof OBJ_FishingRod) {
-            if(this.energy >= 5){
+            if(this.energy >= -15){
                 startFishing();
                 if (gp.gameState != gp.fishingMinigameState){
                     keyH.useToolPressed = false; // Reset the useToolPressed flag
                 }
             }
-        } else if (currentTool instanceof OBJ_FishingRod) {
-            if(this.energy >= 5){
-                startFishing();
-                if (gp.gameState != gp.fishingMinigameState){
-                    keyH.useToolPressed = false; // Reset the useToolPressed flag
-                }
+            else{
+                gp.ui.addMessage("You're too exhausted to fish! (Need at least -15 energy)");
             }
-        }
+        } 
         else{
             gp.ui.addMessage("No tool equipped!");
         }
@@ -1065,13 +1069,13 @@ public class Player extends Entity{
         System.out.println("Before sleep - Day: " + gp.eManager.getDayCount());
         boolean isPassOut = (gp.eManager.getHour() >= 2 && gp.eManager.getHour() < 6) && !gp.ui.showingSleepConfirmDialog;
 
-        if(isPassOut){
-            gp.ui.addMessage("Sudah terlalu larut! Kamu pingsan....");
+        if(isPassOut|| energy <= -20){
+           if (energy <= -20) {
+                gp.ui.addMessage("You collapsed from exhaustion...");
+            } else {
+                gp.ui.addMessage("Sudah terlalu larut! Kamu pingsan....");
+            }
         }
-        else{
-            gp.ui.addMessage("You are sleeping...");
-        }
-
         if (energy < 10) {
             energy += 50;
         }
@@ -1111,7 +1115,7 @@ public class Player extends Entity{
                 boolean isNewConversation = (currentNPC.dialogueIndex == 0);
                 System.out.println("Is new conversation: " + isNewConversation);
                 // If it's a new conversation, check if player has enough energy
-                if (isNewConversation && energy < 10) {
+                if (isNewConversation && energy < -10) {
                     gp.ui.addMessage("You're too tired to start a new conversation! (Need 10 energy)");
                     gp.keyH.enterPressed = false;
                     System.out.println("Not enough energy for new conversation!");
@@ -1332,7 +1336,7 @@ public class Player extends Entity{
                 }
                 return; // Exit without proposing
             }
-            if (hasProposalRing() && energy>=20) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
+            if (hasProposalRing() && energy>=0) {// kalo ditolak masalahnya energinya 20, ntar ngutang kaga mungkin kan
                 boolean accepted = currentNPC.propose();
                 if (accepted) {
                     // LAMARAN DITERIMA
@@ -1378,7 +1382,7 @@ public class Player extends Entity{
                 gp.ui.addMessage("Marry your fiance first, or break up and start over!");
                 return;
             }
-            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=80 && currentNPC.canMarryToday()) {
+            if (hasProposalRing() && currentNPC.getRelationshipStatus() == NPC.RelationshipStatus.FIANCE && energy>=60 && currentNPC.canMarryToday()) {
                 boolean married = currentNPC.marry();
                 
                 if (married) {
@@ -1460,7 +1464,7 @@ public class Player extends Entity{
                 gp.ui.addMessage("You have no items to give!");
                 return;
             }
-            if (energy<5){
+            if (energy<-15){
                 gp.ui.addMessage("You're too tired to gift me! (Need 5 energy)");
                 return;
             }
@@ -1532,7 +1536,7 @@ public class Player extends Entity{
 
     // Method untuk shipping bin
     public void openShippingBin() {
-        if (energy < 5) {
+        if (energy < -15) {
             gp.ui.addMessage("Not enough energy to use shipping bin!");
             return;
         }
@@ -1664,7 +1668,7 @@ public class Player extends Entity{
     }
 
     public void startFishing(){
-        if (energy < 5){
+        if (energy < -15){
             return;
         } 
         if (!isPlayerFacingWater()){
