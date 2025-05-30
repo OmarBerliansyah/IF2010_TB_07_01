@@ -257,6 +257,10 @@ public class GamePanel extends JPanel implements Runnable {
         else if (gameState == fishingMinigameState) {
             ui.processFishingMinigameInput();
         }
+        if (keyH != null) { // Pastikan keyH tidak null
+        
+        
+    }
     }
 
     @Override

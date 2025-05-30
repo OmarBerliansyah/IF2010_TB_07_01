@@ -193,7 +193,12 @@ public class UI {
                 drawCookingInterface(g2);
             }
         }
+
         drawEating();
+        if (gp.gameState == gp.fishingMinigameState){
+            drawFishingMinigameUI();
+        }
+
     }
     private boolean isInNPCHouse() {
         return gp.currentMap >= 5 && gp.currentMap <= 10;
@@ -1483,13 +1488,18 @@ public class UI {
         return false;
     }
 
-        public void processFishingMinigameInput(){
+    public void processFishingMinigameInput(){
+        System.out.println("DEBUG: UI.processFishingMinigameInput() - AWAL. Input buffer: " + gp.fishingInputBuffer);
+
+        // kondisi awal
         if (!gp.player.inFishingMinigame){
             return;
         }
 
+        //  no 1
         if (gp.keyH.newCharTypedFishing){
-            int maxInputLength =3;
+            int maxInputLength = 3;
+
             if (gp.player.fishBeingFishedProto != null && gp.player.fishingRangeString != null){
                 String range = gp.player.fishingRangeString;
                 if (range.endsWith("10")){
@@ -1499,51 +1509,70 @@ public class UI {
                 if (gp.fishingInputBuffer.length() < maxInputLength) {
                     gp.fishingInputBuffer += gp.keyH.lastTypeCharFishing;
                 }
-                gp.keyH.newCharTypedFishing = false;
                 gp.keyH.lastTypeCharFishing = '\0'; // Reset after processing
             }
+        }
 
-            if (gp.keyH.backspacePressedFishing){
-                if (gp.fishingInputBuffer.length() > 0) {
-                    gp.fishingInputBuffer = gp.fishingInputBuffer.substring(0, gp.fishingInputBuffer.length() - 1);
-                }
-                gp.keyH.backspacePressedFishing = false; // Reset after processing
+        gp.keyH.newCharTypedFishing = false;
+
+        // no 2
+        if (gp.keyH.backspacePressedFishing){
+            if (gp.fishingInputBuffer.length() > 0) {
+                gp.fishingInputBuffer = gp.fishingInputBuffer.substring(0, gp.fishingInputBuffer.length() - 1);
             }
+            gp.keyH.backspacePressedFishing = false; // Reset after processing
+        }
 
-            if (gp.keyH.enterPressed){
-                if (!gp.fishingInputBuffer.isEmpty()){
-                    try {
-                        int guessNumber = Integer.parseInt(gp.fishingInputBuffer);
-                        gp.player.processPlayerGuess(guessNumber);
-                    } catch (NumberFormatException nfe){
-                        addMessage("Invalid input! Please enter a number.");
-                    }
-                    gp.fishingInputBuffer = ""; // Reset input buffer after processing
-                } else  {
-
+        //no 3
+        if (gp.keyH.enterPressed){
+            if (!gp.fishingInputBuffer.isEmpty()){
+                try {
+                    int guessNumber = Integer.parseInt(gp.fishingInputBuffer);
+                    gp.player.processPlayerGuess(guessNumber);
+                } catch (NumberFormatException nfe){
+                    addMessage("Invalid input! Please enter a number.");
                 }
-                gp.keyH.enterPressed = false; // Reset after processing
+                gp.fishingInputBuffer = ""; // Reset input buffer after processing
+            } else  {
+
             }
+            gp.keyH.enterPressed = false; // Reset after processing
+        }
+
+        // no 4
+        if(gp.keyH.escPressed){
+            if(gp.player.inFishingMinigame){
+                gp.player.endFishingMinigame(false);
+                addMessage("Fishing cancelled");
+            }
+            gp.keyH.escPressed = false;
         }
     }
+         
 
     public void drawFishingMinigameUI(){
-        int x = gp.tileSize * 3;
-        int y = gp.tileSize * 2;
-        int width = gp.screenWidth - (gp.tileSize * 6);
-        int height = gp.tileSize * 7;
+        if (!gp.player.inFishingMinigame && gp.gameState != gp.fishingMinigameState){
+            return; 
+        }
 
-        drawSubWindow(x, y, width, height);
+        int windowX = gp.tileSize *3;
+        int windowY = gp.tileSize * 2;
+        int windowWidth = gp.screenWidth - (gp.tileSize * 6);
+        int windowHeight = gp.tileSize * 8;
 
-        if (confirmationFont == null){
+        drawSubWindow(windowX, windowY, windowWidth, windowHeight);
+
+        Font baseFontForMinigame = (inputFont != null) ? inputFont.deriveFont(36f) : new Font("Arial", Font.BOLD, 28); // Contoh ukuran
+        if (confirmationFont == null) { // Fallback jika font utama belum ada
             confirmationFont = new Font("Arial", Font.PLAIN, 24);
         }
-        g2.setFont(confirmationFont);
+        g2.setFont(baseFontForMinigame);
         g2.setColor(Color.white);
 
-        int textX = x + gp.tileSize /2;
-        int textY = y + gp.tileSize;
-        int lineHeight = 35;
+        int textPaddingX = gp.tileSize/2 ;
+        int textX = windowX + textPaddingX;
+        int textY = windowY + gp.tileSize;
+        int lineHeight = 50;
 
         if (gp.player.fishBeingFishedProto != null && gp.player.fishBeingFishedProto instanceof Entity.FishableProperties){
             Entity.FishableProperties fishProps = (Entity.FishableProperties) gp.player.fishBeingFishedProto;
@@ -1556,36 +1585,74 @@ public class UI {
         }
 
         if (gp.player.inFishingMinigame){
-            String prompt = "Guess (" + gp.player.fishingRangeString + "):" + gp.fishingInputBuffer;
+            String guessPromptText = "Guess (" + gp.player.fishingRangeString + "):";
+            FontMetrics fm = g2.getFontMetrics();
+            int promptWidth = fm.stringWidth(guessPromptText);
+            g2.drawString(guessPromptText, textX, textY);
 
-            int maxInputLengthForCursor = 3;
+            int inputFieldX = textX + promptWidth + 5;
+            int inputFieldY = textY - fm.getAscent() - 5; // Adjust Y to align with text
+
+            int maxDigits = 3;
+
             if (gp.player.fishingRangeString != null){
                 if (gp.player.fishingRangeString.endsWith("10")){
-                    maxInputLengthForCursor = 2; // Adjust for range ending with "10"
+                    maxDigits = 2; // Adjust for range ending with "10"
                 }
 
-                if (System.currentTimeMillis()/ 500 % 2 == 0 && gp.fishingInputBuffer.length() < maxInputLengthForCursor) { // Blink effect
-                    prompt += "_"; // Add cursor blink
+                int inputFieldWidth = (fm.charWidth('0') * maxDigits) + (gp.tileSize / 2); // Width for 3 digits + padding
+                int inputFieldHeight = fm.getHeight() + 10; // Height for input field
+
+                g2.setColor(new Color(80, 80, 80, 200));
+                g2.fillRect(inputFieldX, inputFieldY, inputFieldWidth, inputFieldHeight);
+
+                g2.setColor(Color.LIGHT_GRAY);
+                g2.setStroke(new BasicStroke(2)); // Border lebih tipis
+                g2.drawRect(inputFieldX, inputFieldY, inputFieldWidth, inputFieldHeight);
+                g2.setStroke(new BasicStroke(1));
+
+                g2.setColor(Color.white);
+                String currentInputText = gp.fishingInputBuffer;
+
+                if (System.currentTimeMillis() / 500 % 2 == 0 && gp.fishingInputBuffer.length() < maxDigits) {
+                    currentInputText += "_";
                 }
 
-                g2.drawString(prompt, textX, textY);
+                g2.drawString(currentInputText, inputFieldX + 5, textY);
+
                 textY += lineHeight;
 
+                
                 int triesLeft = gp.player.maxFishingTries - gp.player.currentFishingTry;
                 g2.drawString("Tries left: " + triesLeft + "/" + gp.player.maxFishingTries, textX, textY);
                 textY += lineHeight;
-                textY += lineHeight /2;
 
-                // instruksi
-                g2.setFont(confirmationFont.deriveFont(18F)); // Font lebih kecil untuk instruksi
-                g2.setColor(Color.LIGHT_GRAY);
-                g2.drawString("Enter: Submit Guess", textX, textY);
-                textY += 25;
-                g2.drawString("Backspace: Delete Character", textX, textY);
-                textY += 25;
-                g2.drawString("Esc: Cancel Fishing (Optional)", textX, textY);
-            } else {
-                g2.drawString("Casting line...", textX, textY);
+                if (gp.player.fishingGuessHint != null && !gp.player.fishingGuessHint.isEmpty()) {
+                g2.setColor(Color.YELLOW); // Warna berbeda untuk petunjuk
+                g2.drawString(gp.player.fishingGuessHint, textX, textY);
+                g2.setColor(Color.white); // Kembalikan ke warna default
+                textY += lineHeight;
+            }
+
+            textY += lineHeight ;
+
+            Font instructionFont = (confirmationFont != null) ? confirmationFont.deriveFont(28F) : new Font("Arial", Font.PLAIN, 18);
+            g2.setFont(instructionFont);
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.drawString("Enter: Submit Guess", textX, textY);
+            textY += 25;
+            g2.drawString("Backspace: Delete Character", textX, textY);
+            textY += 25;
+
+            } else if (gp.gameState == gp.fishingMinigameState) {
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.fillRoundRect(100, 100, 400, 200, 35, 35);
+
+                g2.setColor(Color.WHITE);
+                g2.setFont(g2.getFont().deriveFont(Font.BOLD, 28F));
+                g2.drawString("Fishing Minigame!", 150, 160);
+                g2.setFont(g2.getFont().deriveFont(24F));
+                g2.drawString("Press ENTER to reel in!", 150, 210);
             }
         }
     }

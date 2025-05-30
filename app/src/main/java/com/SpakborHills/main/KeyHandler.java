@@ -273,6 +273,20 @@ public class KeyHandler implements KeyListener {
                 enterPressed = true;
             }
         }
+
+        // FISHING MINIGAME STATE
+        if (gp.gameState == gp.fishingMinigameState) {
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
+            if (code == KeyEvent.VK_SPACE) {
+                useToolPressed = true;
+            }
+            if (code == KeyEvent.VK_BACK_SPACE) {
+                backspacePressedFishing = true;
+            }
+        }
+
 }
 
     @Override
@@ -340,6 +354,17 @@ public class KeyHandler implements KeyListener {
                     gp.ui.addMessage("No item equipped to eat!");
                 }
             }*/
+        }
+        if (gp.gameState == gp.fishingMinigameState) {
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = false;
+            }
+            if (code == KeyEvent.VK_SPACE) {
+                useToolPressed = false;
+            }
+            if (code == KeyEvent.VK_BACK_SPACE) {
+                backspacePressedFishing = false;
+            }
         }
     }
 }
