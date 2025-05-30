@@ -53,6 +53,8 @@ public class UI {
     public int interfaceMaxLines = 20; 
     public int shippingBinScroll = 0;
     public int shippingBinMaxLines = 10; // or whatever fits your window
+    public int inventoryScrollOffset = 0;
+    public final int maxVisibleSlots = 20;
 
 
     // INPUT SYSTEM
@@ -1034,37 +1036,76 @@ public class UI {
         int slotY = slotYstart;
         int slotSize = gp.tileSize+3;
 
-        // DRAW PLAYER'S ITEMS
-        for(int i = 0; i < gp.player.inventory.getInventory().size(); i++){
-            g2.drawImage(gp.player.inventory.getInventory().get(i).item.down1, slotX, slotY, null);
+        // Calculate total pages and current page
+        int totalItems = gp.player.inventory.getInventory().size();
+        int totalPages = (totalItems + maxVisibleSlots - 1) / maxVisibleSlots; // Round up
+        int currentPage = inventoryScrollOffset / maxVisibleSlots + 1;// DRAW PLAYER'S ITEMS
+        // Display page info
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.WHITE);
+        String pageInfo = "Page " + currentPage + "/" + Math.max(1, totalPages);
+        g2.drawString(pageInfo, frameX + frameWidth - 80, frameY - 5);
+        // Display scroll hints if there are more items
+        if (totalItems > maxVisibleSlots) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 12F));
+            g2.setColor(Color.LIGHT_GRAY);
+            
+            if (inventoryScrollOffset > 0) {
+                g2.drawString("▲ Up for more", frameX + 5, frameY - 15);
+            }
+            if (inventoryScrollOffset + maxVisibleSlots < totalItems) {
+                g2.drawString("▼ Down for more", frameX + 5, frameY + frameHeight + 15);
+            }
+        }
+        // DRAW PLAYER'S ITEMS (only visible ones)
+        int startIndex = inventoryScrollOffset;
+        int endIndex = Math.min(startIndex + maxVisibleSlots, totalItems);
+        
+        for(int i = startIndex; i < endIndex; i++){
+            int relativeIndex = i - startIndex; // Index relative to visible slots
+            
+            // Calculate position based on relative index
+            int col = relativeIndex % 5;
+            int row = relativeIndex / 5;
+            
+            slotX = slotXstart + (col * slotSize);
+            slotY = slotYstart + (row * slotSize);
 
+            Inventory.InventoryItem currentItem = gp.player.inventory.getInventory().get(i);
+            
             // EQUIP CURSOR 
-            if (gp.player.getEquippedItem() == gp.player.inventory.getInventory().get(i).item) {
+            if (gp.player.getEquippedItem() == currentItem.item) {
                 g2.setColor(new Color(240, 190, 90, 200));
                 g2.fillRoundRect(slotX + 2, slotY + 2, gp.tileSize - 4, gp.tileSize - 4, 8, 8);
             }
-            g2.drawImage(gp.player.inventory.getInventory().get(i).item.down1, slotX, slotY, null);
+            
+            g2.drawImage(currentItem.item.down1, slotX, slotY, null);
 
-            // nambahin jumlah item di pojok kanan bawah
+            // Add item count in corner
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
             g2.setColor(Color.WHITE);
-            String itemCount = String.valueOf(gp.player.inventory.getInventory().get(i).count);            
+            String itemCount = String.valueOf(currentItem.count);            
             int textX = slotX + gp.tileSize - g2.getFontMetrics().stringWidth(itemCount) - 2;
             int textY = slotY + gp.tileSize - 2;
             g2.drawString(itemCount, textX, textY);
-            
-            slotX += slotSize; 
-
-            if(i == 4 || i == 9 || i == 14){
-                slotX = slotXstart; 
-                slotY += slotSize; 
-            }
         }
-        // CURSOR
-        int cursorX = slotXstart + (slotSize * slotCol);
-        int cursorY = slotYstart + (slotSize * slotRow);
-        int cursorWidth = gp.tileSize;
-        int cursorHeight = gp.tileSize;
+        // CURSOR (only show if within visible range)
+        int absoluteIndex = getItemIndexOnSLot();
+        if (absoluteIndex >= startIndex && absoluteIndex < endIndex) {
+            int relativeIndex = absoluteIndex - startIndex;
+            int cursorCol = relativeIndex % 5;
+            int cursorRow = relativeIndex / 5;
+            
+            int cursorX = slotXstart + (cursorCol * slotSize);
+            int cursorY = slotYstart + (cursorRow * slotSize);
+            int cursorWidth = gp.tileSize;
+            int cursorHeight = gp.tileSize;
+
+            // DRAW CURSOR
+            g2.setColor(Color.white);
+            g2.setStroke(new BasicStroke(3));
+            g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10,10);
+        }
 
         // DESCRIPTION FRAME
         int dFrameX = frameX;
@@ -1079,23 +1120,81 @@ public class UI {
 
         int itemIndex = getItemIndexOnSLot();
 
-        if(itemIndex < gp.player.inventory.getInventory().size()){
+        if(itemIndex >= 0 && itemIndex < gp.player.inventory.getInventory().size()){
             drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight); 
             for(String line : gp.player.inventory.getInventory().get(itemIndex).item.description.split("\n")){
                 g2.drawString(line, textX, textY);
                 textY += 32;
             }
         }
-
-        // DRAW CURSOR
-        g2.setColor(Color.white);
-        g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10,10);
     }
 
     public int getItemIndexOnSLot(){
-        int itemIndex = slotCol + (slotRow*5);
-        return itemIndex;
+        int relativeIndex = slotCol + (slotRow * 5);
+        return inventoryScrollOffset + relativeIndex;
+    }
+    public void scrollInventory(boolean scrollUp) {
+        int totalItems = gp.player.inventory.getInventory().size();
+        
+        if (scrollUp) {
+            // Scroll up (show previous items)
+            inventoryScrollOffset = Math.max(0, inventoryScrollOffset - 5); // Scroll by one row
+            
+            // Adjust cursor if it goes out of bounds
+            int currentAbsoluteIndex = getItemIndexOnSLot();
+            if (currentAbsoluteIndex >= totalItems) {
+                // Move cursor to last available item
+                int lastRelativeIndex = (totalItems - 1) - inventoryScrollOffset;
+                if (lastRelativeIndex >= 0) {
+                    slotRow = lastRelativeIndex / 5;
+                    slotCol = lastRelativeIndex % 5;
+                }
+            }
+        } else {
+            // Scroll down (show next items)
+            int maxScrollOffset = Math.max(0, totalItems - maxVisibleSlots);
+            inventoryScrollOffset = Math.min(maxScrollOffset, inventoryScrollOffset + 5); // Scroll by one row
+            
+            // Adjust cursor if it goes out of bounds
+            int currentAbsoluteIndex = getItemIndexOnSLot();
+            if (currentAbsoluteIndex >= totalItems) {
+                // Move cursor to last available item
+                int lastRelativeIndex = (totalItems - 1) - inventoryScrollOffset;
+                if (lastRelativeIndex >= 0) {
+                    slotRow = lastRelativeIndex / 5;
+                    slotCol = lastRelativeIndex % 5;
+                }
+            }
+        }
+        
+        // Ensure cursor stays within visible bounds
+        ensureCursorInBounds();
+    }
+    public void ensureCursorInBounds() {
+        int totalItems = gp.player.inventory.getInventory().size();
+        int visibleStartIndex = inventoryScrollOffset;
+        int visibleEndIndex = Math.min(inventoryScrollOffset + maxVisibleSlots, totalItems);
+        int visibleItemCount = visibleEndIndex - visibleStartIndex;
+        
+        if (visibleItemCount <= 0) {
+            slotRow = 0;
+            slotCol = 0;
+            return;
+        }
+        
+        // Calculate current relative position
+        int currentRelativeIndex = slotCol + (slotRow * 5);
+        
+        // If cursor is beyond visible items, move it to the last visible item
+        if (currentRelativeIndex >= visibleItemCount) {
+            int lastVisibleRelativeIndex = visibleItemCount - 1;
+            slotRow = lastVisibleRelativeIndex / 5;
+            slotCol = lastVisibleRelativeIndex % 5;
+        }
+        
+        // Ensure row and column are within grid bounds
+        slotRow = Math.max(0, Math.min(3, slotRow)); // Max 4 rows (0-3)
+        slotCol = Math.max(0, Math.min(4, slotCol)); // Max 5 cols (0-4)
     }
     public void drawNPCInteractionInfo() {
         // Always show NPC info when in NPC house (maps 5-10)

@@ -2,13 +2,10 @@ package com.SpakborHills.main; // Package declaration for the main class
 
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
-import com.SpakborHills.entity.Entity;
-
-import java.awt.Color;
 
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed, pageUpPressed, pageDownPressed; // Movement flags
     //DEBUG
     boolean checkDrawTime;
 
@@ -225,10 +222,33 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.playState;
                 characterPressed = true;
             }
+            
+            // Handle scrolling with Page Up/Down or Shift+Up/Down
+            if(code == KeyEvent.VK_PAGE_UP || (code == KeyEvent.VK_UP && e.isShiftDown())){
+                pageUpPressed = true;
+                gp.ui.scrollInventory(true); // Scroll up
+                gp.playSE(2);
+                return; // Don't process normal navigation
+            }
+            if(code == KeyEvent.VK_PAGE_DOWN || (code == KeyEvent.VK_DOWN && e.isShiftDown())){
+                pageDownPressed = true;
+                gp.ui.scrollInventory(false); // Scroll down  
+                gp.playSE(2);
+                return; // Don't process normal navigation
+            }
+            
+            // Normal navigation (only if not scrolling)
             if(code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
                 if(gp.ui.slotRow != 0){
                     gp.ui.slotRow--;
                     gp.playSE(2);
+                } else {
+                    // At top row, try to scroll up
+                    if (gp.ui.inventoryScrollOffset > 0) {
+                        gp.ui.scrollInventory(true);
+                        gp.ui.slotRow = 3; // Move to bottom row of new view
+                        gp.playSE(2);
+                    }
                 }
             }
             if(code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT){
@@ -238,17 +258,34 @@ public class KeyHandler implements KeyListener {
                 }
             }
             if(code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
-                if(gp.ui.slotRow != 3){
+                // Check if we can move down in current view
+                int totalItems = gp.player.inventory.getInventory().size();
+                int currentAbsoluteIndex = gp.ui.getItemIndexOnSLot();
+                int nextRowIndex = currentAbsoluteIndex + 5; // Next row
+                
+                if(gp.ui.slotRow != 3 && nextRowIndex < totalItems && 
+                nextRowIndex < gp.ui.inventoryScrollOffset + gp.ui.maxVisibleSlots){
                     gp.ui.slotRow++;
+                    gp.playSE(2);
+                } else if (nextRowIndex < totalItems) {
+                    // At bottom row but more items exist, scroll down
+                    gp.ui.scrollInventory(false);
+                    gp.ui.slotRow = 0; // Move to top row of new view
                     gp.playSE(2);
                 }
             }
             if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
-                if(gp.ui.slotCol != 4){
+                int totalItems = gp.player.inventory.getInventory().size();
+                int currentAbsoluteIndex = gp.ui.getItemIndexOnSLot();
+                
+                if(gp.ui.slotCol != 4 && currentAbsoluteIndex + 1 < totalItems){
                     gp.ui.slotCol++;
                     gp.playSE(2);
                 }
             }
+            
+            // Ensure cursor stays within bounds after any movement
+            gp.ui.ensureCursorInBounds();
         }
 
         if (gp.gameState == gp.shippingBinState) {
@@ -360,6 +397,12 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_ESCAPE) {
             escPressed = false;
+        }
+        if (code == KeyEvent.VK_PAGE_UP) {
+            pageUpPressed = false;
+        }
+        if (code == KeyEvent.VK_PAGE_DOWN) {
+            pageDownPressed = false;
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_ENTER) {
