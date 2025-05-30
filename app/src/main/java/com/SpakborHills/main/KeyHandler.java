@@ -356,6 +356,28 @@ public class KeyHandler implements KeyListener {
             }
         }
 
+        if (gp.gameState == gp.shoppingState){
+            if (code == KeyEvent.VK_ESCAPE) {
+                escPressed = true;
+            }
+            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                upPressed = true; 
+            }
+            if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
+                downPressed = true; 
+            }
+            if (code == KeyEvent.VK_LEFT || code == KeyEvent.VK_A) {
+                leftPressed = true; 
+            }
+            if (code == KeyEvent.VK_RIGHT || code == KeyEvent.VK_D) {
+                rightPressed = true;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true; 
+            }
+
+        }
+
 }
 
     @Override

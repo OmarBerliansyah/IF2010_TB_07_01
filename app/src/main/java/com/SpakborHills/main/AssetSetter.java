@@ -20,6 +20,7 @@ import com.SpakborHills.objects.OBJ_Stove;
 import com.SpakborHills.objects.OBJ_Tree;
 import com.SpakborHills.objects.OBJ_Tree2;
 import com.SpakborHills.objects.OBJ_TV;
+import com.SpakborHills.objects.OBJ_Table;
 import com.SpakborHills.objects.OBJ_Catfish;
 
 
@@ -166,6 +167,7 @@ public class AssetSetter {
             gp.mapObjects[mapIndex][objIndex4].worldY = 5 * gp.tileSize;
         }
     }
+
     private void initializeForestMap(int mapIndex) {
         // Forest map objects 
         System.out.println("Forest map initialized");
@@ -182,6 +184,12 @@ public class AssetSetter {
      private void initializeEmilyMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Emily map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Table(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 16 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 16 * gp.tileSize;
+        }
     }
      private void initializePerryMap(int mapIndex) {
         // Ocean map objects jika ada
@@ -352,6 +360,7 @@ public class AssetSetter {
         gp.mapObjects[mapIndex][objIndex] = new OBJ_EmilyHouse(gp);
         gp.mapObjects[mapIndex][objIndex].worldX = 12 * gp.tileSize;
         gp.mapObjects[mapIndex][objIndex].worldY = 1 * gp.tileSize;
+
     }
     
     // Dasco House

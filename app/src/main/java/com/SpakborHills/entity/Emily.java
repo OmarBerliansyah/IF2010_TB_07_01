@@ -64,6 +64,15 @@ public class Emily extends NPC{
         super.speak();
     }
 
+    public void interactWithTable() {
+        if (gp.player.energy >= 5) {
+            gp.gameState = gp.shoppingState;
+            gp.ui.addMessage("Welcome to my store! What would you like to buy?");
+        } else {
+            gp.ui.addMessage("You're too tired to shop right now!");
+        }
+    }
+
     @Override
     protected void initializePreferences() {
         // Emily loves all seeds
