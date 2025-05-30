@@ -103,6 +103,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int shippingBinState = 5;
     public final int cookingState = 6;
     public final int fishingMinigameState = 7;
+    public final int endGameTriggerState = 8; 
+    public final int endGameState = 9;
 
     public String fishingInputBuffer = "";
 
@@ -146,6 +148,15 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread.start();
     }
 
+    public void sleep(int milliseconds){
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public void run() {
         double drawInterval = 1000000000.0 / FPS; // Gunakan double untuk presisi
@@ -175,6 +186,11 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
+
+    public static HashMap<String, NPC> getNPCs() {
+        return NPCs;
+    }
+
      public static NPC getOrCreateNPC(String npcName, GamePanel gp) {
         if (!NPCs.containsKey(npcName)) {
             // Create NPC only if doesn't exist
@@ -205,6 +221,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
         return NPCs.get(npcName);
     }
+
+
     public void update() {
         if (ui.showingSleepConfirmDialog) {
             ui.processSleepConfirmationInput();
@@ -264,6 +282,18 @@ public class GamePanel extends JPanel implements Runnable {
         else if (gameState == fishingMinigameState) {
             ui.processFishingMinigameInput();
         }
+        if (keyH != null) { // Pastikan keyH tidak null
+        
+        
+    }
+
+        else if (gameState == endGameTriggerState) {
+            ui.processEndGameTriggerInput();
+        }
+
+        else if (gameState == endGameState) {
+            ui.processEndGameStatsInput();
+        }
     }
 
     @Override
@@ -278,7 +308,8 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameState == titleState) {
             ui.draw(g2);
-        } else { // Untuk playState, pauseState, dialogueState, characterState
+        } 
+        else { // Untuk playState, pauseState, dialogueState, characterState
             // --- LOGIKA KAMERA YANG DIPERBAIKI ---
             // player.screenX dan player.screenY adalah posisi target pemain di layar (misal, tengah)
             int targetCameraX = player.worldX - player.screenX;
@@ -372,8 +403,8 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.setColor(Color.white);
                 g2.drawString("Draw Time: "+passed, 10, 400);
                 System.out.println("Draw Time: "+passed);
-            }
-            }
+
+        }
 
             //UI
             ui.draw(g2);
@@ -381,13 +412,23 @@ public class GamePanel extends JPanel implements Runnable {
             if(gameState == shippingBinState) {
                 ui.drawShippingBinInterface(g2);
             }
-        if (gameState == cookingState) {
-            if (ui.showingFuelSelectionDialog) {
-                ui.drawFuelSelectionDialog(g2);
-            } else {
-                ui.drawCookingInterface(g2);
+            if (gameState == cookingState) {
+                if (ui.showingFuelSelectionDialog) {
+                    ui.drawFuelSelectionDialog(g2);
+                } else {
+                    ui.drawCookingInterface(g2);
+                }
             }
-        }
+
+            if (gameState == endGameTriggerState) {
+                    ui.drawEndGameTriggerInterface(g2);
+                } 
+            }
+
+            if (gameState == endGameState) {
+                ui.drawEndGameStatsInterface(g2);
+            }
+
             g2.dispose();
         }
 

@@ -50,5 +50,5 @@ id,name,category,sell_price,buy_price,description,attributes
 049,Angler,Fish,100,0,"Legendary angler fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
 050,Crimsonfish,Fish,120,0,"Legendary crimsonfish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
 051,Legend,Fish,150,0,"Legendary fish","EDIBLE;ENERGY:1;SELLABLE;STACKABLE:10"
-052,Furniture,Queen Bed,10000,null, "Luxury queen bed","FURNITURE;EQUIPPABLE;STACKABLE:1"
-054,Furniture,Stove,7500,null, "High-end stove","FURNITURE;EQUIPPABLE;STACKABLE:1"
+052,Furniture,Queen Bed,10000,0, "Luxury queen bed","FURNITURE;EQUIPPABLE;STACKABLE:1"
+054,Furniture,Stove,7500,0, "High-end stove","FURNITURE;EQUIPPABLE;STACKABLE:1"
