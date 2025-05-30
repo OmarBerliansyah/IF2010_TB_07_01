@@ -11,9 +11,20 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
+import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
-import com.SpakborHills.entity.*;
-import com.SpakborHills.objects.*;
+import com.SpakborHills.objects.OBJ_Blueberry;
+import com.SpakborHills.objects.OBJ_Cauliflower;
+import com.SpakborHills.objects.OBJ_Cranberry;
+import com.SpakborHills.objects.OBJ_Eggplant;
+import com.SpakborHills.objects.OBJ_Grape;
+import com.SpakborHills.objects.OBJ_HotPepper;
+import com.SpakborHills.objects.OBJ_Melon;
+import com.SpakborHills.objects.OBJ_Parsnip;
+import com.SpakborHills.objects.OBJ_Potato;
+import com.SpakborHills.objects.OBJ_Pumpkin;
+import com.SpakborHills.objects.OBJ_Tomato;
+import com.SpakborHills.objects.OBJ_Wheat;
 import com.SpakborHills.tile.SoilTile;
 
 public class Lighting {
@@ -187,9 +198,19 @@ public class Lighting {
     }
 
     public void incrementDayAndAdvanceWeather() {
+        System.out.println("=== DAY INCREMENT CALLED ===");
+        System.out.println("Old day count: " + dayCount);
+        System.out.println("Old hari: " + hari);
+        
         hari++;
         dayFrameCounter = 0; 
         gp.player.addDayPlayed();
+        
+        // PASTIKAN INI ADA DAN BERFUNGSI:
+        dayCount++;  // ← CRITICAL: Pastikan ini ada!
+        
+        System.out.println("New day count: " + dayCount);
+        System.out.println("New hari: " + hari);
 
         if (hari > 10) { 
             hari = 1;
@@ -197,6 +218,8 @@ public class Lighting {
             rainyDayCount = 0;  
             gp.player.seasonalStatsChange();
         }
+        
+        System.out.println("Calling nextDay...");
         nextDay(hari);
     }
 
@@ -218,38 +241,96 @@ public class Lighting {
         }
     }
 
-    public void updateEachDay(){
-        gp.ui.addMessage("hi");
-        for(int mapi = 0; mapi < gp.tileM.soilMap.length; mapi++){
-            for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
-                for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
-                    SoilTile tile = gp.tileM.soilMap[gp.currentMap][c][r];
-                    if (tile.isSeedPlanted) {
-                        int dayDiff = gp.eManager.getDayCount() - tile.plantedDay;
-                        int requiredDays = getGrowthDays(tile.seedType);
-                        gp.ui.addMessage("Seed planted at: (" + c + "," + r + ")");
+    public int getDayCount() {
+        System.out.println("getDayCount() called, returning: " + dayCount);
+        return dayCount;
+    }
 
-                        if (dayDiff >= requiredDays) {
-                            gp.ui.addMessage("Seed type: " + tile.seedType);
-                            gp.ui.addMessage("Planted day: " + tile.plantedDay);
-                            // gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
-                            Entity grownPlant = createGrownPlant(tile.seedType);
+    // TAMBAHKAN DEBUG INI KE updateEachDay() DI LIGHTING.JAVA
+
+    public void updateEachDay(){
+        System.out.println("========================================");
+        System.out.println("=== UPDATE EACH DAY CALLED ===");
+        System.out.println("Current day: " + dayCount);  // Gunakan dayCount, bukan getDayCount()
+        System.out.println("Player current map: " + gp.currentMap);
+        System.out.println("========================================");
+        
+        gp.ui.addMessage("=== DAILY UPDATE STARTING ===");
+        
+        // SELALU CEK FARM MAP (map 0), tidak peduli player di mana
+        int farmMapIndex = 0;
+        
+        int plantsFound = 0;
+        int plantsGrown = 0;
+        
+        System.out.println("Checking farm map (index 0) for plant growth...");
+        
+        // Loop melalui semua tile di FARM MAP
+        for (int c = 0; c < gp.tileM.mapCols[farmMapIndex]; c++) {
+            for (int r = 0; r < gp.tileM.mapRows[farmMapIndex]; r++) {
+                
+                SoilTile tile = gp.tileM.soilMap[farmMapIndex][c][r];
+                
+                if (tile == null) {
+                    continue;
+                }
+                
+                if (tile.isSeedPlanted) {
+                    plantsFound++;
+                    
+                    int currentDay = dayCount;  // Gunakan dayCount langsung
+                    int dayDiff = currentDay - tile.plantedDay;
+                    int requiredDays = getGrowthDays(tile.seedType);
+                    
+                    System.out.println("FOUND PLANT #" + plantsFound);
+                    System.out.println("  Position: (" + c + "," + r + ")");
+                    System.out.println("  Seed type: " + tile.seedType);
+                    System.out.println("  Planted day: " + tile.plantedDay);
+                    System.out.println("  Current day: " + currentDay);
+                    System.out.println("  Days grown: " + dayDiff);
+                    System.out.println("  Required days: " + requiredDays);
+                    System.out.println("  Ready to harvest: " + (dayDiff >= requiredDays));
+                    
+                    if (dayDiff >= requiredDays && requiredDays > 0) {
+                        System.out.println("  -> HARVESTING PLANT!");
+                        
+                        Entity grownPlant = createGrownPlant(tile.seedType);
+                        if (grownPlant != null) {
                             grownPlant.worldX = c * gp.tileSize;
                             grownPlant.worldY = r * gp.tileSize;
 
-                            insertToMapObjects(gp.currentMap, grownPlant); // Taruh ke world
+                            insertToMapObjects(farmMapIndex, grownPlant);
+                            
+                            // Reset soil tile
                             tile.isSeedPlanted = false;
-
-                            System.out.println("Tile: (" + c + "," + r + ")");
-                            System.out.println("Planted day: " + tile.plantedDay);
-                            System.out.println("Current day: " + gp.eManager.getDayCount());
-                            System.out.println("Diff: " + dayDiff + ", Required: " + requiredDays);
-                            System.out.println("Plant grown at (" + c + "," + r + ") : " + tile.seedType);
+                            tile.seedType = null;
+                            tile.plantedDay = 0;
+                            
+                            // Update tile visual ke tile tanah biasa
+                            gp.tileM.mapTileNum[farmMapIndex][c][r] = 0;
+                            
+                            plantsGrown++;
+                            
+                            System.out.println("  -> SUCCESS: " + grownPlant.name + " created!");
+                            gp.ui.addMessage("Plant grown: " + grownPlant.name + " at (" + c + "," + r + ")");
+                        } else {
+                            System.out.println("  -> ERROR: Failed to create plant for " + tile.seedType);
                         }
+                    } else {
+                        System.out.println("  -> Still growing...");
                     }
+                    System.out.println();
                 }
             }
         }
+        
+        System.out.println("========================================");
+        System.out.println("DAILY UPDATE SUMMARY:");
+        System.out.println("Plants found: " + plantsFound);
+        System.out.println("Plants harvested: " + plantsGrown);
+        System.out.println("========================================");
+        
+        gp.ui.addMessage("Daily check: " + plantsFound + " plants, " + plantsGrown + " harvested");
     }
 
     public int getGrowthDays(String seedType){
@@ -289,13 +370,20 @@ public class Lighting {
     }
 
     public void insertToMapObjects(int mapIndex, Entity e) {
+        System.out.println("=== INSERTING TO MAP OBJECTS ===");
+        System.out.println("Map index: " + mapIndex);
+        System.out.println("Entity: " + e.name);
+        System.out.println("Position: " + e.worldX + "," + e.worldY);
+        
         Entity[] mapObjects = gp.getMapObjects(mapIndex);
         for (int i = 0; i < mapObjects.length; i++) {
             if (mapObjects[i] == null) {
                 mapObjects[i] = e;
-                break;
+                System.out.println("Inserted at slot: " + i);
+                return;
             }
         }
+        System.out.println("ERROR: No empty slots in map objects array!");
     }
 
     public void draw(Graphics2D g2){

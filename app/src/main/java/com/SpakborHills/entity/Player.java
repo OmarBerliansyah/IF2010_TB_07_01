@@ -9,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-
-import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.data.EndGameStats;
+import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.entity.Entity.FishableProperties;
 import com.SpakborHills.environment.Location;
 import com.SpakborHills.environment.Season;
@@ -19,14 +18,9 @@ import com.SpakborHills.environment.Weather;
 import com.SpakborHills.main.GamePanel;
 import com.SpakborHills.main.Inventory;
 import com.SpakborHills.main.KeyHandler;
-import com.SpakborHills.objects.OBJ_FishingRod;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_Parsnip;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
-import com.SpakborHills.tile.TileType;
+import com.SpakborHills.objects.*;
 import com.SpakborHills.tile.SoilTile;
+import com.SpakborHills.tile.TileType;
 
 
 public class Player extends Entity{
@@ -65,7 +59,6 @@ public class Player extends Entity{
     public boolean endGame = false;
     public boolean endGameForIncome = false;
     public boolean endGameForMarriage = false;
-    public boolean endGameDisplayed = false;
     public int endGameCount = 0;
     private boolean hasMarried = false;
     public int totalIncome;
@@ -223,13 +216,11 @@ public class Player extends Entity{
 
     public void seasonalStatsChange(){
         if (gp.eManager.getCurrentSeason() != null) {
-            totalIncomePerSeason += totalIncome;
-            totalExpenditurePerSeason += totalExpenditure;
             avgSeasonalIncome = (double) totalIncomePerSeason / seasonalIncomeCount;
             avgSeasonalExpenditure = (double) totalExpenditurePerSeason / seasonalExpenditureCount;
         }
-        totalIncome = 0;
-        totalExpenditure = 0;
+        totalIncomePerSeason = 0;
+        totalExpenditurePerSeason = 0;
         seasonalIncomeCount = 0;
         seasonalExpenditureCount = 0;
     }
@@ -733,8 +724,14 @@ public class Player extends Entity{
         if (i != 999 && currentMapObjects[i] != null) {
             if (currentMapObjects[i].isPickable) {
                 if (inventory.getInventory().size() < inventory.getMaxInventorySize()) { // periksa inventorynya penuh ga
+                    
+                    //SISTEM MULTI HARVEST
+                    String itemName = currentMapObjects[i].name;
+                    int harvestAmount = getHarvestAmount(itemName);
                     boolean itemAlreadyInInventory = false;
-                   for (Inventory.InventoryItem invItem : inventory.getInventory()) { // Perbaiki akses ke InventoryItem{
+                    System.out.println("Picking up: " + itemName + " x" + harvestAmount);
+
+                    for (Inventory.InventoryItem invItem : inventory.getInventory()) { 
                         if (invItem.item.name.equals(currentMapObjects[i].name)) {
                             invItem.count++;
                             itemAlreadyInInventory = true;
@@ -743,16 +740,42 @@ public class Player extends Entity{
                     }
                     // klo item belum ada, tambahin ke inventory
                     if (!itemAlreadyInInventory) {
-                       inventory.getInventory().add(new Inventory.InventoryItem(currentMapObjects[i], 1));
+                       inventory.getInventory().add(new Inventory.InventoryItem(currentMapObjects[i], harvestAmount));
                     }
                     gp.playSE(1);
-                    gp.ui.addMessage("Got a " + currentMapObjects[i].name + "!");
+
+                    if (harvestAmount == 1) {
+                        gp.ui.addMessage("Got a " + itemName + "!");
+                    } else {
+                        gp.ui.addMessage("Got " + harvestAmount + " " + itemName + "!");
+                    }
+                    
                     currentMapObjects[i] = null;
+
+                    gp.player.totalCropHarvested += harvestAmount;
                 } else {
                     gp.ui.addMessage("You cannot carry any more!"); // ini klo penuh
                 }
             }
         }
+    }
+
+    public int getHarvestAmount(String cropName) {
+        return switch(cropName) {
+            case "Parsnip" -> 1;
+            case "Cauliflower" -> 1;
+            case "Potato" -> 1;
+            case "Wheat" -> 3;
+            case "Blueberry" -> 3;
+            case "Tomato" -> 1;
+            case "HotPepper" -> 1;
+            case "Melon" -> 1;
+            case "Cranberry" -> 10;
+            case "Pumpkin" -> 1;
+            case "Grape" -> 20;
+            case "Eggplant" -> 1; // Tambahan untuk eggplant
+            default -> 1; // Default 1 kalau crop tidak dikenal
+        };
     }
     
     public void planting(){
@@ -790,7 +813,9 @@ public class Player extends Entity{
                 }
 
                 if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
+                    gp.ui.addMessage("CONDITION PASSED - PLANTING NOW!");
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
+                    gp.ui.addMessage("Current tile at target: " + tileNumAtTarget);
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
                         gp.ui.addMessage(""+plantingSeedItem);
@@ -799,18 +824,23 @@ public class Player extends Entity{
                             gp.ui.addMessage(seed.name);
 
                             SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
+                            if (soilTile == null) {
+                                gp.ui.addMessage("Creating new SoilTile");
+                                soilTile = new SoilTile();
+                                gp.tileM.soilMap[gp.currentMap][targetCol][targetRow] = soilTile;
+                            }
                             soilTile.isTilled = true;
                             soilTile.isSeedPlanted = true;
                             soilTile.seedType = plantingSeedItem.item.name;
                             soilTile.plantedDay = gp.eManager.getDayCount();
-
+                            System.out.println("cek");
                             gp.ui.addMessage("Seed planted at: (" + targetCol + "," + targetRow + ")");
                             gp.ui.addMessage("Seed type: " + soilTile.seedType);
                             gp.ui.addMessage("Planted day: " + soilTile.plantedDay);
                             gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
                             gp.ui.addMessage("Planted SoilTile" + soilTile);
 
-                            plantingSeedItem = null;
+                            //plantingSeedItem = null;
                         } else {
                             gp.ui.addMessage("No seed selected to plant!"); 
                         }
@@ -825,14 +855,14 @@ public class Player extends Entity{
             spriteCounter = 0;
             tillWithoutEnergy = false; 
             planting = false;
-        }
-        for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
-            for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
-                SoilTile t = gp.tileM.soilMap[gp.currentMap][c][r];
-                if (t != null && t.isSeedPlanted) {
-                    System.out.println("DEBUG AFTER PLANTING: (" + c + "," + r + ") = " + t.seedType + ", day=" + t.plantedDay);
+            for (int c = 0; c < gp.tileM.mapCols[gp.currentMap]; c++) {
+                for (int r = 0; r < gp.tileM.mapRows[gp.currentMap]; r++) {
+                    SoilTile t = gp.tileM.soilMap[gp.currentMap][c][r];
+                    if (t != null && t.isSeedPlanted) {
+                     System.out.println("DEBUG AFTER PLANTING: (" + c + "," + r + ") = " + t.seedType + ", day=" + t.plantedDay);
+                    }
                 }
-            }
+             }
         }
     }
     
@@ -1031,7 +1061,8 @@ public class Player extends Entity{
     }
 
     public void sleepLogic(){
-        
+        System.out.println("=== SLEEP LOGIC CALLED ===");
+        System.out.println("Before sleep - Day: " + gp.eManager.getDayCount());
         boolean isPassOut = (gp.eManager.getHour() >= 2 && gp.eManager.getHour() < 6) && !gp.ui.showingSleepConfirmDialog;
 
         if(isPassOut){
@@ -1052,10 +1083,10 @@ public class Player extends Entity{
         }
 
         processShippingBinSales();
-
+        System.out.println("Calling incrementDayAndAdvanceWeather...");
         gp.eManager.incrementDayAndAdvanceWeather();
         gp.eManager.setTime(6,0);
-
+        System.out.println("After sleep - Day: " + gp.eManager.getDayCount());
         if (gp.ui.showingSleepConfirmDialog) {
             gp.ui.closeSleepConfirmationDialog(); 
         }
@@ -1584,6 +1615,7 @@ public class Player extends Entity{
         
         gold += totalEarnings;
         totalIncome += totalEarnings;
+        totalIncomePerSeason += totalEarnings;
         seasonalIncomeCount++;
         shippingBinItems.clear();
         
@@ -1607,75 +1639,6 @@ public class Player extends Entity{
         }
         
         return sellableItems;
-    }
-
-    public boolean takeBackFromShippingBin(String itemName, int quantity) {
-        ShippingBinItem target = null;
-        for (ShippingBinItem item : shippingBinItems) {
-            if (item.itemName.equals(itemName)) {
-                target = item;
-                break;
-            }
-        }
-        if (target == null || target.quantity < quantity) {
-            gp.ui.addMessage("No such item in shipping bin!");
-            return false;
-        }
-        
-        target.quantity -= quantity;
-        if (target.quantity <= 0) {
-            shippingBinItems.remove(target);
-        }
-        
-        boolean found = false;
-        for (Inventory.InventoryItem invItem : inventory.getInventory()) {
-            if (invItem.item.name.equals(itemName)) {
-                invItem.count += quantity;
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found) {
-            Entity newItem = createItemByName(itemName);
-            if (newItem != null) {
-                inventory.getInventory().add(new Inventory.InventoryItem(newItem, quantity));
-                found = true;
-            }
-        }
-        
-        if (!found) {
-            boolean existsInBin = false;
-            for (ShippingBinItem binItem : shippingBinItems) {
-                if (binItem.itemName.equals(itemName)) {
-                    binItem.quantity += quantity;
-                    existsInBin = true;
-                    break;
-                }
-            }
-            if (!existsInBin) {
-                ItemDefinition itemDef = gp.itemManager.getDefinitionByName(itemName);
-                if (itemDef != null) {
-                    shippingBinItems.add(new ShippingBinItem(itemDef.id, itemName, quantity, itemDef.sellPrice));
-                }
-            }
-            gp.ui.addMessage("Can't create item: " + itemName);
-            return false;
-        }
-        
-        gp.ui.addMessage("Took back " + quantity + " " + itemName + " from shipping bin!");
-        return true;
-    }
-
-    private Entity createItemByName(String itemName) {
-        switch (itemName) {
-            case "Parsnip Seeds":
-                return new OBJ_ParsnipSeeds(gp);
-            case "Parsnip":
-                return new OBJ_Parsnip(gp);
-            default:
-                return null;
-        }
     }
 
     private ItemDefinition findItemDefinitionByName(String itemName) {
@@ -2135,10 +2098,13 @@ public class Player extends Entity{
         }
 
 
-        //Testing
+
+        //Testing End Game Stats
         public void cheatMoney(int amount) {
             gold += amount;
             totalIncome += amount; 
+            totalIncomePerSeason += amount;
+            seasonalIncomeCount++;
             gp.ui.addMessage("Cheat activated: Money increased by " + amount + "g. New gold: " + gold + "g");
         }
 
