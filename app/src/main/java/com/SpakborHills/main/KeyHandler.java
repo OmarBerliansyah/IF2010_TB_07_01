@@ -3,9 +3,11 @@ package com.SpakborHills.main; // Package declaration for the main class
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
+import com.SpakborHills.entity.NPC;
+
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed, pageUpPressed, pageDownPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed, pageUpPressed, pageDownPressed,npcInfoPressed ; // Movement flags
     //DEBUG
     boolean checkDrawTime;
 
@@ -42,33 +44,89 @@ public class KeyHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode(); // Get the key code of the pressed key
 
-        //TITLE STATE
-        if(gp.gameState == gp.titleState){
-            if(gp.ui.titleScreenState == 0){
-                if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
-                    gp.ui.commandNum--;
-                    if(gp.ui.commandNum < 0){
-                        gp.ui.commandNum = 1;
-                    }
-                }
-                if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
-                    gp.ui.commandNum++;
-                    if(gp.ui.commandNum > 1){
-                        gp.ui.commandNum = 0;
-                    }
-                }
-                if(code == KeyEvent.VK_ENTER){
-                    if(gp.ui.commandNum == 0){
-                        gp.ui.titleScreenState = 1;
-                    }
-                    if(gp.ui.commandNum == 1){
-                        System.exit(0);
-                    }
-                }
-                if(code == KeyEvent.VK_T){
-                    checkDrawTime = !checkDrawTime; 
+    //TITLE STATE
+    if(gp.gameState == gp.titleState){
+        if(gp.ui.titleScreenState == 0){
+            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
+                gp.ui.commandNum--;
+                if(gp.ui.commandNum < 0){
+                    gp.ui.commandNum = 2; // Sekarang ada 3 menu: NEW GAME(0), OTHERS(1), QUIT(2)
                 }
             }
+            if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
+                gp.ui.commandNum++;
+                if(gp.ui.commandNum > 2){ // Ubah dari 2 ke 2 (range 0-2)
+                    gp.ui.commandNum = 0;
+                }
+            }
+            if(code == KeyEvent.VK_ENTER){
+                if(gp.ui.commandNum == 0){
+                    // NEW GAME
+                    gp.ui.titleScreenState = 1;
+                }
+                else if(gp.ui.commandNum == 1){
+                    // OTHERS - Masuk ke menu others
+                    gp.ui.titleScreenState = 2;
+                    gp.ui.othersCommandNum = 0; // Reset selection
+                }
+                else if(gp.ui.commandNum == 2){
+                    // QUIT
+                    System.exit(0);
+                }
+            }
+            if(code == KeyEvent.VK_T){
+                checkDrawTime = !checkDrawTime; 
+            }
+        }
+        // TAMBAHKAN LOGIC UNTUK titleScreenState == 2 (OTHERS MENU)
+        else if(gp.ui.titleScreenState == 2){
+            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
+                gp.ui.othersCommandNum--;
+                if(gp.ui.othersCommandNum < 0){
+                    gp.ui.othersCommandNum = 2; // HELP(0), CREDITS(1), BACK(2)
+                }
+            }
+            if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
+                gp.ui.othersCommandNum++;
+                if(gp.ui.othersCommandNum > 2){
+                    gp.ui.othersCommandNum = 0;
+                }
+            }
+            if(code == KeyEvent.VK_ENTER){
+                if(gp.ui.othersCommandNum == 0){
+                    // HELP
+                    gp.ui.titleScreenState = 3;
+                }
+                else if(gp.ui.othersCommandNum == 1){
+                    // CREDITS
+                    gp.ui.titleScreenState = 4;
+                }
+                else if(gp.ui.othersCommandNum == 2){
+                    // BACK to main menu
+                    gp.ui.titleScreenState = 0;
+                    gp.ui.commandNum = 0;
+                }
+            }
+            if(code == KeyEvent.VK_ESCAPE){
+                // ESC to go back to main menu
+                gp.ui.titleScreenState = 0;
+                gp.ui.commandNum = 0;
+            }
+        }
+        // TAMBAHKAN LOGIC UNTUK titleScreenState == 3 (HELP SCREEN)
+        else if(gp.ui.titleScreenState == 3){
+            if(code == KeyEvent.VK_ESCAPE){
+                // Go back to others menu
+                gp.ui.titleScreenState = 2;
+            }
+        }
+        // TAMBAHKAN LOGIC UNTUK titleScreenState == 4 (CREDITS SCREEN)
+        else if(gp.ui.titleScreenState == 4){
+            if(code == KeyEvent.VK_ESCAPE){
+                // Go back to others menu
+                gp.ui.titleScreenState = 2;
+            }
+        }
             else if(gp.ui.titleScreenState == 1){
                 // INPUT SCREEN HANDLING
                 if (code == KeyEvent.VK_UP) {
@@ -186,6 +244,21 @@ public class KeyHandler implements KeyListener {
             }
             if (code == KeyEvent.VK_M && !marryPressed) {
                 marryPressed = true;
+            }
+                if (code == KeyEvent.VK_H && !npcInfoPressed) {
+                    npcInfoPressed = true;
+                    if (gp.currentMap >= 5 && gp.currentMap <= 10) {
+                        if (gp.ui.showingNPCInfo) {
+                            gp.ui.closeNPCInfo();
+                        } else {
+                            for (int i = 0; i < gp.NPC.length; i++) {
+                                if (gp.NPC[i] instanceof NPC) {
+                                    gp.ui.showNPCInfo(i);
+                                    break;
+                                }
+                            }
+                        }
+                    } 
             }
             //Cheat for End Game
             //Cheat Money
@@ -434,6 +507,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_PAGE_DOWN) {
             pageDownPressed = false;
+        }
+        if (code == KeyEvent.VK_H) {
+            npcInfoPressed = false;
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_ENTER) {

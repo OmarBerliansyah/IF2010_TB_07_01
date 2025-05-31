@@ -1073,6 +1073,13 @@ public class Player extends Entity{
         boolean isPassOut = (gp.eManager.getHour() >= 2 && gp.eManager.getHour() < 6) && !gp.ui.showingSleepConfirmDialog;
 
         if(isPassOut|| energy <= -20){
+           gp.currentMap = 2;
+            worldX = gp.tileSize * 11;
+            worldY = gp.tileSize * 12;
+            gp.currentMap = 2;
+            gp.aSetter.setObject();
+            gp.aSetter.setNPC();
+            updateLocation();
            if (energy <= -20) {
                 gp.ui.addMessage("You collapsed from exhaustion...");
             } else {

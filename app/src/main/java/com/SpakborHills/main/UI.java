@@ -45,7 +45,8 @@ public class UI {
     public int slotCol = 0;
     public int slotRow = 0;
     public int commandNum = 0;
-    public int titleScreenState = 0; // 0 : the first screen, 1: the second screen
+    public int titleScreenState = 0; // 0 : the first screen, 1: the second screen, 2: others menu, 3: help, 4: credits
+    public int othersCommandNum = 0; // 0: help, 1: credits, 2: back - ADD THIS LINE
     public int interfaceScroll = 0;
     public int interfaceMaxLines = 20; 
     public int shippingBinScroll = 0;
@@ -73,12 +74,13 @@ public class UI {
     public Inventory.InventoryItem pendingAddItem = null;
     public boolean showingCookingInterface = false;
     public int cookingSelectedIndex = 0;
-    public boolean coalBatchMode = false;
-    public String coalBatchFirstRecipe = null;
     public boolean showingFuelSelectionDialog = false;
     public int fuelSelectionIndex = 0;
     public String pendingRecipeId = null;
     public boolean showingWatchTV = false;
+    public boolean showingNPCInfo = false;
+    public int currentNPCIndex = -1;
+    public boolean coalBatchMode = false;
 
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -183,6 +185,9 @@ public class UI {
             }
             if(showingSleepConfirmDialog){
                 drawSleepConfirmationDialog(g2);
+            }
+             if(showingNPCInfo){
+                drawNPCInfoInterface(g2);
             }
         }
         if(gp.gameState == gp.pauseState){
@@ -753,7 +758,7 @@ public class UI {
                 int originalLogoWidth = spakborHillsLogo.getWidth();
                 int originalLogoHeight = spakborHillsLogo.getHeight();
 
-                double scaleFactor = 0.90;
+                double scaleFactor = 0.70;
 
                 int drawLogoWidth = (int)(originalLogoWidth * scaleFactor);
                 int drawLogoHeight = (int)(originalLogoHeight * scaleFactor);
@@ -783,14 +788,14 @@ public class UI {
             int y_logo_height_for_menu_calc = 0;
             int y_logo_top_position = gp.tileSize * 1; 
             if (spakborHillsLogo != null) {
-                double scaleFactor = 0.75; // Pastikan ini sama dengan scaleFactor saat menggambar logo
+                double scaleFactor = 0.70; // Pastikan ini sama dengan scaleFactor saat menggambar logo
                 y_logo_height_for_menu_calc = (int)(spakborHillsLogo.getHeight() * scaleFactor);
             }
             int y_logo_bottom = (spakborHillsLogo != null) ? (y_logo_top_position + y_logo_height_for_menu_calc) : (gp.tileSize * 5);
             
             // --- MEMPERBESAR SPACING MENU ---
             // int y_menu_start = y_logo_bottom + gp.tileSize * 1; // Spacing sebelumnya
-            int y_menu_start = y_logo_bottom + gp.tileSize * 2; // Diperbesar jadi 2 tileSize (atau sesuaikan: 1.5, 2.5, dll.)
+            int y_menu_start = y_logo_bottom + gp.tileSize * 1; // Diperbesar jadi 2 tileSize (atau sesuaikan: 1.5, 2.5, dll.)
 
             int current_menu_y = y_menu_start;
 
@@ -812,7 +817,30 @@ public class UI {
                 g2.setFont(originalFont);       // Kembalikan ke font menu
            
             }
-            current_menu_y += gp.tileSize * 2.0;
+            current_menu_y += gp.tileSize * 1.5;
+
+            // MENU ITEM: OTHERS
+            text = "OTHERS";
+            x_menu = getXforCenteredText(text);
+
+            g2.setColor(Color.black); // Shadow
+            g2.drawString(text, x_menu + 3, current_menu_y + 3);
+            g2.setColor(Color.white); // Main text
+            g2.drawString(text, x_menu, current_menu_y);
+
+            if (commandNum == 1) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
+                g2.setFont(originalFont);
+            }
+
+            current_menu_y += gp.tileSize * 1.5;
+
+
 
             // MENU ITEM: QUIT
             text = "QUIT";
@@ -822,7 +850,7 @@ public class UI {
             g2.drawString(text, x_menu + 3, current_menu_y + 3);
             g2.setColor(Color.white); // Main text
             g2.drawString(text, x_menu, current_menu_y);
-            if (commandNum == 1) { // commandNum untuk QUIT sekarang 1
+            if (commandNum == 2) { // commandNum untuk QUIT sekarang 1
                 Font originalFont = g2.getFont(); 
                 g2.setFont(selectorFont);
                 FontMetrics fmSelector = g2.getFontMetrics();
@@ -831,7 +859,6 @@ public class UI {
                 g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
                 g2.setFont(originalFont);
             }
-
         }
         else if(titleScreenState == 1){
             //CLASS SELECTION SCREEN
@@ -902,6 +929,181 @@ public class UI {
             String instruction = "Use UP/DOWN to navigate, ENTER to select, Type to input text";
             int instrX = getXforCenteredText(instruction);
             g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
+        } else if (titleScreenState == 2){
+            // OTHERS MENU
+            if (titleScreenImage != null){
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            }
+
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+            g2.setFont(menuFont);
+           
+            int startY = gp.screenHeight / 2 - gp.tileSize * 2; // Center vertically
+            int lineSpacing = gp.tileSize * 2;
+
+            // TITLE
+            g2.setColor(Color.WHITE);
+            String title = "OTHERS";
+            int titleX = getXforCenteredText(title);
+            g2.drawString(title, titleX, startY - gp.tileSize);
+
+            int menuStartY = startY ;
+
+            // HELP
+            String helpText = "HELP";
+            int helpX = getXforCenteredText(helpText);
+            g2.setColor(Color.black);
+            g2.drawString(helpText, helpX + 3, startY + 3);
+            g2.setColor(Color.white);
+            g2.drawString(helpText, helpX, menuStartY);
+            if (othersCommandNum == 0) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", helpX - selector_x_offset, menuStartY);
+                g2.setFont(originalFont);
+            }
+
+            // CREDITS
+            String creditsText = "CREDITS";
+            int creditsX = getXforCenteredText(creditsText);
+            g2.setColor(Color.black);
+            g2.drawString(creditsText, creditsX + 3, startY + lineSpacing + 3);
+            g2.setColor(Color.white);
+            g2.drawString(creditsText, creditsX, startY + lineSpacing);
+            if (othersCommandNum == 1) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", creditsX - selector_x_offset, startY + lineSpacing);
+                g2.setFont(originalFont);
+            }
+
+            // BACK
+            String backText = "BACK";
+            int backX = getXforCenteredText(backText);
+            g2.setColor(Color.black);
+            g2.drawString(backText, backX + 3, startY + lineSpacing * 2 + 3);
+            g2.setColor(Color.white);
+            g2.drawString(backText, backX, startY + lineSpacing * 2);
+            if (othersCommandNum == 2) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", backX - selector_x_offset, startY + lineSpacing * 2);
+                g2.setFont(originalFont);
+            }
+        } 
+        else if(titleScreenState == 3){
+        // HELP SCREEN
+        if (titleScreenImage != null) {
+            g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+        } else {
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        }
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        g2.setFont(menuFont);
+        g2.setColor(Color.WHITE);
+
+        String title = "HELP";
+        int titleX = getXforCenteredText(title);
+        g2.drawString(title, titleX, gp.tileSize * 3);
+
+        // Help content (currently empty as requested)
+        g2.setFont(inputFont.deriveFont(32F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String emptyText = "Help content will be added here";
+        int emptyX = getXforCenteredText(emptyText);
+        g2.drawString(emptyText, emptyX, gp.screenHeight / 2);
+
+
+        // Back instruction
+        g2.setFont(g2.getFont().deriveFont(16F));
+        g2.setColor(Color.YELLOW);
+        String instruction = "Press ESC to go back";
+        int instrX = getXforCenteredText(instruction);
+        g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
+
+        } 
+        else if(titleScreenState == 4){
+            // CREDITS SCREEN
+            if (titleScreenImage != null) {
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            }
+
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+            g2.setFont(menuFont);
+            g2.setColor(Color.WHITE);
+
+            String title = "CREDITS";
+            int titleX = getXforCenteredText(title);
+            g2.drawString(title, titleX, gp.tileSize * 2);
+
+            // Credits content
+            g2.setFont(inputFont.deriveFont(40F));
+            g2.setColor(Color.YELLOW);
+            int startY = gp.tileSize * 4;
+            int lineSpacing = 50;
+
+            String spakborians = "SPAKBORIANS";
+            int spakboriansX = getXforCenteredText(spakborians);
+            g2.drawString(spakborians, spakboriansX, startY);
+
+            g2.setFont(inputFont.deriveFont(28F));
+            g2.setColor(Color.WHITE);
+            startY += lineSpacing + 20;
+
+            String[] credits = {
+                "18223055    Muhammad Omar Berliansyah",
+                "18223065    Nadia Apsarini Baizal", 
+                "18223069    Catherine Alicia N",
+                "18223081    Aliya Harta Ary Utama",
+                "18223095    Noeriza Aqila Wibawa"
+            };
+
+            for(String credit : credits) {
+                int creditX = getXforCenteredText(credit);
+                g2.drawString(credit, creditX, startY);
+                startY += lineSpacing;
+            }
+
+            startY += 30;
+            g2.setFont(inputFont.deriveFont(24F));
+            g2.setColor(Color.CYAN);
+            String specialCredits = "Special Credits: Tomoro Dipatiukur, Beverly Dago,";
+            int specialX = getXforCenteredText(specialCredits);
+            g2.drawString(specialCredits, specialX, startY);
+        
+            startY += 35;
+            String specialCredits2 = "Kamar Noe, Ayamayaman, Kelompok K4_4";
+            int special2X = getXforCenteredText(specialCredits2);
+            g2.drawString(specialCredits2, special2X, startY);
+
+            // Back instruction
+        g2.setFont(g2.getFont().deriveFont(16F));
+        g2.setColor(Color.YELLOW);
+        String instruction = "Press ESC to go back";
+        int instrX = getXforCenteredText(instruction);
+        g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
         }
     }
     public void addCharacterToInput(char c) {
@@ -1313,7 +1515,7 @@ public class UI {
             } else {
                 g2.setColor(Color.RED);
             }
-            g2.drawString("ENTER: Chat (+10♥, -10⚡)", x, y);
+            g2.drawString("ENTER: Chat (+10 point, -10 energy)", x, y);
             y += 15;
             
             // Gift action
@@ -1339,7 +1541,7 @@ public class UI {
                     g2.drawString("R: Propose (Ready!)", x, y);
                 } else {
                     g2.setColor(Color.YELLOW);
-                    g2.drawString("R: Propose (Need 150♥)", x, y);
+                    g2.drawString("R: Propose (Need 150 point)", x, y);
                 }
             } else {
                 g2.setColor(Color.GRAY);
@@ -1363,20 +1565,198 @@ public class UI {
     }
     private String getGiftEffect(NPC npc, String itemName) {
         if (npc.getLovedItems().contains(itemName)) {
-            return "(+25♥, -5⚡) LOVES IT!";
+            return "(+25 point, -5 energy) LOVES IT!";
         } else if (npc.getLikedItems().contains(itemName)) {
-            return "(+20♥, -5⚡) Likes it";
+            return "(+20 point, -5 energy) Likes it";
         } else if (npc.getHatedItems().contains(itemName)) {
-            return "(-25♥, -5⚡) HATES IT!";
+            return "(-25 point, -5 energy) HATES IT!";
         } else {
-            return "(+0♥, -5⚡) Neutral";
+            return "(+0 point, -5 energy) Neutral";
         }
+    }
+    public void showNPCInfo(int npcIndex) {
+        this.showingNPCInfo = true;
+        this.currentNPCIndex = npcIndex;
+    }
+
+    public void closeNPCInfo() {
+        this.showingNPCInfo = false;
+        this.currentNPCIndex = -1;
+        gp.gameState = gp.playState;
     }
     public void showCookingInterface() {
         showingCookingInterface = true;
         cookingSelectedIndex = 0;
     }
-    
+    public void processNPCInfoInput() {
+        if (!showingNPCInfo) return;
+        
+        if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+            closeNPCInfo();
+            gp.keyH.enterPressed = false;
+            gp.keyH.escPressed = false;
+        }
+    }
+    public void drawNPCInfoInterface(Graphics2D g2) {
+        if (!showingNPCInfo || currentNPCIndex == -1 || currentNPCIndex >= gp.NPC.length) {
+            return;
+        }
+        
+        Entity npcEntity = gp.NPC[currentNPCIndex];
+        if (!(npcEntity instanceof NPC)) {
+            return;
+        }
+        
+        NPC currentNPC = (NPC) npcEntity;
+        
+        int windowWidth = gp.tileSize * 14;
+        int windowHeight = gp.tileSize * 11;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        // Draw main window
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        // Title
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 32F));
+        g2.setColor(Color.YELLOW);
+        String title = currentNPC.name + " - Character Info";
+        int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
+        g2.drawString(title, titleX, y + 50);
+        
+        // Basic Info Section
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("=== BASIC INFO ===", x + 20, y + 100);
+        
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 20F));
+        g2.setColor(Color.WHITE);
+        int infoY = y + 130;
+        
+        // Relationship Status
+        String statusText = "Status: " + getRelationshipStatusText(currentNPC.getRelationshipStatus());
+        g2.drawString(statusText, x + 30, infoY);
+        infoY += 25;
+        
+        // Heart Points
+        String heartText = "Heart Points: " + currentNPC.getHeartPoints() + "/150";
+        if (currentNPC.getHeartPoints() < 50) {
+            g2.setColor(Color.RED);
+        } else if (currentNPC.getHeartPoints() < 100) {
+            g2.setColor(Color.YELLOW);
+        } else {
+            g2.setColor(Color.GREEN);
+        }
+        g2.drawString(heartText, x + 30, infoY);
+        g2.setColor(Color.WHITE);
+        infoY += 25;
+        
+        // Interaction Stats
+        String chatText = "Chat Count: " + currentNPC.getChattingFrequency();
+        g2.drawString(chatText, x + 30, infoY);
+        infoY += 25;
+        
+        String giftText = "Gift Count: " + currentNPC.getGiftingFrequency();
+        g2.drawString(giftText, x + 30, infoY);
+        infoY += 25;
+        
+        String visitText = "Visit Count: " + currentNPC.getVisitingFrequency();
+        g2.drawString(visitText, x + 30, infoY);
+        infoY += 40;
+        
+        // Preferences Section
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("=== PREFERENCES ===", x + 20, infoY);
+        infoY += 30;
+        
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 18F));
+        
+        // Loved Items
+        g2.setColor(Color.PINK);
+        g2.drawString("LOVES:", x + 30, infoY);
+        infoY += 20;
+        g2.setColor(Color.WHITE);
+        
+        if (currentNPC.getLovedItems().isEmpty()) {
+            g2.drawString("   No known loved items", x + 40, infoY);
+            infoY += 20;
+        } else {
+            for (String item : currentNPC.getLovedItems()) {
+                g2.drawString("   - " + item, x + 40, infoY);
+                infoY += 20;
+                if (infoY > y + windowHeight - 100) break; // Prevent overflow
+            }
+        }
+        
+        infoY += 10;
+        
+        // Liked Items
+        g2.setColor(Color.GREEN);
+        g2.drawString("LIKES:", x + 30, infoY);
+        infoY += 20;
+        g2.setColor(Color.WHITE);
+        
+        if (currentNPC.getLikedItems().isEmpty()) {
+            g2.drawString("   No known liked items", x + 40, infoY);
+            infoY += 20;
+        } else {
+            for (String item : currentNPC.getLikedItems()) {
+                g2.drawString("   - " + item, x + 40, infoY);
+                infoY += 20;
+                if (infoY > y + windowHeight - 80) break; // Prevent overflow
+            }
+        }
+        
+        infoY += 10;
+        
+        // Hated Items 
+        if (infoY < y + windowHeight - 60) {
+            g2.setColor(Color.RED);
+            g2.drawString("HATES:", x + 30, infoY);
+            infoY += 20;
+            g2.setColor(Color.WHITE);
+            
+            if (currentNPC.name.equals("Mayor Tedi") || currentNPC.name.equals("Mayor")) {
+                g2.drawString("   - Everything else! (-25 points)", x + 40, infoY);
+                infoY += 20;
+            }
+            // For other NPCs with empty hated items list
+            else if (currentNPC.getHatedItems().isEmpty()) {
+                g2.drawString("   - No specific dislikes", x + 40, infoY);
+                infoY += 20;
+            } 
+            else {
+                // Normal case - show actual hated items
+                for (String item : currentNPC.getHatedItems()) {
+                    g2.drawString("   - " + item, x + 40, infoY);
+                    infoY += 20;
+                    if (infoY > y + windowHeight - 40) break;
+                }
+            }
+        }
+        
+        // Instructions at bottom
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String instruction = "H or ESC: Close";
+        int instrX = getXforCenteredTextInWindow(instruction, x, windowWidth, g2, g2.getFont());
+        g2.drawString(instruction, instrX, y + windowHeight - 20);
+    }
+
+    // Helper method untuk mengkonversi status relationship
+    private String getRelationshipStatusText(NPC.RelationshipStatus status) {
+        switch (status) {
+            case FRIEND:
+                return "Friend";
+            case FIANCE:
+                return "Fiance";
+            case SPOUSE:
+                return "Spouse";
+            default:
+                return "Unknown";
+        }
+    }
     public void closeCookingInterface() {
         showingCookingInterface = false;
         showingFuelSelectionDialog = false;
@@ -1404,12 +1784,12 @@ public class UI {
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
             g2.setColor(Color.CYAN);
             String fuelStatus = gp.cooking.getFuelStatus();
-            g2.drawString("⛽ " + fuelStatus, x + 20, y + 70);
+            g2.drawString( fuelStatus, x + 20, y + 70);
         }
         // === COOKING INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawString("💡 Coal gives +1 cooking deposit | Wood is single use | Deposits are free", x + 20, y + 90);
+        g2.drawString("Coal gives plus 1 cooking deposit \n Wood is single use \n Deposits are free", x + 20, y + 90);
     
         // === RECIPE LIST ===
         List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
@@ -1444,14 +1824,14 @@ public class UI {
             g2.setColor(canCook ? Color.WHITE : Color.GRAY);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
             
-            String recipeInfo = recipe.name + " (⚡+" + recipe.energyRestore + ")";
+            String recipeInfo = recipe.name + " (energy plus " + recipe.energyRestore + ")";
             g2.drawString(recipeInfo, x + 40, itemY);
             
             // === INGREDIENTS INFO ===
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
             g2.setColor(canCook ? Color.LIGHT_GRAY : Color.DARK_GRAY);
             
-            StringBuilder ingredients = new StringBuilder("📦 Needs: ");
+            StringBuilder ingredients = new StringBuilder("Needs: ");
             for (int j = 0; j < recipe.ingredients.size(); j++) {
                 Cooking.Ingredient ing = recipe.ingredients.get(j);
                 ingredients.append(ing.itemName).append(" x").append(ing.quantity);
@@ -1463,7 +1843,7 @@ public class UI {
         // === INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
         g2.setColor(Color.LIGHT_GRAY);
-        String instructions = "ENTER: Cook Recipe | ESC: Close | ↑↓: Navigate";
+        String instructions = "ENTER: Cook Recipe \n ESC: Close \n up and down: Navigate";
         g2.drawString(instructions, x + 20, y + windowHeight - 30);
     }
     
@@ -1485,8 +1865,8 @@ public class UI {
         // === FUEL OPTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
         
-        String[] fuelOptions = {"🪵 Wood (Single Use)", "⚫ Coal (+1 Deposit)"};
-        String[] fuelDescriptions = {"Cook once then consume", "Cook once + get 1 free cook"};
+        String[] fuelOptions = {" Wood (Single Use)", " Coal ( plus 1 Deposit)"};
+        String[] fuelDescriptions = {"Cook once then consume", "Cook once and get 1 free cook"};
         
         int optionY = y + gp.tileSize + 40;
         int optionSpacing = 60;

@@ -348,7 +348,7 @@ public class Cooking {
     private void unlockRecipe(String recipeId, String recipeName) {
         if (!unlockedRecipes.getOrDefault(recipeId, false)) {
             unlockedRecipes.put(recipeId, true);
-            gp.ui.addMessage("🎉 New recipe unlocked: " + recipeName + "!");
+            gp.ui.addMessage("New recipe unlocked: " + recipeName + "!");
         }
     }
     
@@ -379,7 +379,7 @@ public class Cooking {
         }
         
         String status = "Fuel: ";
-        if (coalCount > 0) status += "Coal x" + coalCount + " (batch: 2 recipes) ";
+        if (coalCount > 0) status += "Coal x" + coalCount + " (2 recipes) ";
         if (woodCount > 0) status += "Wood x" + woodCount + " (single recipe) ";
         
         if (coalCount == 0 && woodCount == 0) {
