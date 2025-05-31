@@ -1,9 +1,5 @@
 package com.SpakborHills.main;
 
-import com.SpakborHills.entity.Emily;
-
-// import java.awt.*;
-
 public class EventHandler {
     GamePanel gp;
     EventRect eventRect[][][];
@@ -66,11 +62,15 @@ public class EventHandler {
             // TELEPORT TO OCEAN
             if (hit(0, 13, 31, "any") == true) {
                 teleport(1, 11, 0);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
             else if (hit(1, 12, 0, "any") == true) {
                 teleport(0, 13, 31);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // TELEPORT TO HOUSE
@@ -87,20 +87,27 @@ public class EventHandler {
             // TELEPORT TO FOREST RIVER
             else if (hit(0, 0, 17, "any") == true) {
                 teleport(3, 15, 5);
+                gp.player.energy -= 10; // Reduce energy when teleporting to forest river
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
             else if (hit(3, 15, 6, "any") == true) {
                 teleport(0, 0, 16);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // TELEPORT TO NPC MAP
             else if (hit(0, 0, 14, "any") == true) {
                 teleport(4, 31, 18);
-    
+                gp.player.energy -= 10; // Reduce energy when teleporting to NPC map
+                gp.eManager.addMinutesToTime(15);
             }
             else if (hit(4, 31, 19, "any") == true) {
                 teleport(0,0,13);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             
             }
             // TELEPORT FROM NPCMAP TO Mayor HOUSE
@@ -114,9 +121,13 @@ public class EventHandler {
             // teleport to emily house
             else if (hit(4, 15,7, "any")==true){
                 teleport(5, 11, 22);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
             else if(hit(5,12,22, "any") == true){
                 teleport(4,16,7);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
             // TELEPORT KE RUMAH CAROLINE
             else if (hit(4, 3,18, "any")== true){
@@ -151,11 +162,15 @@ public class EventHandler {
             // TELEPORT TO MOUNTAIN LAKE
             else if (hit(0, 28, 0, "any") == true) {
                 teleport(11, 8, 2);
+                gp.player.energy -= 10; // Reduce energy when teleporting to mountain lake
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM MOUNTAIN LAKE
             else if (hit(11, 8, 2, "any") == true) {
                 teleport(0, 28, 0);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // Interact with Bed

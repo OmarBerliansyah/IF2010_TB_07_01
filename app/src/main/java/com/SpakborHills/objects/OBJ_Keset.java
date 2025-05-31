@@ -20,8 +20,9 @@ public class OBJ_Keset extends Entity {
         int drawX = worldX - gp.clampedCameraX;
         int drawY = worldY - gp.clampedCameraY;
 
-        if (drawX + (2 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (3 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
-            g2.drawImage(down1, drawX, drawY, 2 * gp.tileSize, 3 * gp.tileSize, null);
+        if (drawX + (3 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (2
+         * gp.tileSize) > 0 && drawY < gp.screenHeight) {
+            g2.drawImage(down1, drawX, drawY, 3 * gp.tileSize, 2 * gp.tileSize, null);
         }
     }
 }

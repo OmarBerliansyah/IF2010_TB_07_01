@@ -252,6 +252,9 @@ public class GamePanel extends JPanel implements Runnable {
             if(ui.showingSleepConfirmDialog ) {
                 ui.processSleepConfirmationInput();                                             // Pastikan player.update() di atas tidak memproses gerakan jika dialog aktif
             }
+            if(ui.showingNPCInfo) {
+                ui.processNPCInfoInput();
+            }
         }
         else if (gameState == pauseState){
             
@@ -266,6 +269,7 @@ public class GamePanel extends JPanel implements Runnable {
                     keyH.enterPressed = false;
                     eHandler.canTouchEvent = true; 
                     gameState = playState;
+                    
                 }
             }
             else {
@@ -300,9 +304,6 @@ public class GamePanel extends JPanel implements Runnable {
             store.update();
         }
 
-        // if (keyH != null) { // Pastikan keyH tidak null
-        
-        // }
     }
 
     @Override
