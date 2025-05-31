@@ -200,19 +200,27 @@ public class EventHandler {
                     canTouchEvent = false;
                 }
             }
+            // else if(hit(2, 13, 6, "any") == true){
+            //     if(gp.player.energy < 5){
+            //             canTouchEvent = false;
+            //             gp.ui.addMessage("Not enough energy to watch TV!");
+            //             gp.keyH.enterPressed = false;
+            //             gp.ui.showingWatchTV = false;
+            //             return;
+            //     }
+            //     gp.gameState = gp.dialogueState;
+            //     canTouchEvent = false;
+            //     gp.keyH.enterPressed = false;
+            //     gp.ui.showingWatchTV = true;
+            //     gp.player.energy -= 5;
+            // }
+
             else if(hit(2, 13, 6, "any") == true){
-                if(gp.player.energy < 5){
-                        canTouchEvent = false;
-                        gp.ui.addMessage("Not enough energy to watch TV!");
-                        gp.keyH.enterPressed = false;
-                        gp.ui.showingWatchTV = false;
-                        return;
+                if(!gp.player.isWatchingTV()){
+                    canTouchEvent = false;
+                    gp.keyH.enterPressed = false;
+                    gp.player.startWatchingTV(); // Use the new state method
                 }
-                gp.gameState = gp.dialogueState;
-                canTouchEvent = false;
-                gp.keyH.enterPressed = false;
-                gp.ui.showingWatchTV = true;
-                gp.player.energy -= 5;
             }
 
             else if (hit(5, 17, 18, "any") || hit(5, 16, 18, "any")) {
