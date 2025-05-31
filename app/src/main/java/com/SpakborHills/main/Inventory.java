@@ -4,7 +4,12 @@ import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
-import com.SpakborHills.objects.*;
+import com.SpakborHills.objects.OBJ_FishingRod;
+import com.SpakborHills.objects.OBJ_Hoe;
+import com.SpakborHills.objects.OBJ_ParsnipSeeds;
+import com.SpakborHills.objects.OBJ_Pickaxe;
+import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.Entity.*;
 
 public class Inventory {
     public ArrayList<Inventory.InventoryItem> inventory = new ArrayList<>();    
@@ -37,13 +42,6 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Blueberry(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Melon(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Pumpkin(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Baguette(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 1));
-
-
     }
 
     public void addItem(Entity item) {

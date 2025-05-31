@@ -79,7 +79,7 @@ public class EventHandler {
             }
 
             // TELEPORT TO MAIN FROM HOUSE
-            else if (hit(2, 11, 23, "any") == true) {
+            else if (hit(2, 11, 23, "any") == true || hit(2, 12, 23, "any") == true) {
                 teleport(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow());
 
             }

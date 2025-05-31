@@ -614,7 +614,7 @@ public class Player extends Entity{
             }
 
             int tileNum = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow];
-            if (energy >= -15 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && tileNum != 10 && gp.currentMap == 0) {
+            if (energy >= -15 && gp.tileM.tile[tileNum].tileType == TileType.PLANTED && gp.currentMap == 0) {
                 watering = true;
                 tillWithoutEnergy = false;
                 energy -= 5; // Misal biaya energi untuk menyiram adalah 5
@@ -1027,10 +1027,32 @@ public class Player extends Entity{
 
                 if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap]) {
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.PLANTED && tileNumAtTarget != 10) { // Periksa tipe tile tersebut
+                    if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.PLANTED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 10; // 10 = WateredSoil
                         // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraWatering);
+                        SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
+                        if (soilTile != null && soilTile.isSeedPlanted) {
+                            // Check if this is a new day for watering tracking
+                            if (soilTile.lastWateringDay != gp.eManager.getDayCount()) {
+                                soilTile.dailyWateringCount = 0;
+                            }
+                            
+                            // Water the plant
+                            soilTile.dailyWateringCount++;
+                            soilTile.lastWateringDay = gp.eManager.getDayCount();
+                            
+                            // Check if adequately watered for sunny weather
+                            if (gp.eManager.getCurrentWeather() == Weather.SUNNY) {
+                                if (soilTile.dailyWateringCount >= 2) {
+                                    soilTile.adequatelyWatered = true;
+                                    gp.ui.addMessage("Plant adequately watered for sunny weather!");
+                                } else {
+                                    gp.ui.addMessage("Plant watered (" + soilTile.dailyWateringCount + "/2 for sunny weather)");
+                                }
+                                System.out.println("Plant watered at (" + targetCol + "," + targetRow + ") - Daily count: " + soilTile.dailyWateringCount);
+                            }
+                        }
                     }
                 }
             } 
