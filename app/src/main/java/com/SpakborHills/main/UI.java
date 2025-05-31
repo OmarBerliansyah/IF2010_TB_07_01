@@ -73,12 +73,13 @@ public class UI {
     public Inventory.InventoryItem pendingAddItem = null;
     public boolean showingCookingInterface = false;
     public int cookingSelectedIndex = 0;
-    public boolean coalBatchMode = false;
-    public String coalBatchFirstRecipe = null;
     public boolean showingFuelSelectionDialog = false;
     public int fuelSelectionIndex = 0;
     public String pendingRecipeId = null;
     public boolean showingWatchTV = false;
+    public boolean showingNPCInfo = false;
+    public int currentNPCIndex = -1;
+    public boolean coalBatchMode = false;
 
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -183,6 +184,9 @@ public class UI {
             }
             if(showingSleepConfirmDialog){
                 drawSleepConfirmationDialog(g2);
+            }
+             if(showingNPCInfo){
+                drawNPCInfoInterface(g2);
             }
         }
         if(gp.gameState == gp.pauseState){
@@ -1313,7 +1317,7 @@ public class UI {
             } else {
                 g2.setColor(Color.RED);
             }
-            g2.drawString("ENTER: Chat (+10♥, -10⚡)", x, y);
+            g2.drawString("ENTER: Chat (+10 point, -10 energy)", x, y);
             y += 15;
             
             // Gift action
@@ -1339,7 +1343,7 @@ public class UI {
                     g2.drawString("R: Propose (Ready!)", x, y);
                 } else {
                     g2.setColor(Color.YELLOW);
-                    g2.drawString("R: Propose (Need 150♥)", x, y);
+                    g2.drawString("R: Propose (Need 150 point)", x, y);
                 }
             } else {
                 g2.setColor(Color.GRAY);
@@ -1363,20 +1367,198 @@ public class UI {
     }
     private String getGiftEffect(NPC npc, String itemName) {
         if (npc.getLovedItems().contains(itemName)) {
-            return "(+25♥, -5⚡) LOVES IT!";
+            return "(+25 point, -5 energy) LOVES IT!";
         } else if (npc.getLikedItems().contains(itemName)) {
-            return "(+20♥, -5⚡) Likes it";
+            return "(+20 point, -5 energy) Likes it";
         } else if (npc.getHatedItems().contains(itemName)) {
-            return "(-25♥, -5⚡) HATES IT!";
+            return "(-25 point, -5 energy) HATES IT!";
         } else {
-            return "(+0♥, -5⚡) Neutral";
+            return "(+0 point, -5 energy) Neutral";
         }
+    }
+    public void showNPCInfo(int npcIndex) {
+        this.showingNPCInfo = true;
+        this.currentNPCIndex = npcIndex;
+    }
+
+    public void closeNPCInfo() {
+        this.showingNPCInfo = false;
+        this.currentNPCIndex = -1;
+        gp.gameState = gp.playState;
     }
     public void showCookingInterface() {
         showingCookingInterface = true;
         cookingSelectedIndex = 0;
     }
-    
+    public void processNPCInfoInput() {
+        if (!showingNPCInfo) return;
+        
+        if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+            closeNPCInfo();
+            gp.keyH.enterPressed = false;
+            gp.keyH.escPressed = false;
+        }
+    }
+    public void drawNPCInfoInterface(Graphics2D g2) {
+        if (!showingNPCInfo || currentNPCIndex == -1 || currentNPCIndex >= gp.NPC.length) {
+            return;
+        }
+        
+        Entity npcEntity = gp.NPC[currentNPCIndex];
+        if (!(npcEntity instanceof NPC)) {
+            return;
+        }
+        
+        NPC currentNPC = (NPC) npcEntity;
+        
+        int windowWidth = gp.tileSize * 14;
+        int windowHeight = gp.tileSize * 11;
+        int x = gp.screenWidth / 2 - windowWidth / 2;
+        int y = gp.screenHeight / 2 - windowHeight / 2;
+        
+        // Draw main window
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        // Title
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 32F));
+        g2.setColor(Color.YELLOW);
+        String title = currentNPC.name + " - Character Info";
+        int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
+        g2.drawString(title, titleX, y + 50);
+        
+        // Basic Info Section
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("=== BASIC INFO ===", x + 20, y + 100);
+        
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 20F));
+        g2.setColor(Color.WHITE);
+        int infoY = y + 130;
+        
+        // Relationship Status
+        String statusText = "Status: " + getRelationshipStatusText(currentNPC.getRelationshipStatus());
+        g2.drawString(statusText, x + 30, infoY);
+        infoY += 25;
+        
+        // Heart Points
+        String heartText = "Heart Points: " + currentNPC.getHeartPoints() + "/150";
+        if (currentNPC.getHeartPoints() < 50) {
+            g2.setColor(Color.RED);
+        } else if (currentNPC.getHeartPoints() < 100) {
+            g2.setColor(Color.YELLOW);
+        } else {
+            g2.setColor(Color.GREEN);
+        }
+        g2.drawString(heartText, x + 30, infoY);
+        g2.setColor(Color.WHITE);
+        infoY += 25;
+        
+        // Interaction Stats
+        String chatText = "Chat Count: " + currentNPC.getChattingFrequency();
+        g2.drawString(chatText, x + 30, infoY);
+        infoY += 25;
+        
+        String giftText = "Gift Count: " + currentNPC.getGiftingFrequency();
+        g2.drawString(giftText, x + 30, infoY);
+        infoY += 25;
+        
+        String visitText = "Visit Count: " + currentNPC.getVisitingFrequency();
+        g2.drawString(visitText, x + 30, infoY);
+        infoY += 40;
+        
+        // Preferences Section
+        g2.setFont(characterScreenFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("=== PREFERENCES ===", x + 20, infoY);
+        infoY += 30;
+        
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 18F));
+        
+        // Loved Items
+        g2.setColor(Color.PINK);
+        g2.drawString("LOVES:", x + 30, infoY);
+        infoY += 20;
+        g2.setColor(Color.WHITE);
+        
+        if (currentNPC.getLovedItems().isEmpty()) {
+            g2.drawString("   No known loved items", x + 40, infoY);
+            infoY += 20;
+        } else {
+            for (String item : currentNPC.getLovedItems()) {
+                g2.drawString("   - " + item, x + 40, infoY);
+                infoY += 20;
+                if (infoY > y + windowHeight - 100) break; // Prevent overflow
+            }
+        }
+        
+        infoY += 10;
+        
+        // Liked Items
+        g2.setColor(Color.GREEN);
+        g2.drawString("LIKES:", x + 30, infoY);
+        infoY += 20;
+        g2.setColor(Color.WHITE);
+        
+        if (currentNPC.getLikedItems().isEmpty()) {
+            g2.drawString("   No known liked items", x + 40, infoY);
+            infoY += 20;
+        } else {
+            for (String item : currentNPC.getLikedItems()) {
+                g2.drawString("   - " + item, x + 40, infoY);
+                infoY += 20;
+                if (infoY > y + windowHeight - 80) break; // Prevent overflow
+            }
+        }
+        
+        infoY += 10;
+        
+        // Hated Items 
+        if (infoY < y + windowHeight - 60) {
+            g2.setColor(Color.RED);
+            g2.drawString("HATES:", x + 30, infoY);
+            infoY += 20;
+            g2.setColor(Color.WHITE);
+            
+            if (currentNPC.name.equals("Mayor Tedi") || currentNPC.name.equals("Mayor")) {
+                g2.drawString("   - Everything else! (-25 points)", x + 40, infoY);
+                infoY += 20;
+            }
+            // For other NPCs with empty hated items list
+            else if (currentNPC.getHatedItems().isEmpty()) {
+                g2.drawString("   - No specific dislikes", x + 40, infoY);
+                infoY += 20;
+            } 
+            else {
+                // Normal case - show actual hated items
+                for (String item : currentNPC.getHatedItems()) {
+                    g2.drawString("   - " + item, x + 40, infoY);
+                    infoY += 20;
+                    if (infoY > y + windowHeight - 40) break;
+                }
+            }
+        }
+        
+        // Instructions at bottom
+        g2.setFont(characterScreenFont.deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String instruction = "H or ESC: Close";
+        int instrX = getXforCenteredTextInWindow(instruction, x, windowWidth, g2, g2.getFont());
+        g2.drawString(instruction, instrX, y + windowHeight - 20);
+    }
+
+    // Helper method untuk mengkonversi status relationship
+    private String getRelationshipStatusText(NPC.RelationshipStatus status) {
+        switch (status) {
+            case FRIEND:
+                return "Friend";
+            case FIANCE:
+                return "Fiance";
+            case SPOUSE:
+                return "Spouse";
+            default:
+                return "Unknown";
+        }
+    }
     public void closeCookingInterface() {
         showingCookingInterface = false;
         showingFuelSelectionDialog = false;
@@ -1404,7 +1586,7 @@ public class UI {
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
             g2.setColor(Color.CYAN);
             String fuelStatus = gp.cooking.getFuelStatus();
-            g2.drawString("⛽ " + fuelStatus, x + 20, y + 70);
+            g2.drawString( fuelStatus, x + 20, y + 70);
         }
         // === COOKING INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));

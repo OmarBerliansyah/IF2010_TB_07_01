@@ -3,9 +3,11 @@ package com.SpakborHills.main; // Package declaration for the main class
 import java.awt.event.KeyEvent; // Import the KeyListener interface for handling keyboard events
 import java.awt.event.KeyListener; // Import the KeyEvent class for key even
 
+import com.SpakborHills.entity.NPC;
+
 public class KeyHandler implements KeyListener {
     GamePanel gp;
-    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed, pageUpPressed, pageDownPressed; // Movement flags
+    public boolean upPressed, downPressed, leftPressed, rightPressed, enterPressed, pausePressed, characterPressed, useToolPressed, giftPressed, proposePressed, marryPressed, escPressed, pageUpPressed, pageDownPressed,npcInfoPressed ; // Movement flags
     //DEBUG
     boolean checkDrawTime;
 
@@ -186,6 +188,21 @@ public class KeyHandler implements KeyListener {
             }
             if (code == KeyEvent.VK_M && !marryPressed) {
                 marryPressed = true;
+            }
+                if (code == KeyEvent.VK_H && !npcInfoPressed) {
+                    npcInfoPressed = true;
+                    if (gp.currentMap >= 5 && gp.currentMap <= 10) {
+                        if (gp.ui.showingNPCInfo) {
+                            gp.ui.closeNPCInfo();
+                        } else {
+                            for (int i = 0; i < gp.NPC.length; i++) {
+                                if (gp.NPC[i] instanceof NPC) {
+                                    gp.ui.showNPCInfo(i);
+                                    break;
+                                }
+                            }
+                        }
+                    } 
             }
             //Cheat for End Game
             //Cheat Money
@@ -425,6 +442,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_PAGE_DOWN) {
             pageDownPressed = false;
+        }
+        if (code == KeyEvent.VK_H) {
+            npcInfoPressed = false;
         }
         if (gp.gameState == gp.characterState) {
             if (code == KeyEvent.VK_ENTER) {
