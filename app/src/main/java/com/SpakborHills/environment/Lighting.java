@@ -253,6 +253,7 @@ public class Lighting {
         System.out.println("=== UPDATE EACH DAY CALLED ===");
         System.out.println("Current day: " + dayCount);  // Gunakan dayCount, bukan getDayCount()
         System.out.println("Player current map: " + gp.currentMap);
+        System.out.println("Current weather: " + currentWeather);
         System.out.println("========================================");
         
         gp.ui.addMessage("=== DAILY UPDATE STARTING ===");
@@ -262,6 +263,7 @@ public class Lighting {
         
         int plantsFound = 0;
         int plantsGrown = 0;
+        int plantsWithered = 0;
         
         System.out.println("Checking farm map (index 0) for plant growth...");
         
@@ -277,6 +279,34 @@ public class Lighting {
                 
                 if (tile.isSeedPlanted) {
                     plantsFound++;
+
+                    if (currentWeather == Weather.SUNNY) {
+                        // Check if plant was adequately watered yesterday
+                        if (tile.lastWateringDay != dayCount - 1 || tile.dailyWateringCount < 2) {
+                            // Plant wasn't watered enough, it withers
+                            System.out.println("PLANT WITHERED at (" + c + "," + r + ") - insufficient watering");
+                            System.out.println("  Last watered day: " + tile.lastWateringDay);
+                            System.out.println("  Daily watering count: " + tile.dailyWateringCount);
+                            
+                            // Reset to tilled state
+                            tile.isSeedPlanted = false;
+                            tile.seedType = null;
+                            tile.plantedDay = 0;
+                            tile.dailyWateringCount = 0;
+                            tile.lastWateringDay = -1;
+                            tile.adequatelyWatered = false;
+                            
+                            // Change tile back to tilled
+                            gp.tileM.mapTileNum[farmMapIndex][c][r] = 8; // Assuming 8 is tilled tile
+                            
+                            plantsWithered++;
+                            continue;
+                        }
+                    }
+
+                    // Reset daily watering count for new day
+                    tile.dailyWateringCount = 0;
+                    tile.adequatelyWatered = false;
                     
                     int currentDay = dayCount;  // Gunakan dayCount langsung
                     int dayDiff = currentDay - tile.plantedDay;
@@ -305,6 +335,9 @@ public class Lighting {
                             tile.isSeedPlanted = false;
                             tile.seedType = null;
                             tile.plantedDay = 0;
+                            tile.dailyWateringCount = 0;
+                            tile.lastWateringDay = -1;
+                            tile.adequatelyWatered = false;
                             
                             // Update tile visual ke tile tanah biasa
                             gp.tileM.mapTileNum[farmMapIndex][c][r] = 0;
@@ -329,6 +362,7 @@ public class Lighting {
         System.out.println("DAILY UPDATE SUMMARY:");
         System.out.println("Plants found: " + plantsFound);
         System.out.println("Plants harvested: " + plantsGrown);
+        System.out.println("Plants withered: " + plantsWithered);
         System.out.println("========================================");
         
         gp.ui.addMessage("Daily check: " + plantsFound + " plants, " + plantsGrown + " harvested");
