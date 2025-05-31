@@ -269,14 +269,14 @@ public class Player extends Entity{
             sleeping();
             return;
         }
-        if (totalIncome >= 17209 && !endGameForIncome && endGameCount < 2) {
+        if (gold >= 17209 && !endGameForIncome && endGameCount < 2) {
             endGame = true;
             endGameForIncome = true;
             endGameTrigger();
             return;
         }
         
-        if (hasMarried && !endGameForMarriage && endGameCount < 2) {
+        if (isMarried()&& !endGameForMarriage && endGameCount < 2) {
             endGame = true;
             endGameForMarriage = true;
             endGameTrigger();
@@ -341,7 +341,11 @@ public class Player extends Entity{
 
  
     }
-
+    public boolean isMarried() {
+        return partner != null && 
+            partner instanceof NPC && 
+            ((NPC)partner).getRelationshipStatus() == NPC.RelationshipStatus.SPOUSE;
+    }
     public void handleMovement(){
         //CHECK TILE COLLISION
         collisionOn = false;
@@ -1459,6 +1463,7 @@ public class Player extends Entity{
         // Refresh house map objects and NPCs
         gp.aSetter.setObject();
         gp.aSetter.setNPC();
+        hasMarried = true;
         // TIME SKIP TO 22:00 (10 PM)
         gp.eManager.setTime(22, 0);
         
@@ -2103,8 +2108,13 @@ public class Player extends Entity{
             seasonalMoneyFlows.add(avgSeasonalIncome);
             seasonalMoneyFlows.add(avgSeasonalExpenditure);
 
-            List<NPC> npcs = new ArrayList<>(GamePanel.getNPCs().values());
-
+            List<NPC> npcs = new ArrayList<>();
+            for (String npcName : new String[]{"Emily", "Perry", "Dasco", "Abigail", "Mayor", "Caroline"}) {
+                NPC npc = GamePanel.getOrCreateNPC(npcName, gp);
+                if (npc != null) {
+                    npcs.add(npc);
+                }
+            }
             return new EndGameStats<>(moneyFlows, seasonalMoneyFlows, npcs, totalCropHarvested, fishCaught, totalDaysPlayed);
         }
 
