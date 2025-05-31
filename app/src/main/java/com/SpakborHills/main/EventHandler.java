@@ -69,6 +69,8 @@ public class EventHandler {
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
             else if (hit(1, 12, 0, "any") == true) {
                 teleport(0, 13, 31);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // TELEPORT TO HOUSE
@@ -92,6 +94,8 @@ public class EventHandler {
             // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
             else if (hit(3, 15, 6, "any") == true) {
                 teleport(0, 0, 16);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // TELEPORT TO NPC MAP
@@ -102,6 +106,8 @@ public class EventHandler {
             }
             else if (hit(4, 31, 19, "any") == true) {
                 teleport(0,0,13);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             
             }
             // TELEPORT FROM NPCMAP TO Mayor HOUSE
@@ -115,9 +121,13 @@ public class EventHandler {
             // teleport to emily house
             else if (hit(4, 15,7, "any")==true){
                 teleport(5, 11, 22);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
             else if(hit(5,12,22, "any") == true){
                 teleport(4,16,7);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
             // TELEPORT KE RUMAH CAROLINE
             else if (hit(4, 3,18, "any")== true){
@@ -159,6 +169,8 @@ public class EventHandler {
             // BACK TELEPORT TO MAIN MAP FROM MOUNTAIN LAKE
             else if (hit(11, 8, 2, "any") == true) {
                 teleport(0, 28, 0);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // Interact with Bed
