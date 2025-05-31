@@ -249,7 +249,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             eManager.update();
-            if(ui.showingSleepConfirmDialog) {
+            if(ui.showingSleepConfirmDialog ) {
                 ui.processSleepConfirmationInput();                                             // Pastikan player.update() di atas tidak memproses gerakan jika dialog aktif
             }
         }
@@ -267,6 +267,9 @@ public class GamePanel extends JPanel implements Runnable {
                     eHandler.canTouchEvent = true; 
                     gameState = playState;
                 }
+            }
+            else {
+                ui.processDialogueScrollingInput();
             }
         }
         else if (gameState == shippingBinState) {

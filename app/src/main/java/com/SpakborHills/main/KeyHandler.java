@@ -212,7 +212,16 @@ public class KeyHandler implements KeyListener {
         //DIALOGUE STATE
         if (gp.gameState == gp.dialogueState){
             if(code == KeyEvent.VK_ENTER){
-                gp.gameState = gp.playState;
+                if(gp.ui.showingWatchTV){
+                    gp.ui.showingWatchTV = false;
+                    gp.eHandler.canTouchEvent = false;
+                    gp.gameState = gp.playState; // Exit dialogue state
+                    gp.eManager.addMinutesToTime(15); // Add 30 minutes for watching TV
+                    gp.ui.addMessage("You watched TV for 15 minutes.");
+                }
+                else{
+                    gp.gameState = gp.playState; // Exit dialogue state
+                }
             }
         }
 
@@ -358,7 +367,10 @@ public class KeyHandler implements KeyListener {
 
         if (gp.gameState == gp.shoppingState){
             if (code == KeyEvent.VK_ESCAPE) {
-                escPressed = true;
+                    escPressed = true;
+                    gp.gameState = gp.playState;
+                    gp.eHandler.canTouchEvent = true;
+                    return;
             }
             if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
                 upPressed = true; 

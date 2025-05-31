@@ -90,6 +90,7 @@ public class Entity {
             dialogueInProgress = false;
         }
         gp.ui.currentDialogue = dialogue[dialogueIndex];
+        gp.ui.dialogueScroll = 0;
         dialogueIndex++;
 
         switch(gp.player.direction){
