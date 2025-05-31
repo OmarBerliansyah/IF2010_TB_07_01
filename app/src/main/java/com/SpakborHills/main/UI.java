@@ -1139,7 +1139,7 @@ public class UI {
         // Help content (currently empty as requested)
         g2.setFont(inputFont.deriveFont(32F));
         g2.setColor(Color.LIGHT_GRAY);
-b
+
         int startY = gp.tileSize * 4;
         int lineSpacing = 35;
         int sectionSpacing = 50;
