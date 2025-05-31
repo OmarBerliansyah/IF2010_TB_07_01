@@ -38,7 +38,6 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 15));
 
   
  
