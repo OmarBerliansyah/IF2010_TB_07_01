@@ -2232,24 +2232,24 @@ public class Player extends Entity{
         
 
         //Testing End Game Stats
-        public void cheatMoney(int amount) {
-            gold += amount;
-            totalIncome += amount; 
-            totalIncomePerSeason += amount;
-            seasonalIncomeCount++;
-            gp.ui.addMessage("Cheat activated: Money increased by " + amount + "g. New gold: " + gold + "g");
-        }
+        // public void cheatMoney(int amount) {
+        //     gold += amount;
+        //     totalIncome += amount; 
+        //     totalIncomePerSeason += amount;
+        //     seasonalIncomeCount++;
+        //     gp.ui.addMessage("Cheat activated: Money increased by " + amount + "g. New gold: " + gold + "g");
+        // }
 
-        public void forceMarry(String npcName) {
-            NPC npc = GamePanel.getOrCreateNPC(npcName, gp);
-            if (npc == null) {
-                gp.ui.addMessage("Cheat error: NPC " + npcName + " not found.");
-                return;
-            }
-            partner = npc;
-            npc.relationshipStatus = NPC.RelationshipStatus.SPOUSE;
-            hasMarried = true;
-            gp.ui.addMessage("Cheat activated: You are now married to " + npcName + "!");
-        }
+        // public void forceMarry(String npcName) {
+        //     NPC npc = GamePanel.getOrCreateNPC(npcName, gp);
+        //     if (npc == null) {
+        //         gp.ui.addMessage("Cheat error: NPC " + npcName + " not found.");
+        //         return;
+        //     }
+        //     partner = npc;
+        //     npc.relationshipStatus = NPC.RelationshipStatus.SPOUSE;
+        //     hasMarried = true;
+        //     gp.ui.addMessage("Cheat activated: You are now married to " + npcName + "!");
+        // }
 }
 
