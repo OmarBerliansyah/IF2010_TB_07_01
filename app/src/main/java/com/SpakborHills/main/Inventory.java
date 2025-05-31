@@ -66,6 +66,29 @@ public class Inventory {
         }
     }
 
+    public boolean addItemBool(Entity item) {
+        if (inventory.size() < maxInventorySize) {
+            boolean itemAlreadyInInventory = false;
+            for (InventoryItem invItem : inventory) {
+                if (invItem.item.name.equals(item.name)) {
+                    invItem.count++;
+                    itemAlreadyInInventory = true;
+                    break;
+                }
+            }
+            if (!itemAlreadyInInventory) {
+                inventory.add(new InventoryItem(item, 1));
+            }
+            gp.playSE(1);
+            gp.ui.addMessage("Got a " + item.name + "!");
+            return true;
+        } else {
+            gp.ui.addMessage("You cannot carry any more!");
+            return false;
+        }
+    }
+
+
     public void equipItem(int inventoryIndex) {
         if (inventoryIndex >= 0 && inventoryIndex < inventory.size()) {
             equippedItem = inventory.get(inventoryIndex).item;

@@ -313,6 +313,7 @@ public class Lighting {
                             
                             System.out.println("  -> SUCCESS: " + grownPlant.name + " created!");
                             gp.ui.addMessage("Plant grown: " + grownPlant.name + " at (" + c + "," + r + ")");
+                            gp.player.totalCropHarvested +=  gp.player.getHarvestAmount(grownPlant.name);
                         } else {
                             System.out.println("  -> ERROR: Failed to create plant for " + tile.seedType);
                         }

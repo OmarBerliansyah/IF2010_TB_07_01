@@ -1,7 +1,5 @@
 package com.SpakborHills.main;
 
-// import java.awt.*;
-
 public class EventHandler {
     GamePanel gp;
     EventRect eventRect[][][];
@@ -64,6 +62,8 @@ public class EventHandler {
             // TELEPORT TO OCEAN
             if (hit(0, 13, 31, "any") == true) {
                 teleport(1, 11, 0);
+                gp.player.energy -= 10; // Reduce energy when teleporting to ocean
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM OCEAN
@@ -85,6 +85,8 @@ public class EventHandler {
             // TELEPORT TO FOREST RIVER
             else if (hit(0, 0, 17, "any") == true) {
                 teleport(3, 15, 5);
+                gp.player.energy -= 10; // Reduce energy when teleporting to forest river
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM FOREST RIVER
@@ -95,7 +97,8 @@ public class EventHandler {
             // TELEPORT TO NPC MAP
             else if (hit(0, 0, 14, "any") == true) {
                 teleport(4, 31, 18);
-    
+                gp.player.energy -= 10; // Reduce energy when teleporting to NPC map
+                gp.eManager.addMinutesToTime(15);
             }
             else if (hit(4, 31, 19, "any") == true) {
                 teleport(0,0,13);
@@ -149,6 +152,8 @@ public class EventHandler {
             // TELEPORT TO MOUNTAIN LAKE
             else if (hit(0, 28, 0, "any") == true) {
                 teleport(11, 8, 2);
+                gp.player.energy -= 10; // Reduce energy when teleporting to mountain lake
+                gp.eManager.addMinutesToTime(15);
             }
 
             // BACK TELEPORT TO MAIN MAP FROM MOUNTAIN LAKE
@@ -197,6 +202,13 @@ public class EventHandler {
                 gp.keyH.enterPressed = false;
                 gp.ui.showingWatchTV = true;
                 gp.player.energy -= 5;
+            }
+
+            else if (gp.currentMap == 5 && hit(5, 17, 18, "any") || hit(5, 16, 19, "any")) {
+                gp.ui.addMessage("Welcome to Emily's Store!");
+                gp.gameState = gp.shoppingState;
+                gp.keyH.enterPressed = false;
+                // canTouchEvent = false;
             }
             // // NPC MERCHANT
             // else if (hit(1, 12, 9, "up") == true) {
