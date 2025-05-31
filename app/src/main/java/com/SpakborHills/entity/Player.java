@@ -1485,8 +1485,8 @@ public class Player extends Entity{
                 gp.ui.addMessage("You don't pick any item to gift");
                 return;
             }
-            if (itemToGive.equals("Ring")) {
-                gp.ui.addMessage("You can't give away your Proposal Ring!");
+            if (itemToGive.equals("Ring")||itemToGive.equals("Fishing Rod")||itemToGive.equals("Watering Can")||itemToGive.equals("Pickaxe")||itemToGive.equals("Hoe")) {
+                gp.ui.addMessage("You can't give away that item!");
                 gp.ui.addMessage("Choose a different item to gift.");
                 return; 
             }
