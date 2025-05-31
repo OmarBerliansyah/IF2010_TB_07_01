@@ -737,7 +737,7 @@ public class Player extends Entity{
 
                     for (Inventory.InventoryItem invItem : inventory.getInventory()) { 
                         if (invItem.item.name.equals(currentMapObjects[i].name)) {
-                            invItem.count++;
+                            invItem.count+=harvestAmount;
                             itemAlreadyInInventory = true;
                             break;
                         }
