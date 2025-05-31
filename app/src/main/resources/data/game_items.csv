@@ -1,0 +1,62 @@
+id,name,category,sell_price,buy_price,description,is_sellable,is_buyable,energy_value,stack_size
+001,Parsnip Seeds,Seeds,10,20,"Basic parsnip seeds for spring planting",true,true,0,99
+002,Parsnip,Crops,35,50,"Fresh parsnip vegetable",true,true,3,99
+003,Cauliflower Seeds,Seeds,40,80,"Cauliflower seeds for spring planting",true,true,0,99
+004,Cauliflower,Crops,150,200,"Fresh cauliflower",true,true,3,99
+005,Potato Seeds,Seeds,25,50,"Potato seeds for spring planting",true,true,0,99
+006,Potato,Crops,80,0,"Fresh potato",true,false,3,99
+007,Wheat Seeds,Seeds,30,60,"Wheat seeds for spring and fall planting",true,true,0,99
+008,Wheat,Crops,30,50,"Fresh wheat grain",true,true,3,99
+009,Blueberry Seeds,Seeds,40,80,"Blueberry seeds for summer planting",true,true,0,99
+010,Blueberry,Crops,40,150,"Fresh sweet blueberries",true,true,3,99
+011,Tomato Seeds,Seeds,25,50,"Tomato seeds for summer planting",true,true,0,99
+012,Tomato,Crops,60,90,"Fresh ripe tomato",true,true,3,99
+013,Hot Pepper Seeds,Seeds,20,40,"Hot pepper seeds for summer planting",true,true,0,99
+014,Hot Pepper,Crops,40,0,"Spicy hot pepper",true,false,3,99
+015,Melon Seeds,Seeds,40,80,"Melon seeds for summer planting",true,true,0,99
+016,Melon,Crops,250,0,"Sweet juicy melon",true,false,3,99
+017,Cranberry Seeds,Seeds,50,100,"Cranberry seeds for fall planting",true,true,0,99
+018,Cranberry,Crops,25,0,"Tart cranberries",true,false,3,99
+019,Pumpkin Seeds,Seeds,75,150,"Pumpkin seeds for fall planting",true,true,0,99
+020,Pumpkin,Crops,250,300,"Large orange pumpkin",true,true,3,99
+021,Grape Seeds,Seeds,30,60,"Grape seeds for fall planting",true,true,0,99
+022,Grape,Crops,10,100,"Sweet purple grapes",true,true,3,99
+023,Eggplant Seeds,Seeds,50,100,"Eggplant seeds for fall planting",true,true,0,99
+024,Eggplant,Crops,600,0,"Fresh purple eggplant",true,false,3,99
+025,Fish and Chips,Food,135,150,"Delicious fish and chips",true,true,50,10
+026,Baguette,Food,80,100,"Fresh crusty baguette",true,true,25,10
+027,Sashimi,Food,275,300,"Fresh raw fish sashimi",true,true,70,10
+028,Fugu,Food,135,0,"Dangerous fugu fish dish",true,false,50,10
+029,Wine,Food,90,100,"Fine aged wine",true,true,20,10
+030,Pumpkin Pie,Food,100,120,"Sweet pumpkin pie",true,true,35,10
+031,Veggie Soup,Food,120,140,"Healthy vegetable soup",true,true,40,10
+032,Fish Stew,Food,260,280,"Hearty fish stew",true,true,70,10
+033,Spakbor Salad,Food,250,0,"Special Spakbor salad",true,false,70,10
+034,Fish Sandwich,Food,180,200,"Tasty fish sandwich",true,true,50,10
+035,The Legends of Spakbor,Food,2000,0,"Legendary dish of Spakbor",true,false,100,1
+036,CookedPigHead,Food,500,0,"Cooked pig head dish",true,false,80,1
+037,Egg,Misc,5,10,"Fresh chicken egg",true,true,2,50
+038,Wood,Misc,50,100,"Dry firewood for cooking fuel",true,true,0,50
+039,Coal,Misc,100,200,"High-quality coal for cooking fuel",true,true,0,50
+040,Ring,Misc,0,3000,"Special ring for marriage proposals",false,true,0,1
+041,Queen Bed,Furniture,0,10000,"Luxury queen-sized bed",false,true,0,1
+043,Stove,Furniture,0,7500,"High-end cooking stove",false,true,0,1
+044,Bullhead,Fish,15,0,"Common bullhead fish",true,false,1,50
+045,Carp,Fish,20,0,"Common carp fish",true,false,1,50
+046,Chub,Fish,18,0,"Common chub fish",true,false,1,50
+047,Largemouth Bass,Fish,25,0,"Regular bass fish",true,false,1,50
+048,Rainbow Trout,Fish,30,0,"Regular trout fish",true,false,1,50
+049,Sturgeon,Fish,35,0,"Regular sturgeon fish",true,false,1,50
+050,Midnight Carp,Fish,40,0,"Nocturnal carp fish",true,false,1,50
+051,Flounder,Fish,28,0,"Flat ocean flounder",true,false,1,50
+052,Halibut,Fish,40,0,"Large ocean halibut",true,false,1,50
+053,Octopus,Fish,45,0,"Ocean octopus",true,false,1,50
+054,Pufferfish,Fish,50,0,"Dangerous pufferfish",true,false,1,50
+055,Sardine,Fish,22,0,"Small ocean sardine",true,false,1,50
+056,Super Cucumber,Fish,55,0,"Rare sea cucumber",true,false,1,50
+057,Catfish,Fish,32,0,"River catfish",true,false,1,50
+058,Salmon,Fish,38,0,"Fresh salmon",true,false,1,50
+059,Angler,Fish,100,0,"Legendary angler fish",true,false,1,10
+060,Crimsonfish,Fish,120,0,"Legendary crimsonfish",true,false,1,10
+061,Glacierfish,Fish,110,0,"Legendary glacierfish",true,false,1,10
+062,Legend,Fish,150,0,"The legendary fish",true,false,1,10

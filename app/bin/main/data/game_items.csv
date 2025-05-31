@@ -1,0 +1,14 @@
+ID,Name,Category,SellPrice,BuyPrice,Description,Attributes
+001,Parsnip Seeds,Seed,10,20,"Plant in spring. Takes 4 days to mature.",PLANTABLE;HARVEST_ID:101;STACKABLE:99;TYPE:Seed
+101,Parsnip,Crop,35,0,"A spring tuber closely related to the carrot.",EDIBLE;ENERGY:25;HEALTH:10;SELLABLE;STACKABLE:99;TYPE:Crop
+201,Wood,Material,2,0,"A sturdy piece of wood.",SELLABLE;STACKABLE:99;TYPE:Material
+010,Fishing Rod,Tool,0,500,"A basic fishing rod.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
+011,Hoe,Tool,0,0,"Used to till soil.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
+012,Watering Can,Tool,0,0,"Used to water crops.",TOOL;EQUIPPABLE;STACKABLE:1;CAPACITY:100;TYPE:Tool
+013,Pickaxe,Tool,0,0,"Used to chop wood.",TOOL;EQUIPPABLE;STACKABLE:1;TYPE:Tool
+700,Bed,Furniture,0,0,"Allows you to sleep and save the game.",INTERACTABLE;FURNITURE_TYPE:BED;TYPE:Furniture
+701,TV,Furniture,0,0,"Watch for weather and tips.",INTERACTABLE;FURNITURE_TYPE:TV;TYPE:Furniture
+702,Kitchen Stove,Furniture,0,1000,"Cook delicious meals here.",INTERACTABLE;FURNITURE_TYPE:KITCHEN;COOKING_STATION;TYPE:Furniture
+800,Mermaid Pendant,Special,0,5000,"A legendary pendant required for marriage proposal.",SELLABLE;STACKABLE:1;TYPE:Special
+401,Small Perch,Fish,25,0,"A small freshwater fish.",EDIBLE;ENERGY:15;HEALTH:5;SELLABLE;STACKABLE:99;TYPE:Fish
+301,Nasi Goreng,CookedDish,150,0,"A delicious fried rice.",EDIBLE;ENERGY:100;HEALTH:40;SELLABLE;STACKABLE:1;TYPE:CookedDish
