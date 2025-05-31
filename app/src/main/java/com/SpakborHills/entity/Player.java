@@ -76,11 +76,13 @@ public class Player extends Entity{
     public int totalCropHarvested;
     private List<FishableProperties> fishCaught;
     public Inventory.InventoryItem plantingSeedItem;
+    private PlayerState currentState;
 
     public Player(GamePanel gp, KeyHandler keyH){
         super(gp);
         this.keyH = keyH;
         this.inventory = new Inventory(gp, this);
+        this.currentState = new NormalState(this); // Set initial state to NormalState
         this.randomGenerator = new Random();
         screenX = gp.screenWidth/2 - (gp.tileSize/2);
         screenY = gp.screenHeight/2 - (gp.tileSize/2);
@@ -107,6 +109,39 @@ public class Player extends Entity{
         getPlayerSeedsImage();
         inventory = new Inventory(gp, this);
         fishCaught = new ArrayList<>();
+    }
+
+    public void changeState(PlayerState newState) {
+        if (currentState != null) {
+            currentState.onExit();
+        }
+        
+        this.currentState = newState;
+        
+        if (currentState != null) {
+            currentState.onEnter();
+            System.out.println("Player state changed to: " + currentState.getStateName());
+        }
+    }
+
+    public PlayerState getCurrentState() {
+        return currentState;
+    }
+
+    public String getCurrentStateName() {
+        return currentState != null ? currentState.getStateName() : "None";
+    }
+
+    public boolean isWatchingTV() {
+        return currentState instanceof WatchingTVState;
+    }
+
+    public void startWatchingTV() {
+        changeState(new WatchingTVState(this));
+    }
+
+    public void returnToNormalState() {
+        changeState(new NormalState(this));
     }
 
     public void setDefaultValues(){
@@ -252,8 +287,14 @@ public class Player extends Entity{
             return null;
     }
 
+    @Override
     public void update(){
         if(gp.ui.showingSleepConfirmDialog) {
+            return;
+        }
+        if (currentState instanceof WatchingTVState) {
+            currentState.handleInput(keyH);
+            currentState.update();
             return;
         }
         // if(gp.ui.showingWatchTV) {

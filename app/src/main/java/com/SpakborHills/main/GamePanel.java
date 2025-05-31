@@ -264,13 +264,13 @@ public class GamePanel extends JPanel implements Runnable {
                 ui.processSleepConfirmationInput();
             }
             else if(ui.showingWatchTV){
-                if (keyH.enterPressed) {
-                    ui.showingWatchTV = false;
-                    keyH.enterPressed = false;
-                    eHandler.canTouchEvent = true; 
-                    gameState = playState;
+                // if (keyH.enterPressed) {
+                //     ui.showingWatchTV = false;
+                //     keyH.enterPressed = false;
+                //     eHandler.canTouchEvent = true; 
+                //     gameState = playState;
                     
-                }
+                // }
             }
             else {
                 ui.processDialogueScrollingInput();
