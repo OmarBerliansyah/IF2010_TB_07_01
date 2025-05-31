@@ -262,16 +262,16 @@ public class KeyHandler implements KeyListener {
             }
             //Cheat for End Game
             //Cheat Money
-            if (code == KeyEvent.VK_1) {
-                int inputGold = 17208;
-                gp.player.cheatMoney(inputGold);
-                gp.ui.addMessage("Total Income: " + gp.player.totalIncome);
+            // if (code == KeyEvent.VK_1) {
+            //     int inputGold = 17208;
+            //     gp.player.cheatMoney(inputGold);
+            //     gp.ui.addMessage("Total Income: " + gp.player.totalIncome);
 
-            }
-            //Cheat Marry 
-            if (code == KeyEvent.VK_2) {
-                gp.player.forceMarry("Abigail");
-            }
+            // }
+            // //Cheat Marry 
+            // if (code == KeyEvent.VK_2) {
+            //     gp.player.forceMarry("Abigail");
+            // }
         }
 
         //PAUSE STATE
