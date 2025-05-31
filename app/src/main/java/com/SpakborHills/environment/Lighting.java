@@ -232,7 +232,7 @@ public class Lighting {
         if(rainyDayCount < 2 && currentDayInSeason >= 28){
             currentWeather = Weather.RAINY;
         }else{
-            if(Math.random()<0.2 && rainyDayCount < 2){
+            if(Math.random()<0.5 && rainyDayCount < 3){
                 currentWeather = Weather.RAINY;
                 rainyDayCount++;
             } else{

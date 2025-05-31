@@ -187,7 +187,7 @@ public class AssetSetter {
         int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex1 != -1) {
             gp.mapObjects[mapIndex][objIndex1] = new OBJ_Table(gp);
-            gp.mapObjects[mapIndex][objIndex1].worldX = 16 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldX = 17 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex1].worldY = 16 * gp.tileSize;
         }
         int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);

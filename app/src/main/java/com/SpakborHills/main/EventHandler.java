@@ -79,7 +79,7 @@ public class EventHandler {
             }
 
             // TELEPORT TO MAIN FROM HOUSE
-            else if (hit(2, 11, 23, "any") == true) {
+            else if (hit(2, 11, 23, "any") == true || hit(2, 12, 23, "any") == true) {
                 teleport(0, gp.aSetter.getDoorCol()+1, gp.aSetter.getDoorRow());
 
             }
@@ -174,13 +174,12 @@ public class EventHandler {
             }
 
             // Interact with Bed
-            else if (hit(2, 6, 11, "any") == true) {
+            else if (hit(2, 6, 11, "any") == true) {                
                 if(!gp.ui.showingSleepConfirmDialog){
                     canTouchEvent = false;
                     gp.gameState = gp.dialogueState;
                     gp.keyH.enterPressed = false;
                     gp.ui.showSleepConfirmationDialog();
-                    // teleport(2, 8, 10);
                 }
             }
 
@@ -216,7 +215,7 @@ public class EventHandler {
                 gp.player.energy -= 5;
             }
 
-            else if (gp.currentMap == 5 && hit(5, 17, 18, "any") || hit(5, 16, 19, "any")) {
+            else if (hit(5, 17, 18, "any") || hit(5, 16, 18, "any")) {
                 gp.ui.addMessage("Welcome to Emily's Store!");
                 gp.gameState = gp.shoppingState;
                 gp.keyH.enterPressed = false;
