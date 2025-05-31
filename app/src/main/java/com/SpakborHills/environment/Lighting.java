@@ -50,7 +50,7 @@ public class Lighting {
     Season season = Season.SPRING;
 
     public Weather currentWeather = Weather.SUNNY;
-    private int rainyDayCount = 0;
+    public int rainyDayCount = 0;
 
     public Lighting(GamePanel gp){
         this.gp = gp;
