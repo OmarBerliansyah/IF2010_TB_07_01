@@ -1773,7 +1773,7 @@ public class UI {
         drawSubWindow(x, y, windowWidth, windowHeight);
         
         // === TITLE ===
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 30F));
         g2.setColor(Color.WHITE);
         String title = "KITCHEN";
         int titleX = getXforCenteredTextInWindow(title, x, windowWidth, g2, g2.getFont());
@@ -1784,18 +1784,18 @@ public class UI {
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
             g2.setColor(Color.CYAN);
             String fuelStatus = gp.cooking.getFuelStatus();
-            g2.drawString( fuelStatus, x + 20, y + 70);
+            g2.drawString( fuelStatus, x + 20, y + 90);
         }
         // === COOKING INSTRUCTIONS ===
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawString("Coal gives plus 1 cooking deposit \n Wood is single use \n Deposits are free", x + 20, y + 90);
+        g2.drawString("Coal gives plus 1 cooking deposit \n Wood is single use \n Deposits are free", x + 20, y + 110);
     
         // === RECIPE LIST ===
         List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
         
         if (recipes.isEmpty()) {
-            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 25F));
             g2.setColor(Color.GRAY);
             String noRecipes = "No recipes unlocked yet!";
             int noRecipesX = getXforCenteredTextInWindow(noRecipes, x, windowWidth, g2, g2.getFont());
@@ -1803,7 +1803,7 @@ public class UI {
             return;
         }
         
-        int listStartY = y + 120;
+        int listStartY = y + 140;
         int itemHeight = 45;
         int maxVisibleItems = 6;
         

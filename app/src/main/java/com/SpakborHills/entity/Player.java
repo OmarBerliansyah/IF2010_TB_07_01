@@ -255,14 +255,15 @@ public class Player extends Entity{
         if(gp.ui.showingSleepConfirmDialog) {
             return;
         }
-        if(gp.ui.showingWatchTV) {
-            if (gp.keyH.enterPressed) {
-                gp.gameState = gp.playState;
-                gp.ui.showingWatchTV = false;
-                gp.keyH.enterPressed = false;
-                gp.eHandler.canTouchEvent = true;
-            }
-        }
+        // if(gp.ui.showingWatchTV) {
+        //     if (gp.keyH.enterPressed) {
+        //         gp.eManager.addMinutesToTime(15);
+        //         gp.gameState = gp.playState;
+        //         gp.ui.showingWatchTV = false;
+        //         gp.keyH.enterPressed = false;
+        //         gp.eHandler.canTouchEvent = true;
+        //     }
+        // }
         if (energy<=-20){
             gp.ui.addMessage("You're completely exhausted! You collapse and fall asleep...");
             sleeping();
@@ -1103,6 +1104,7 @@ public class Player extends Entity{
     public void watching(){
         gp.ui.showingWatchTV = true;
         gp.gameState = gp.dialogueState;
+        gp.eManager.addMinutesToTime(15);
     }
 
     public void interactNPC(int i){
@@ -1480,8 +1482,8 @@ public class Player extends Entity{
                 gp.ui.addMessage("You don't pick any item to gift");
                 return;
             }
-            if (itemToGive.equals("Ring")) {
-                gp.ui.addMessage("You can't give away your Proposal Ring!");
+            if (itemToGive.equals("Ring")||itemToGive.equals("Fishing Rod")||itemToGive.equals("Watering Can")||itemToGive.equals("Pickaxe")||itemToGive.equals("Hoe")) {
+                gp.ui.addMessage("You can't give away that item!");
                 gp.ui.addMessage("Choose a different item to gift.");
                 return; 
             }

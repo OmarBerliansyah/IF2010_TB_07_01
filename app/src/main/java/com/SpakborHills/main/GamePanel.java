@@ -269,6 +269,7 @@ public class GamePanel extends JPanel implements Runnable {
                     keyH.enterPressed = false;
                     eHandler.canTouchEvent = true; 
                     gameState = playState;
+                    
                 }
             }
         }
