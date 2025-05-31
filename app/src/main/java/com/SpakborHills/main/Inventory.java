@@ -33,11 +33,15 @@ public class Inventory {
 
     public void setItems() {
         inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
-        // inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 180)); //Debug
         inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Blueberry(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Melon(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Pumpkin(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Baguette(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 1));
 
 
     }
