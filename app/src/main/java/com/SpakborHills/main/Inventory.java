@@ -38,29 +38,10 @@ public class Inventory {
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_FishStew(gp), 1));
-        inventory.add(new InventoryItem (new OBJ_Wood(gp),2));
-        inventory.add(new InventoryItem (new OBJ_Grape(gp),6));
-        inventory.add(new InventoryItem(new OBJ_Coal(gp),1));
-        inventory.add(new InventoryItem(new OBJ_Ring(gp),1));
-        inventory.add(new InventoryItem(new OBJ_BlueberrySeeds(gp),2));
-        inventory.add(new InventoryItem(new OBJ_LargemouthBass(gp), 6));
-        inventory.add(new InventoryItem(new OBJ_RainbowTrout(gp), 4));
-        inventory.add(new InventoryItem(new OBJ_Sturgeon(gp), 2));
-        inventory.add(new InventoryItem(new OBJ_MidnightCarp(gp), 3));
-        inventory.add(new InventoryItem(new OBJ_Flounder(gp), 5));
-        inventory.add(new InventoryItem(new OBJ_Halibut(gp), 3));
-        inventory.add(new InventoryItem(new OBJ_Octopus(gp), 2));
-        inventory.add(new InventoryItem(new OBJ_Pufferfish(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Sardine(gp), 15));
-        inventory.add(new InventoryItem(new OBJ_SuperCucumber(gp), 2));
-        inventory.add(new InventoryItem(new OBJ_Catfish(gp), 4));
-        inventory.add(new InventoryItem(new OBJ_Salmon(gp), 6));
-        inventory.add(new InventoryItem(new OBJ_SpakborSalad(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_TheLegendsOfSpakbor(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_Fugu(gp), 1));
-        inventory.add(new InventoryItem(new OBJ_CookedPigHead(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 15));
+
+  
+ 
                 
 
     }

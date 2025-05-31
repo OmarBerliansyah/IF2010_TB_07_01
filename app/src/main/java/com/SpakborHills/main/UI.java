@@ -48,7 +48,8 @@ public class UI {
     public int slotCol = 0;
     public int slotRow = 0;
     public int commandNum = 0;
-    public int titleScreenState = 0; // 0 : the first screen, 1: the second screen
+    public int titleScreenState = 0; // 0 : the first screen, 1: the second screen, 2: others menu, 3: help, 4: credits
+    public int othersCommandNum = 0; // 0: help, 1: credits, 2: back - ADD THIS LINE
     public int interfaceScroll = 0;
     public int interfaceMaxLines = 20; 
     public int shippingBinScroll = 0;
@@ -756,7 +757,7 @@ public class UI {
                 int originalLogoWidth = spakborHillsLogo.getWidth();
                 int originalLogoHeight = spakborHillsLogo.getHeight();
 
-                double scaleFactor = 0.90;
+                double scaleFactor = 0.70;
 
                 int drawLogoWidth = (int)(originalLogoWidth * scaleFactor);
                 int drawLogoHeight = (int)(originalLogoHeight * scaleFactor);
@@ -786,14 +787,14 @@ public class UI {
             int y_logo_height_for_menu_calc = 0;
             int y_logo_top_position = gp.tileSize * 1; 
             if (spakborHillsLogo != null) {
-                double scaleFactor = 0.75; // Pastikan ini sama dengan scaleFactor saat menggambar logo
+                double scaleFactor = 0.70; // Pastikan ini sama dengan scaleFactor saat menggambar logo
                 y_logo_height_for_menu_calc = (int)(spakborHillsLogo.getHeight() * scaleFactor);
             }
             int y_logo_bottom = (spakborHillsLogo != null) ? (y_logo_top_position + y_logo_height_for_menu_calc) : (gp.tileSize * 5);
             
             // --- MEMPERBESAR SPACING MENU ---
             // int y_menu_start = y_logo_bottom + gp.tileSize * 1; // Spacing sebelumnya
-            int y_menu_start = y_logo_bottom + gp.tileSize * 2; // Diperbesar jadi 2 tileSize (atau sesuaikan: 1.5, 2.5, dll.)
+            int y_menu_start = y_logo_bottom + gp.tileSize * 1; // Diperbesar jadi 2 tileSize (atau sesuaikan: 1.5, 2.5, dll.)
 
             int current_menu_y = y_menu_start;
 
@@ -815,7 +816,30 @@ public class UI {
                 g2.setFont(originalFont);       // Kembalikan ke font menu
            
             }
-            current_menu_y += gp.tileSize * 2.0;
+            current_menu_y += gp.tileSize * 1.5;
+
+            // MENU ITEM: OTHERS
+            text = "OTHERS";
+            x_menu = getXforCenteredText(text);
+
+            g2.setColor(Color.black); // Shadow
+            g2.drawString(text, x_menu + 3, current_menu_y + 3);
+            g2.setColor(Color.white); // Main text
+            g2.drawString(text, x_menu, current_menu_y);
+
+            if (commandNum == 1) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
+                g2.setFont(originalFont);
+            }
+
+            current_menu_y += gp.tileSize * 1.5;
+
+
 
             // MENU ITEM: QUIT
             text = "QUIT";
@@ -825,7 +849,7 @@ public class UI {
             g2.drawString(text, x_menu + 3, current_menu_y + 3);
             g2.setColor(Color.white); // Main text
             g2.drawString(text, x_menu, current_menu_y);
-            if (commandNum == 1) { // commandNum untuk QUIT sekarang 1
+            if (commandNum == 2) { // commandNum untuk QUIT sekarang 1
                 Font originalFont = g2.getFont(); 
                 g2.setFont(selectorFont);
                 FontMetrics fmSelector = g2.getFontMetrics();
@@ -834,7 +858,6 @@ public class UI {
                 g2.drawString(">", x_menu - selector_x_offset, current_menu_y);
                 g2.setFont(originalFont);
             }
-
         }
         else if(titleScreenState == 1){
             //CLASS SELECTION SCREEN
@@ -905,6 +928,181 @@ public class UI {
             String instruction = "Use UP/DOWN to navigate, ENTER to select, Type to input text";
             int instrX = getXforCenteredText(instruction);
             g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
+        } else if (titleScreenState == 2){
+            // OTHERS MENU
+            if (titleScreenImage != null){
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            }
+
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+            g2.setFont(menuFont);
+           
+            int startY = gp.screenHeight / 2 - gp.tileSize * 2; // Center vertically
+            int lineSpacing = gp.tileSize * 2;
+
+            // TITLE
+            g2.setColor(Color.WHITE);
+            String title = "OTHERS";
+            int titleX = getXforCenteredText(title);
+            g2.drawString(title, titleX, startY - gp.tileSize);
+
+            int menuStartY = startY ;
+
+            // HELP
+            String helpText = "HELP";
+            int helpX = getXforCenteredText(helpText);
+            g2.setColor(Color.black);
+            g2.drawString(helpText, helpX + 3, startY + 3);
+            g2.setColor(Color.white);
+            g2.drawString(helpText, helpX, menuStartY);
+            if (othersCommandNum == 0) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", helpX - selector_x_offset, menuStartY);
+                g2.setFont(originalFont);
+            }
+
+            // CREDITS
+            String creditsText = "CREDITS";
+            int creditsX = getXforCenteredText(creditsText);
+            g2.setColor(Color.black);
+            g2.drawString(creditsText, creditsX + 3, startY + lineSpacing + 3);
+            g2.setColor(Color.white);
+            g2.drawString(creditsText, creditsX, startY + lineSpacing);
+            if (othersCommandNum == 1) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", creditsX - selector_x_offset, startY + lineSpacing);
+                g2.setFont(originalFont);
+            }
+
+            // BACK
+            String backText = "BACK";
+            int backX = getXforCenteredText(backText);
+            g2.setColor(Color.black);
+            g2.drawString(backText, backX + 3, startY + lineSpacing * 2 + 3);
+            g2.setColor(Color.white);
+            g2.drawString(backText, backX, startY + lineSpacing * 2);
+            if (othersCommandNum == 2) {
+                Font originalFont = g2.getFont();
+                g2.setFont(selectorFont);
+                FontMetrics fmSelector = g2.getFontMetrics();
+                int selectorWidth = fmSelector.stringWidth(">");
+                int selector_x_offset = selectorWidth + (gp.tileSize / 3);
+                g2.drawString(">", backX - selector_x_offset, startY + lineSpacing * 2);
+                g2.setFont(originalFont);
+            }
+        } 
+        else if(titleScreenState == 3){
+        // HELP SCREEN
+        if (titleScreenImage != null) {
+            g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+        } else {
+            g2.setColor(Color.DARK_GRAY);
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        }
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+        g2.setFont(menuFont);
+        g2.setColor(Color.WHITE);
+
+        String title = "HELP";
+        int titleX = getXforCenteredText(title);
+        g2.drawString(title, titleX, gp.tileSize * 3);
+
+        // Help content (currently empty as requested)
+        g2.setFont(inputFont.deriveFont(32F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String emptyText = "Help content will be added here";
+        int emptyX = getXforCenteredText(emptyText);
+        g2.drawString(emptyText, emptyX, gp.screenHeight / 2);
+
+
+        // Back instruction
+        g2.setFont(g2.getFont().deriveFont(16F));
+        g2.setColor(Color.YELLOW);
+        String instruction = "Press ESC to go back";
+        int instrX = getXforCenteredText(instruction);
+        g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
+
+        } 
+        else if(titleScreenState == 4){
+            // CREDITS SCREEN
+            if (titleScreenImage != null) {
+                g2.drawImage(titleScreenImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+            } else {
+                g2.setColor(Color.DARK_GRAY);
+                g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+            }
+
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+
+            g2.setFont(menuFont);
+            g2.setColor(Color.WHITE);
+
+            String title = "CREDITS";
+            int titleX = getXforCenteredText(title);
+            g2.drawString(title, titleX, gp.tileSize * 2);
+
+            // Credits content
+            g2.setFont(inputFont.deriveFont(40F));
+            g2.setColor(Color.YELLOW);
+            int startY = gp.tileSize * 4;
+            int lineSpacing = 50;
+
+            String spakborians = "SPAKBORIANS";
+            int spakboriansX = getXforCenteredText(spakborians);
+            g2.drawString(spakborians, spakboriansX, startY);
+
+            g2.setFont(inputFont.deriveFont(28F));
+            g2.setColor(Color.WHITE);
+            startY += lineSpacing + 20;
+
+            String[] credits = {
+                "18223055    Muhammad Omar Berliansyah",
+                "18223065    Nadia Apsarini Baizal", 
+                "18223069    Catherine Alicia N",
+                "18223081    Aliya Harta Ary Utama",
+                "18223095    Noeriza Aqila Wibawa"
+            };
+
+            for(String credit : credits) {
+                int creditX = getXforCenteredText(credit);
+                g2.drawString(credit, creditX, startY);
+                startY += lineSpacing;
+            }
+
+            startY += 30;
+            g2.setFont(inputFont.deriveFont(24F));
+            g2.setColor(Color.CYAN);
+            String specialCredits = "Special Credits: Tomoro Dipatiukur, Beverly Dago,";
+            int specialX = getXforCenteredText(specialCredits);
+            g2.drawString(specialCredits, specialX, startY);
+        
+            startY += 35;
+            String specialCredits2 = "Kamar Noe, Ayamayaman, Kelompok K4_4";
+            int special2X = getXforCenteredText(specialCredits2);
+            g2.drawString(specialCredits2, special2X, startY);
+
+            // Back instruction
+        g2.setFont(g2.getFont().deriveFont(16F));
+        g2.setColor(Color.YELLOW);
+        String instruction = "Press ESC to go back";
+        int instrX = getXforCenteredText(instruction);
+        g2.drawString(instruction, instrX, gp.screenHeight - gp.tileSize);
         }
     }
     public void addCharacterToInput(char c) {
