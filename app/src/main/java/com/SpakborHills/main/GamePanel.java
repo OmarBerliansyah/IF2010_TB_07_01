@@ -42,6 +42,7 @@ import com.SpakborHills.objects.OBJ_Sardine;
 import com.SpakborHills.objects.OBJ_Sturgeon;
 import com.SpakborHills.objects.OBJ_SuperCucumber;
 import com.SpakborHills.tile.TileManager;
+import com.SpakborHills.entity.PlayerDayObserver;
 
 public class GamePanel extends JPanel implements Runnable {
     // SCREEN SETTINGS
@@ -107,6 +108,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int endGameTriggerState = 8; 
     public final int endGameState = 9;
     public final int shoppingState = 10;
+    public final int statsState = 11;
 
     public String fishingInputBuffer = "";
 
@@ -139,6 +141,7 @@ public class GamePanel extends JPanel implements Runnable {
         aSetter.setNPC();    // Mengisi array NPC
         playMusic(0);
         eManager.setup();
+        setupDayObservers();
         cooking = new Cooking(this);
         gameState = titleState;
         initializeFishPrototypes();
@@ -224,6 +227,18 @@ public class GamePanel extends JPanel implements Runnable {
         return NPCs.get(npcName);
     }
 
+    public void setupDayObservers() {
+        // Create only player observer
+        PlayerDayObserver playerObserver = new PlayerDayObserver(player);
+        
+        // Register observer with EnvironmentManager
+        eManager.addDayObserver(playerObserver);
+        
+        System.out.println("Player day observer setup completed");
+    }
+
+
+
 
     public void update() {
         if (ui.showingSleepConfirmDialog) {
@@ -264,13 +279,13 @@ public class GamePanel extends JPanel implements Runnable {
                 ui.processSleepConfirmationInput();
             }
             else if(ui.showingWatchTV){
-                if (keyH.enterPressed) {
-                    ui.showingWatchTV = false;
-                    keyH.enterPressed = false;
-                    eHandler.canTouchEvent = true; 
-                    gameState = playState;
+                // if (keyH.enterPressed) {
+                //     ui.showingWatchTV = false;
+                //     keyH.enterPressed = false;
+                //     eHandler.canTouchEvent = true; 
+                //     gameState = playState;
                     
-                }
+                // }
             }
             else {
                 ui.processDialogueScrollingInput();
@@ -304,6 +319,9 @@ public class GamePanel extends JPanel implements Runnable {
             store.update();
         }
 
+        else if (gameState == statsState) {
+            ui.processStatsInput();
+        }
     }
 
     @Override
@@ -437,6 +455,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (gameState == endGameState) {
                 ui.drawEndGameStatsInterface(g2);
+            }
+
+            if (gameState == statsState){
+                ui.drawEndGameStatsInterface2(g2);
             }
 
             else if (gameState == shoppingState) {

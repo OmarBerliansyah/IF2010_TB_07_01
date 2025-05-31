@@ -366,6 +366,18 @@ public class KeyHandler implements KeyListener {
                 }
             }
             
+
+            if(code == KeyEvent.VK_C && !characterPressed){
+                gp.gameState = gp.playState;
+                characterPressed = true;
+            }
+            
+            if(code == KeyEvent.VK_0 || code == KeyEvent.VK_NUMPAD0) {
+                gp.gameState = gp.statsState;
+                gp.ui.interfaceScroll = 0; 
+                return; 
+            }
+
             // Ensure cursor stays within bounds after any movement
             gp.ui.ensureCursorInBounds();
         }
@@ -463,6 +475,20 @@ public class KeyHandler implements KeyListener {
 
         }
 
+        if (gp.gameState == gp.statsState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.characterState;
+            }
+            if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
+                upPressed = true;
+            }
+            if (code == KeyEvent.VK_DOWN || code == KeyEvent.VK_S) {
+                downPressed = true;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
+        }
 }
 
     @Override
@@ -525,6 +551,8 @@ public class KeyHandler implements KeyListener {
                     }
                 }
             }
+
+            
             if (code == KeyEvent.VK_E) {
                 gp.player.eating(); // biar semua logika ada di 1 tempat
             }

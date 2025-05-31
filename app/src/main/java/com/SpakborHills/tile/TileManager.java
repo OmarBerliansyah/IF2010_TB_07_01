@@ -113,10 +113,10 @@ public class TileManager {
         setup(43, "SoilKeinjek", false, TileType.TILLABLE);
         setup(44, "rumahataskanan", false, TileType.NONE);
         setup(45, "rumahataskiri", false, TileType.NONE);
-        setup(46, "rumahatas", false, TileType.NONE);
-        setup(47, "rumahbawah", false, TileType.NONE);
-        setup(48, "rumahkanan", false, TileType.NONE);
-        setup(49, "rumahkiri", false, TileType.NONE);
+        setup(46, "rumahatas", true, TileType.NONE);
+        setup(47, "rumahbawah", true, TileType.NONE);
+        setup(48, "rumahkanan", true, TileType.NONE);
+        setup(49, "rumahkiri", true, TileType.NONE);
         setup(50, "rumahbawahkiri", false, TileType.NONE);
         setup(51, "rumahbawahkanan", false, TileType.NONE);
         setup(52, "rumahtengah", false, TileType.NONE);
@@ -201,6 +201,7 @@ public class TileManager {
         setup(131, "UjungJembatanAtas", false, TileType.NONE);
         setup(132, "UjungPantai", false, TileType.NONE);
         setup(133, "GrassCollision", true, TileType.NONE);
+        setup(134, "rumahbawah", false, TileType.NONE);
     }
 
 

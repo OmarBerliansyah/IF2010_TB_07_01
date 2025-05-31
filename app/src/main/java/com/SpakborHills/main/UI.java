@@ -48,12 +48,12 @@ public class UI {
     public int titleScreenState = 0; // 0 : the first screen, 1: the second screen, 2: others menu, 3: help, 4: credits
     public int othersCommandNum = 0; // 0: help, 1: credits, 2: back - ADD THIS LINE
     public int interfaceScroll = 0;
-    public int interfaceMaxLines = 20; 
+    public int interfaceMaxLines = 16; 
     public int shippingBinScroll = 0;
-    public int shippingBinMaxLines = 10; // or whatever fits your window
+    public int shippingBinMaxLines = 7; // or whatever fits your window
     public int inventoryScrollOffset = 0;
     public int shippedItemsScroll = 0;
-    public int shippedItemsMaxLines = 10;
+    public int shippedItemsMaxLines = 7;
     public int shippedItemsSelectedIndex = 0;
     public boolean focusOnShippedItems = false;
 
@@ -87,6 +87,8 @@ public class UI {
     public boolean showingNPCInfo = false;
     public int currentNPCIndex = -1;
     public boolean coalBatchMode = false;
+    public boolean showStatsButtonFocused = false;
+
 
     public UI(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -216,7 +218,9 @@ public class UI {
         if(gp.gameState == gp.characterState){
             drawCharacterScreen();
             drawInventory();
+            gp.ui.showStatsButtonFocused = true;
         }
+
         if (gp.gameState == gp.shippingBinState) {
             drawShippingBinInterface(g2);
         }
@@ -232,6 +236,10 @@ public class UI {
         
         if (gp.gameState == gp.fishingMinigameState){
             drawFishingMinigameUI();
+        }
+
+        if (gp.gameState == gp.statsState){
+            drawEndGameStatsInterface2(g2);
         }
 
         if(gp.gameState != gp.titleState){
@@ -534,9 +542,8 @@ public class UI {
                 g2.setColor(new Color(255, 255, 0, 100));
                 g2.fillRect(x + 10, itemY - 15, windowWidth - 20, itemHeight - 2);
                 g2.setColor(Color.YELLOW);
-                g2.drawString("▶", x + 15, itemY);
-            } 
-            else {
+                g2.drawString("->", x + 15, itemY);
+            } else {
                 g2.setColor(Color.WHITE);
             }
 
@@ -552,10 +559,10 @@ public class UI {
         if (sellableItems.size() > shippingBinMaxLines) {
             g2.setColor(Color.YELLOW);
             if (shippingBinScroll > 0) {
-                g2.drawString("▲ More items above", x + windowWidth - 180, listStartY - 10);
+                g2.drawString("More items above", x + windowWidth - 180, listStartY - 10);
             }
             if (shippingBinScroll + shippingBinMaxLines < sellableItems.size()) {
-                g2.drawString("▼ More items below", x + windowWidth - 180, listStartY + (maxVisibleItems * itemHeight) + 10);
+                g2.drawString("More items below", x + windowWidth - 180, listStartY + (maxVisibleItems * itemHeight) + 10);
             }
         }
 
@@ -576,7 +583,7 @@ public class UI {
                 g2.setColor(new Color(255, 255, 0, 100));
                 g2.fillRect(x + 10, itemY - 15, windowWidth - 20, itemHeight - 2);
                 g2.setColor(Color.YELLOW);
-                g2.drawString("▶", x + 15, itemY);
+                g2.drawString("->", x + 15, itemY);
             } else {
                 g2.setColor(Color.WHITE);
             }
@@ -589,10 +596,10 @@ public class UI {
         if (binItems.size() > shippedItemsMaxLines) {
             g2.setColor(Color.YELLOW);
             if (shippedItemsScroll > 0) {
-                g2.drawString("▲ More shipped above", x + windowWidth - 180, shippedStartY - 10);
+                g2.drawString("More shipped above", x + windowWidth - 180, shippedStartY - 10);
             }
             if (shippedItemsScroll + shippedItemsMaxLines < binItems.size()) {
-                g2.drawString("▼ More shipped below", x + windowWidth - 180, shippedStartY + (shippedMaxVisible * itemHeight) + 10);
+                g2.drawString("More shipped below", x + windowWidth - 180, shippedStartY + (shippedMaxVisible * itemHeight) + 10);
             }
         }
 
@@ -602,13 +609,14 @@ public class UI {
         }
         g2.setColor(Color.YELLOW);
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16F));
-        int totalY = shippedStartY + shippedMaxVisible * itemHeight + 20;
+        int totalY = y + windowHeight - 30;
         g2.drawString("Total Value: " + totalValue + "g", x + 20, totalY);
 
         if (showShippingBinConfirmDialog) {
             drawShippingBinConfirmDialog(g2);
         }
     }
+
 
 
 
@@ -1559,6 +1567,33 @@ b
                 textY += 32;
             }
         }
+
+        int buttonWidth = gp.tileSize * 4;
+        int buttonHeight = gp.tileSize;
+        int buttonX = dFrameX + (dFrameWidth - buttonWidth) / 2;
+        int buttonY = dFrameY + dFrameHeight + 10;
+
+        g2.setColor(new Color(204, 153, 0));
+        g2.fillRoundRect(buttonX, buttonY, buttonWidth, buttonHeight, 12, 12);
+
+        g2.setColor(Color.BLACK);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(buttonX, buttonY, buttonWidth, buttonHeight, 12, 12);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 20F));
+        g2.setColor(Color.WHITE);
+        String btnText = "Show Player Statistics";
+        FontMetrics btnFm = g2.getFontMetrics();
+        int btnTextX = buttonX + (buttonWidth - btnFm.stringWidth(btnText)) / 2;
+        int btnTextY = buttonY + (buttonHeight + btnFm.getAscent()) / 2 - 4;
+        g2.drawString(btnText, btnTextX, btnTextY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+        g2.setColor(Color.YELLOW);
+        String hintText = "Press 0 to view statistics";
+        int hintTextX = buttonX + (buttonWidth - g2.getFontMetrics().stringWidth(hintText)) / 2;
+        int hintTextY = buttonY + buttonHeight + 22;
+        g2.drawString(hintText, hintTextX, hintTextY);
     }
 
     public int getItemIndexOnSLot(){
@@ -1628,6 +1663,29 @@ b
         slotRow = Math.max(0, Math.min(3, slotRow)); // Max 4 rows (0-3)
         slotCol = Math.max(0, Math.min(4, slotCol)); // Max 5 cols (0-4)
     }
+
+    public void processStatsInput() {
+        if (gp.keyH.upPressed) {
+            interfaceScroll--;
+            if (interfaceScroll < 0) interfaceScroll = 0;
+            gp.keyH.upPressed = false;
+        }
+        if (gp.keyH.downPressed) {
+            interfaceScroll++;
+            gp.keyH.downPressed = false;
+        }
+        if (gp.keyH.enterPressed || gp.keyH.escPressed) {
+            closeStats();
+            gp.keyH.enterPressed = false;
+            gp.keyH.escPressed = false;
+            interfaceScroll = 0;
+        }
+    }
+
+    public void closeStats() {
+        gp.gameState = gp.characterState;
+    }
+
     public void drawNPCInteractionInfo() {
         // Always show NPC info when in NPC house (maps 5-10)
         if (!isInNPCHouse()) {
@@ -2210,9 +2268,7 @@ b
         return false;
     }
 
-    public void processFishingMinigameInput(){
-        
-
+    public void processFishingMinigameInput() {
         // kondisi awal
         if (!gp.player.inFishingMinigame){
             return;
@@ -2479,7 +2535,7 @@ b
             if (totalLines > interfaceMaxLines) {
                 g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 16F));
                 g2.setColor(Color.YELLOW);
-                g2.drawString("↑↓ Scroll", x + windowWidth - 100, y + windowHeight - 30);
+                g2.drawString("Scroll", x + windowWidth - 100, y + windowHeight - 30);
             }
         }
         else {
@@ -2501,6 +2557,78 @@ b
         int btnTextY = btnY + (buttonHeight + g2.getFontMetrics().getAscent()) / 2 - 4;
         g2.drawString(btnText, btnTextX, btnTextY);
     }
+
+    public void drawEndGameStatsInterface2(Graphics2D g2) {
+        int windowWidth = gp.tileSize * 14;
+        int windowHeight = gp.tileSize * 10;
+        int x = 10 * (gp.screenWidth - windowWidth) / 20;
+        int y = 13 * (gp.screenHeight - windowHeight) / 20;
+        
+        drawSubWindow(x, y, windowWidth, windowHeight);
+        
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 28F));
+        g2.setColor(Color.green);
+        String header = "Statistik Permainan";
+        int headerX = getXforCenteredTextInWindow(header, x, windowWidth, g2, confirmationFont);
+        int headerY = y + 40;
+        g2.drawString(header, headerX, headerY);
+        
+        if (gp.player.endGameDisplay() != null) {
+            g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 20F));
+            g2.setColor(Color.white);
+            String statsText = gp.player.endGameDisplay().toString();
+            String[] lines = statsText.split("\n");
+            int totalLines = lines.length;
+
+            if (interfaceScroll < 0) interfaceScroll = 0;
+            if (interfaceScroll > Math.max(0, totalLines - interfaceMaxLines)) {
+                interfaceScroll = Math.max(0, totalLines - interfaceMaxLines);
+            }
+
+            int lineY = headerY + 40;
+            int endIndex = Math.min(totalLines, interfaceScroll + interfaceMaxLines);
+            
+            for (int i = interfaceScroll; i < endIndex; i++) {
+                g2.drawString(lines[i], x + 20, lineY);
+                lineY += 24;
+            }
+
+            // Show scroll indicators
+            if (totalLines > interfaceMaxLines) {
+                g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 16F));
+                g2.setColor(Color.YELLOW);
+                
+                if (interfaceScroll > 0) {
+                    g2.drawString(" More above", x + windowWidth - 120, headerY + 20);
+                }
+                if (interfaceScroll + interfaceMaxLines < totalLines) {
+                    g2.drawString(" More below", x + windowWidth - 120, y + windowHeight - 60);
+                }
+                
+                String scrollInfo = "Line " + (interfaceScroll + 1) + "-" + Math.min(interfaceScroll + interfaceMaxLines, totalLines) + " of " + totalLines;
+                g2.drawString(scrollInfo, x + 20, y + windowHeight - 80);
+            }
+        }
+        else {
+            g2.setFont(confirmationFont.deriveFont(Font.PLAIN, 20F));
+            g2.drawString("No end game statistics available.", x + 20, headerY + 40);
+        }
+        
+        int buttonWidth = windowWidth - 40;
+        int buttonHeight = gp.tileSize;
+        int btnX = x + 20;
+        int btnY = y + windowHeight - buttonHeight - 20;
+        g2.setColor(new Color(204,153,0));
+        g2.fillRect(btnX, btnY, buttonWidth, buttonHeight);
+        g2.setFont(confirmationFont.deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.black);
+        String btnText = "Keluar End Game (ESC)";
+        int btnTextWidth = g2.getFontMetrics().stringWidth(btnText);
+        int btnTextX = btnX + (buttonWidth - btnTextWidth) / 2;
+        int btnTextY = btnY + (buttonHeight + g2.getFontMetrics().getAscent()) / 2 - 4;
+        g2.drawString(btnText, btnTextX, btnTextY);
+    }
+
 
     public void processEndGameStatsInput() {
         if (gp.keyH.upPressed) {

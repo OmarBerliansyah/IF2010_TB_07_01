@@ -50,7 +50,7 @@ public class Lighting {
     Season season = Season.SPRING;
 
     public Weather currentWeather = Weather.SUNNY;
-    private int rainyDayCount = 0;
+    public int rainyDayCount = 0;
 
     public Lighting(GamePanel gp){
         this.gp = gp;
@@ -207,7 +207,7 @@ public class Lighting {
         gp.player.addDayPlayed();
         
         // PASTIKAN INI ADA DAN BERFUNGSI:
-        dayCount++;  // ← CRITICAL: Pastikan ini ada!
+        dayCount++;  //  CRITICAL: Pastikan ini ada!
         
         System.out.println("New day count: " + dayCount);
         System.out.println("New hari: " + hari);

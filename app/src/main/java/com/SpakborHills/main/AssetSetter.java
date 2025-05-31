@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.objects.OBJ_AbigailHouse;
+import com.SpakborHills.objects.OBJ_Bed;
 import com.SpakborHills.objects.OBJ_CarolineHouse;
 import com.SpakborHills.objects.OBJ_DascoHouse;
 import com.SpakborHills.objects.OBJ_EmilyHouse;
@@ -14,14 +15,12 @@ import com.SpakborHills.objects.OBJ_Keset;
 import com.SpakborHills.objects.OBJ_MayorHouse;
 import com.SpakborHills.objects.OBJ_PerryHouse;
 import com.SpakborHills.objects.OBJ_Pond;
-import com.SpakborHills.objects.OBJ_QueenBed;
 import com.SpakborHills.objects.OBJ_ShippingBin;
 import com.SpakborHills.objects.OBJ_Stove;
-import com.SpakborHills.objects.OBJ_Tree;
-import com.SpakborHills.objects.OBJ_Tree2;
 import com.SpakborHills.objects.OBJ_TV;
 import com.SpakborHills.objects.OBJ_Table;
-import com.SpakborHills.objects.OBJ_Catfish;
+import com.SpakborHills.objects.OBJ_Tree;
+import com.SpakborHills.objects.OBJ_Tree2;
 
 
 public class AssetSetter {
@@ -149,7 +148,7 @@ public class AssetSetter {
         // ini aja di copy ya
         int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex2 != -1) {
-            gp.mapObjects[mapIndex][objIndex2] = new OBJ_QueenBed(gp);
+            gp.mapObjects[mapIndex][objIndex2] = new OBJ_Bed(gp);
             gp.mapObjects[mapIndex][objIndex2].worldX = 5 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex2].worldY = 5 * gp.tileSize;
         }

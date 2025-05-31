@@ -13,8 +13,6 @@ public class EndGameStats<T extends List<?>, U extends List<?>, V extends List<N
     private W totalCropHarvested;
     private X fishCaught;
     private Y totalDaysPlayed;
-    
-
 
     public EndGameStats(T moneyFlows, U seasonalMoneyFlows, V npcs, W totalCropHarvested, X fishCaught, Y totalDaysPlayed) {
         this.moneyFlows = moneyFlows;
@@ -152,6 +150,5 @@ public class EndGameStats<T extends List<?>, U extends List<?>, V extends List<N
             fishCaught.size(),
             fishCaughtStr.toString()
         );
-
     }
 }

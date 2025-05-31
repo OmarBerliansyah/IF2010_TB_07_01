@@ -4,17 +4,17 @@ import java.awt.Graphics2D;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.main.GamePanel;
 
-public class OBJ_QueenBed extends Entity {
-    public OBJ_QueenBed(GamePanel gp){
+public class OBJ_Bed extends Entity {
+    public OBJ_Bed(GamePanel gp){
         super(gp);
-        name = "Queen Bed";
+        name = "Bed";
         down1 = setup("objects/QueenBed", gp.tileSize, gp.tileSize); 
         collision = true;
 
         solidArea.x = 0;
         solidArea.y = 0;
-        solidArea.width = 4 * gp.tileSize;
-        solidArea.height = 6 * gp.tileSize;
+        solidArea.width = 2 * gp.tileSize;
+        solidArea.height = 4 * gp.tileSize;
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
         isPickable = false;
@@ -26,7 +26,7 @@ public class OBJ_QueenBed extends Entity {
         int drawY = worldY - gp.clampedCameraY;
 
         if (drawX + (4 * gp.tileSize) > 0 && drawX < gp.screenWidth && drawY + (6 * gp.tileSize) > 0 && drawY < gp.screenHeight) {
-            g2.drawImage(down1, drawX, drawY, 4 * gp.tileSize, 6 * gp.tileSize, null);
+            g2.drawImage(down1, drawX, drawY, 2 * gp.tileSize, 4 * gp.tileSize, null);
         }
     }
 }
