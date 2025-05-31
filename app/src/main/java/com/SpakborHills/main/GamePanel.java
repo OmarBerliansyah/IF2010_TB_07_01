@@ -107,6 +107,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int endGameTriggerState = 8; 
     public final int endGameState = 9;
     public final int shoppingState = 10;
+    public final int statsState = 11;
 
     public String fishingInputBuffer = "";
 
@@ -304,6 +305,9 @@ public class GamePanel extends JPanel implements Runnable {
             store.update();
         }
 
+        else if (gameState == statsState) {
+            ui.processStatsInput();
+        }
     }
 
     @Override
@@ -437,6 +441,10 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (gameState == endGameState) {
                 ui.drawEndGameStatsInterface(g2);
+            }
+
+            if (gameState == statsState){
+                ui.drawEndGameStatsInterface2(g2);
             }
 
             else if (gameState == shoppingState) {

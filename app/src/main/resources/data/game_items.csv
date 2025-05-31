@@ -34,6 +34,7 @@ id,name,category,sell_price,buy_price,description,is_sellable,is_buyable,energy_
 033,Spakbor Salad,Food,250,0,"Special Spakbor salad",true,false,70,10
 034,Fish Sandwich,Food,180,200,"Tasty fish sandwich",true,true,50,10
 035,The Legends of Spakbor,Food,2000,0,"Legendary dish of Spakbor",true,false,100,1
+036,CookedPigHead,Food,500,0,"Cooked pig head dish",true,false,80,1
 037,Egg,Misc,5,10,"Fresh chicken egg",true,true,2,50
 038,Wood,Misc,50,100,"Dry firewood for cooking fuel",true,true,0,50
 039,Coal,Misc,100,200,"High-quality coal for cooking fuel",true,true,0,50

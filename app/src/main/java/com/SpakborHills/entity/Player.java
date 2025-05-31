@@ -2137,10 +2137,10 @@ public class Player extends Entity{
         }
 
         public EndGameStats<List<Integer>, List<Double>, List<NPC>, Integer, List<FishableProperties>, Integer> endGameDisplay() {
-            if (!endGame) {
-                gp.ui.addMessage("You haven't reached the end game yet!");
-                return null;
-            }  
+            // if (!endGame || !gp.ui.showStatsButtonFocused) {
+            //     gp.ui.addMessage("You haven't reached the end game yet!");
+            //     return null;
+            // }  
             
             List<Integer> moneyFlows = new ArrayList<>(2);
             moneyFlows.add(totalIncome);

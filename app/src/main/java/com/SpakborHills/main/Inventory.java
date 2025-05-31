@@ -4,11 +4,7 @@ import java.util.ArrayList;
 
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.Player;
-import com.SpakborHills.objects.OBJ_FishingRod;
-import com.SpakborHills.objects.OBJ_Hoe;
-import com.SpakborHills.objects.OBJ_ParsnipSeeds;
-import com.SpakborHills.objects.OBJ_Pickaxe;
-import com.SpakborHills.objects.OBJ_WateringCan;
+import com.SpakborHills.objects.*;
 
 
 public class Inventory {
@@ -37,11 +33,41 @@ public class Inventory {
     }
 
     public void setItems() {
-        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        // Essential Tools
         inventory.add(new InventoryItem(new OBJ_Hoe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_WateringCan(gp), 1));
         inventory.add(new InventoryItem(new OBJ_Pickaxe(gp), 1));
         inventory.add(new InventoryItem(new OBJ_FishingRod(gp), 1));
+        
+        // Seeds
+        inventory.add(new InventoryItem(new OBJ_ParsnipSeeds(gp), 15));
+        inventory.add(new InventoryItem(new OBJ_CauliflowerSeeds(gp), 5));
+        inventory.add(new InventoryItem(new OBJ_PotatoSeeds(gp), 5));
+        
+        // Crops/Produce
+        inventory.add(new InventoryItem(new OBJ_Parsnip(gp), 2));
+        inventory.add(new InventoryItem(new OBJ_Cauliflower(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Potato(gp), 3));
+
+        
+        // Basic Resources
+        inventory.add(new InventoryItem(new OBJ_Wood(gp), 20));
+
+        
+        // Fish (examples)
+        inventory.add(new InventoryItem(new OBJ_Sardine(gp), 2));
+        inventory.add(new InventoryItem(new OBJ_Carp(gp), 1));
+        
+        // Special Items
+        inventory.add(new InventoryItem(new OBJ_Ring(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Bed(gp), 100));
+        inventory.add(new InventoryItem(new OBJ_BullHead(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Angler(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_Blueberry(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_FishStew(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_EggplantSeeds(gp), 1));
+        inventory.add(new InventoryItem(new OBJ_CookedPigHead(gp), 1));
+
     }
 
     public void addItem(Entity item) {
