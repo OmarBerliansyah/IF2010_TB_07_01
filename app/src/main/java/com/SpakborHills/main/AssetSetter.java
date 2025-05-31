@@ -308,8 +308,7 @@ public class AssetSetter {
         int[][] treePositions2;
         treePositions2 = switch (houseIndex+1) {
             case 1 -> new int[][]{
-                {22,0}, {24,0},
-                {31,3}, {30,5}, {30,7}, {30,9}
+                {30,3}, {30,5}, {30,7}, {30,9}, {30,11}, {30,13}
             };
             case 2 -> new int[][]{
                  {13,0}, {15,0}, {17,0},
