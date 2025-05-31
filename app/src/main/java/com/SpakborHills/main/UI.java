@@ -18,13 +18,10 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import com.SpakborHills.data.EndGameStats;
 import com.SpakborHills.data.ItemDefinition;
 import com.SpakborHills.entity.Entity;
 import com.SpakborHills.entity.NPC;
 import com.SpakborHills.entity.ShippingBinItem;
-import com.SpakborHills.entity.Entity;
-import com.SpakborHills.entity.Entity.FishableProperties;
 
 public class UI {
     GamePanel gp;
@@ -1279,7 +1276,7 @@ public class UI {
         
         g2.setFont(g2.getFont().deriveFont(16F));
         int x = 20; // Kiri atas
-        int y = 50; // Sedikit dari atas
+        int y = 100; // Sedikit dari atas
         
         // Background
         g2.setColor(new Color(0, 0, 0, 150));
