@@ -23,7 +23,7 @@ id,name,category,sell_price,buy_price,description,is_sellable,is_buyable,energy_
 022,Grape,Crops,10,100,"Sweet purple grapes",true,true,3,99
 023,Eggplant Seeds,Seeds,50,100,"Eggplant seeds for fall planting",true,true,0,99
 024,Eggplant,Crops,600,0,"Fresh purple eggplant",true,false,3,99
-025,Fish n' Chips,Food,135,150,"Delicious fish and chips",true,true,50,10
+025,Fish and Chips,Food,135,150,"Delicious fish and chips",true,true,50,10
 026,Baguette,Food,80,100,"Fresh crusty baguette",true,true,25,10
 027,Sashimi,Food,275,300,"Fresh raw fish sashimi",true,true,70,10
 028,Fugu,Food,135,0,"Dangerous fugu fish dish",true,false,50,10
@@ -34,13 +34,11 @@ id,name,category,sell_price,buy_price,description,is_sellable,is_buyable,energy_
 033,Spakbor Salad,Food,250,0,"Special Spakbor salad",true,false,70,10
 034,Fish Sandwich,Food,180,200,"Tasty fish sandwich",true,true,50,10
 035,The Legends of Spakbor,Food,2000,0,"Legendary dish of Spakbor",true,false,100,1
-036,Cooked Pig's Head,Food,0,1000,"Exotic cooked pig's head",false,true,100,1
 037,Egg,Misc,5,10,"Fresh chicken egg",true,true,2,50
-038,Firewood,Misc,50,100,"Dry firewood for cooking fuel",true,true,0,50
+038,Wood,Misc,50,100,"Dry firewood for cooking fuel",true,true,0,50
 039,Coal,Misc,100,200,"High-quality coal for cooking fuel",true,true,0,50
-040,Proposal Ring,Misc,0,3000,"Special ring for marriage proposals",false,true,0,1
+040,Ring,Misc,0,3000,"Special ring for marriage proposals",false,true,0,1
 041,Queen Bed,Furniture,0,10000,"Luxury queen-sized bed",false,true,0,1
-042,King Bed,Furniture,0,15000,"Spacious king-sized bed",false,true,0,1
 043,Stove,Furniture,0,7500,"High-end cooking stove",false,true,0,1
 044,Bullhead,Fish,15,0,"Common bullhead fish",true,false,1,50
 045,Carp,Fish,20,0,"Common carp fish",true,false,1,50

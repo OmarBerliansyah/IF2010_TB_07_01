@@ -52,7 +52,13 @@ public class UI {
     public int shippingBinScroll = 0;
     public int shippingBinMaxLines = 10; // or whatever fits your window
     public int inventoryScrollOffset = 0;
+    public int shippedItemsScroll = 0;
+    public int shippedItemsMaxLines = 10;
+    public int shippedItemsSelectedIndex = 0;
+    public boolean focusOnShippedItems = false;
+
     public final int maxVisibleSlots = 20;
+    public int dialogueScroll = 0;
 
 
     // INPUT SYSTEM
@@ -427,7 +433,6 @@ public class UI {
         return fm.stringWidth(text) / 2;
     }
 
-
     public void processSleepConfirmationInput() {
         if (!showingSleepConfirmDialog) return; // Hanya proses jika dialog aktif
 
@@ -457,17 +462,22 @@ public class UI {
             gp.keyH.enterPressed = false; // Konsumsi input enter
         }
     }
-
+    
     public void showShippingBinInterface() {
         showingShippingBinInterface = true;
         shippingBinSelectedIndex = 0;
         shippingBinQuantity = 1;
+        focusOnShippedItems = false;
+        shippedItemsSelectedIndex = 0;
+        shippedItemsScroll = 0;
     }
 
     public void closeShippingBinInterface() {
         showingShippingBinInterface = false;
+        focusOnShippedItems = false;
         gp.gameState = gp.playState;
     }
+
 
     public void drawShippingBinInterface(Graphics2D g2) {
         if (!showingShippingBinInterface) return;
@@ -496,19 +506,25 @@ public class UI {
 
         int itemHeight = 25;
         int listStartY = y + 120;
-        int inventoryLines = sellableItems.size();
-        int shippedLabelY = listStartY + inventoryLines * itemHeight + 20;
 
-        for (int i = 0; i < sellableItems.size(); i++) {
-            int itemY = listStartY + i * itemHeight;
-            if (shippingBinSelectedIndex == i) {
+        int maxVisibleItems = Math.min(shippingBinMaxLines, sellableItems.size());
+        int startIndex = shippingBinScroll;
+        int endIndex = Math.min(startIndex + maxVisibleItems, sellableItems.size());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            int displayIndex = i - startIndex;
+            int itemY = listStartY + (displayIndex * itemHeight);
+
+            if (!focusOnShippedItems && shippingBinSelectedIndex == i) {
                 g2.setColor(new Color(255, 255, 0, 100));
                 g2.fillRect(x + 10, itemY - 15, windowWidth - 20, itemHeight - 2);
                 g2.setColor(Color.YELLOW);
-                g2.drawString(">", x + 15, itemY);
-            } else {
+                g2.drawString("▶", x + 15, itemY);
+            } 
+            else {
                 g2.setColor(Color.WHITE);
             }
+
             Inventory.InventoryItem item = sellableItems.get(i);
             ItemDefinition itemDef = gp.itemManager.getDefinitionByName(item.item.name);
             String itemInfo = item.item.name + " x" + item.count;
@@ -518,18 +534,51 @@ public class UI {
             g2.drawString(itemInfo, x + 35, itemY);
         }
 
+        if (sellableItems.size() > shippingBinMaxLines) {
+            g2.setColor(Color.YELLOW);
+            if (shippingBinScroll > 0) {
+                g2.drawString("▲ More items above", x + windowWidth - 180, listStartY - 10);
+            }
+            if (shippingBinScroll + shippingBinMaxLines < sellableItems.size()) {
+                g2.drawString("▼ More items below", x + windowWidth - 180, listStartY + (maxVisibleItems * itemHeight) + 10);
+            }
+        }
+
+        int shippedLabelY = listStartY + (maxVisibleItems * itemHeight) + 30;
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16F));
         g2.setColor(Color.YELLOW);
         g2.drawString("Shipped items:", x + 20, shippedLabelY);
 
         int shippedStartY = shippedLabelY + itemHeight;
-        for (int i = 0; i < binItems.size(); i++) {
-            int itemY = shippedStartY + i * itemHeight;
-            g2.setColor(Color.WHITE);
+        int shippedMaxVisible = Math.min(shippedItemsMaxLines, binItems.size());
+        int shippedStartIndex = shippedItemsScroll;
+        int shippedEndIndex = Math.min(shippedStartIndex + shippedMaxVisible, binItems.size());
+
+        for (int i = shippedStartIndex; i < shippedEndIndex; i++) {
+            int displayIndex = i - shippedStartIndex;
+            int itemY = shippedStartY + displayIndex * itemHeight;
+            if (focusOnShippedItems && shippedItemsSelectedIndex == i) {
+                g2.setColor(new Color(255, 255, 0, 100));
+                g2.fillRect(x + 10, itemY - 15, windowWidth - 20, itemHeight - 2);
+                g2.setColor(Color.YELLOW);
+                g2.drawString("▶", x + 15, itemY);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
             ShippingBinItem binItem = binItems.get(i);
             int itemValue = binItem.quantity * binItem.sellPrice;
             String binInfo = binItem.itemName + " x" + binItem.quantity + " (" + itemValue + "g)";
             g2.drawString(binInfo, x + 35, itemY);
+        }
+
+        if (binItems.size() > shippedItemsMaxLines) {
+            g2.setColor(Color.YELLOW);
+            if (shippedItemsScroll > 0) {
+                g2.drawString("▲ More shipped above", x + windowWidth - 180, shippedStartY - 10);
+            }
+            if (shippedItemsScroll + shippedItemsMaxLines < binItems.size()) {
+                g2.drawString("▼ More shipped below", x + windowWidth - 180, shippedStartY + (shippedMaxVisible * itemHeight) + 10);
+            }
         }
 
         int totalValue = 0;
@@ -538,13 +587,15 @@ public class UI {
         }
         g2.setColor(Color.YELLOW);
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16F));
-        int totalY = shippedStartY + binItems.size() * itemHeight + 20;
+        int totalY = shippedStartY + shippedMaxVisible * itemHeight + 20;
         g2.drawString("Total Value: " + totalValue + "g", x + 20, totalY);
 
         if (showShippingBinConfirmDialog) {
             drawShippingBinConfirmDialog(g2);
         }
     }
+
+
 
     public void drawShippingBinConfirmDialog(Graphics2D g2) {
         int windowWidth = gp.tileSize * 7;
@@ -592,9 +643,11 @@ public class UI {
         if (showShippingBinConfirmDialog) return;
 
         List<Inventory.InventoryItem> sellableItems = gp.player.getSellableItems();
+        List<ShippingBinItem> binItems = gp.player.getShippingBinItems();
         int totalOptions = sellableItems.size();
+        int totalShipped = binItems.size();
 
-        if (totalOptions == 0) {
+        if (totalOptions == 0 && totalShipped == 0) {
             if (gp.keyH.enterPressed || gp.keyH.escPressed) {
                 closeShippingBinInterface();
                 gp.keyH.enterPressed = false;
@@ -603,41 +656,70 @@ public class UI {
             return;
         }
 
-        if (gp.keyH.upPressed) {
-            if (shippingBinSelectedIndex > 0) {
-                shippingBinSelectedIndex--;
-                if (shippingBinSelectedIndex < shippingBinScroll) {
-                    shippingBinScroll--;
+        if (!focusOnShippedItems) {
+            if (gp.keyH.upPressed) {
+                if (shippingBinSelectedIndex > 0) {
+                    shippingBinSelectedIndex--;
+                    if (shippingBinSelectedIndex < shippingBinScroll) {
+                        shippingBinScroll = shippingBinSelectedIndex;
+                    }
+                } else if (totalShipped > 0) {
+                    focusOnShippedItems = true;
+                    shippedItemsSelectedIndex = Math.min(totalShipped - 1, shippedItemsMaxLines - 1);
+                    shippedItemsScroll = Math.max(0, totalShipped - shippedItemsMaxLines);
                 }
+                gp.keyH.upPressed = false;
             }
-            gp.keyH.upPressed = false;
-        }
-        if (gp.keyH.downPressed) {
-            if (shippingBinSelectedIndex < totalOptions - 1) {
-                shippingBinSelectedIndex++;
-                if (shippingBinSelectedIndex >= shippingBinScroll + shippingBinMaxLines) {
-                    shippingBinScroll++;
+            if (gp.keyH.downPressed) {
+                if (shippingBinSelectedIndex < totalOptions - 1) {
+                    shippingBinSelectedIndex++;
+                    if (shippingBinSelectedIndex >= shippingBinScroll + shippingBinMaxLines) {
+                        shippingBinScroll = shippingBinSelectedIndex - shippingBinMaxLines + 1;
+                    }
+                } else if (totalShipped > 0) {
+                    focusOnShippedItems = true;
+                    shippedItemsSelectedIndex = 0;
+                    shippedItemsScroll = 0;
                 }
+                gp.keyH.downPressed = false;
             }
-            gp.keyH.downPressed = false;
-        }
+            shippingBinSelectedIndex = Math.max(0, Math.min(shippingBinSelectedIndex, totalOptions - 1));
+            shippingBinScroll = Math.max(0, Math.min(shippingBinScroll, Math.max(0, totalOptions - shippingBinMaxLines)));
 
-        // Clamp scroll and selection
-        if (shippingBinScroll < 0) shippingBinScroll = 0;
-        if (shippingBinScroll > Math.max(0, totalOptions - shippingBinMaxLines)) {
-            shippingBinScroll = Math.max(0, totalOptions - shippingBinMaxLines);
-        }
-        if (shippingBinSelectedIndex < 0) shippingBinSelectedIndex = 0;
-        if (shippingBinSelectedIndex >= totalOptions) shippingBinSelectedIndex = totalOptions - 1;
-
-        if (gp.keyH.enterPressed) {
-            if (shippingBinSelectedIndex < sellableItems.size()) {
+            if (gp.keyH.enterPressed && shippingBinSelectedIndex < sellableItems.size()) {
                 pendingAddItem = sellableItems.get(shippingBinSelectedIndex);
                 confirmAdd = true;
                 showShippingBinConfirmDialog = true;
                 shippingBinConfirmCommandNum = 0;
+                gp.keyH.enterPressed = false;
             }
-            gp.keyH.enterPressed = false;
+        } else {
+            if (gp.keyH.upPressed) {
+                if (shippedItemsSelectedIndex > 0) {
+                    shippedItemsSelectedIndex--;
+                    if (shippedItemsSelectedIndex < shippedItemsScroll) {
+                        shippedItemsScroll = shippedItemsSelectedIndex;
+                    }
+                } else {
+                    focusOnShippedItems = false;
+                    shippingBinSelectedIndex = totalOptions - 1;
+                }
+                gp.keyH.upPressed = false;
+            }
+            if (gp.keyH.downPressed) {
+                if (shippedItemsSelectedIndex < totalShipped - 1) {
+                    shippedItemsSelectedIndex++;
+                    if (shippedItemsSelectedIndex >= shippedItemsScroll + shippedItemsMaxLines) {
+                        shippedItemsScroll = shippedItemsSelectedIndex - shippedItemsMaxLines + 1;
+                    }
+                } else {
+                    focusOnShippedItems = false;
+                    shippingBinSelectedIndex = 0;
+                }
+                gp.keyH.downPressed = false;
+            }
+            shippedItemsSelectedIndex = Math.max(0, Math.min(shippedItemsSelectedIndex, totalShipped - 1));
+            shippedItemsScroll = Math.max(0, Math.min(shippedItemsScroll, Math.max(0, totalShipped - shippedItemsMaxLines)));
         }
 
         if (gp.keyH.escPressed) {
@@ -653,10 +735,12 @@ public class UI {
             shippingBinConfirmCommandNum = 0; 
             gp.keyH.leftPressed = false;
         }
+
         if (gp.keyH.rightPressed) {
-            shippingBinConfirmCommandNum = 1;
+            shippingBinConfirmCommandNum = 1; 
             gp.keyH.rightPressed = false;
         }
+            
         if (gp.keyH.upPressed || gp.keyH.downPressed) {
             shippingBinConfirmCommandNum = (shippingBinConfirmCommandNum == 0 ? 1 : 0);
             gp.keyH.upPressed = false;
@@ -665,12 +749,18 @@ public class UI {
 
         if (gp.keyH.enterPressed) {
             if (shippingBinConfirmCommandNum == 0 && pendingAddItem != null) { 
-                gp.player.addToShippingBin(pendingAddItem.item.name, 1);
+                if (gp.player.energy >= -20) { 
+                    gp.player.addToShippingBin(pendingAddItem.item.name, 1);
+                } 
+                else {
+                    gp.ui.addMessage("Too tired to use shipping bin! (Min -20 energy)");
+                }            
             }
             showShippingBinConfirmDialog = false;
             pendingAddItem = null;
             gp.keyH.enterPressed = false;
         }
+        
         if (gp.keyH.escPressed) {
             showShippingBinConfirmDialog = false;
             pendingAddItem = null;
@@ -1168,24 +1258,73 @@ public class UI {
         gp.gameState = gp.playState;
     }
 
-    public void drawDialogueScreen(){
-        //WINDOW
-        int x = gp.tileSize*2;
-        int y = gp.tileSize*5;
-        int width = gp.screenWidth - (gp.tileSize *4);
-        int height = gp.tileSize *5;
+    public void drawDialogueScreen() {
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize * 5;
+        int width = gp.screenWidth - (gp.tileSize * 4);
+        int height = gp.tileSize * 5;
 
         drawSubWindow(x, y, width, height);
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
-        x += gp.tileSize;
-        y += gp.tileSize;
+        int padding = gp.tileSize;
+        int textX = x + padding;
+        int textY = y + padding;
 
-        for(String line : currentDialogue.split("\n")){
-            g2.drawString(line, x, y);
-            y += 40;
+        String[] lines = currentDialogue.split("\n");
+        int lineSpacing = 40;
+        int visibleLines = (height - 2 * padding) / lineSpacing;
+
+        if (dialogueScroll > Math.max(0, lines.length - visibleLines)) {
+            dialogueScroll = Math.max(0, lines.length - visibleLines);
+        }
+        if (dialogueScroll < 0) dialogueScroll = 0;
+
+        for (int i = dialogueScroll; i < Math.min(lines.length, dialogueScroll + visibleLines); i++) {
+            g2.drawString(lines[i], textX, textY);
+            textY += lineSpacing;
+        }
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 24F));
+        g2.setColor(Color.YELLOW);
+        if (dialogueScroll > 0) {
+            g2.drawString("▲", x + width - gp.tileSize, y + padding - 5);
+        }
+        if (dialogueScroll + visibleLines < lines.length) {
+            g2.drawString("▼", x + width - gp.tileSize, y + height - padding + 20);
         }
     }
+
+
+    public void processDialogueScrollingInput() {
+        if (currentDialogue == null || currentDialogue.isEmpty()) {
+            return;
+        }
+        
+        String[] lines = currentDialogue.split("\n");
+        int lineSpacing = 40;
+        int padding = gp.tileSize;
+        int height = gp.tileSize * 5;
+        int visibleLines = (height - 2 * padding) / lineSpacing;
+
+        if (gp.keyH.upPressed) {
+            dialogueScroll--;
+            if (dialogueScroll < 0) dialogueScroll = 0;
+            gp.keyH.upPressed = false;
+            gp.playSE(2);
+        }
+        if (gp.keyH.downPressed) {
+            if (dialogueScroll + visibleLines < lines.length) {
+                dialogueScroll++;
+                gp.playSE(2);
+            }
+            gp.keyH.downPressed = false;
+        }
+    }
+
+
+
+    
     public void drawSubWindow(int x, int y, int width, int height){
 
         Color c = new Color(0,0,0, 200);
@@ -2208,8 +2347,8 @@ public class UI {
     public void drawEndGameTriggerInterface(Graphics2D g2) {
         int windowWidth = gp.tileSize * 12;
         int windowHeight = gp.tileSize * 10;
-        int x = gp.screenWidth / 2 - windowWidth / 2;
-        int y = gp.screenHeight / 2 - windowHeight / 2;
+        int x = 10 * (gp.screenWidth - windowWidth) / 20;
+        int y = 14 * (gp.screenHeight - windowHeight) / 20;
         
         g2.setColor(Color.black);
         g2.fillRect(x, y, windowWidth, windowHeight);
@@ -2272,8 +2411,8 @@ public class UI {
     public void drawEndGameStatsInterface(Graphics2D g2) {
         int windowWidth = gp.tileSize * 14;
         int windowHeight = gp.tileSize * 10;
-        int x = gp.screenWidth / 2 - windowWidth / 2;
-        int y = gp.screenHeight / 2 - windowHeight / 2;
+        int x = 10 * (gp.screenWidth - windowWidth) / 20;
+        int y = 13 * (gp.screenHeight - windowHeight) / 20;
         
         drawSubWindow(x, y, windowWidth, windowHeight);
         

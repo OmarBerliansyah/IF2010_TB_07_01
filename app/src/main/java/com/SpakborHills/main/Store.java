@@ -19,9 +19,9 @@ public class Store {
     private final int VISIBLE_ROWS = 3;
     private final int ITEMS_PER_PAGE = ITEMS_PER_ROW * VISIBLE_ROWS;
     
-    private final int STORE_WIDTH = 600;
-    private final int STORE_HEIGHT = 500;
-    private final int ITEM_SLOT_SIZE = 80;
+    private final int STORE_WIDTH = 800;
+    private final int STORE_HEIGHT = 600;
+    private final int ITEM_SLOT_SIZE = 100;
     private final int DESCRIPTION_HEIGHT = 120;
     
     public Store(GamePanel gp) {
@@ -77,7 +77,9 @@ public class Store {
     
         if (gp.keyH.escPressed) {
             gp.gameState = gp.playState;
-            gp.keyH.escPressed = false;
+            gp.eHandler.canTouchEvent = true;
+            gp.keyH.escPressed = false; 
+            return; 
         }
     }
     
@@ -146,7 +148,7 @@ public class Store {
         
         drawItemGrid(g2, storeX, storeY);
         
-        drawDescriptionBox(g2, storeX, storeY);
+        drawDescriptionBox(g2, storeX, storeY + 13);
         
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         g2.setColor(Color.YELLOW);
@@ -154,44 +156,43 @@ public class Store {
         
         g2.setColor(Color.BLACK);
         g2.setFont(new Font("Arial", Font.PLAIN, 12));
-        g2.drawString("Arrow Keys: Navigate | Enter: Buy | ESC: Exit", 
-                     storeX + 20, storeY + STORE_HEIGHT - 40);
+        g2.drawString("Arrow Keys: Navigate | Enter: Buy | ESC: Exit", storeX + 20, storeY + STORE_HEIGHT - 40);
     }
     
     private void drawItemGrid(Graphics2D g2, int storeX, int storeY) {
-        int gridStartX = storeX + 30;
-        int gridStartY = storeY + 60;
-        
+        int gridWidth = ITEMS_PER_ROW * ITEM_SLOT_SIZE + (ITEMS_PER_ROW - 1) * 10;
+        int gridHeight = VISIBLE_ROWS * ITEM_SLOT_SIZE + (VISIBLE_ROWS - 1) * 10;
+
+        int gridStartX = storeX + (STORE_WIDTH - gridWidth) / 2;
+        int gridStartY = storeY + 60 + (STORE_HEIGHT - 60 - DESCRIPTION_HEIGHT - 80 - gridHeight) / 2;
+
         for (int i = 0; i < ITEMS_PER_PAGE && (scrollOffset + i) < storeItems.size(); i++) {
             int itemIndex = scrollOffset + i;
             ItemDefinition item = storeItems.get(itemIndex);
-            
+
             int row = i / ITEMS_PER_ROW;
             int col = i % ITEMS_PER_ROW;
-            
+
             int slotX = gridStartX + col * (ITEM_SLOT_SIZE + 10);
             int slotY = gridStartY + row * (ITEM_SLOT_SIZE + 10);
-            
-            // Draw slot background
+
             if (itemIndex == selectedItemIndex) {
-                g2.setColor(new Color(255, 255, 0, 100));
+                g2.setColor(new Color(255, 255, 0, 180));
                 g2.fillRoundRect(slotX - 2, slotY - 2, ITEM_SLOT_SIZE + 4, ITEM_SLOT_SIZE + 4, 8, 8);
             }
-            
+
             g2.setColor(new Color(101, 67, 33));
             g2.fillRoundRect(slotX, slotY, ITEM_SLOT_SIZE, ITEM_SLOT_SIZE, 5, 5);
-            
+
             g2.setColor(new Color(160, 120, 80));
             g2.fillRoundRect(slotX + 2, slotY + 2, ITEM_SLOT_SIZE - 4, ITEM_SLOT_SIZE - 4, 3, 3);
-            
-            // Draw item image
+
             BufferedImage itemImage = getItemImage(item.name);
             if (itemImage != null) {
                 int imageSize = ITEM_SLOT_SIZE - 10;
                 g2.drawImage(itemImage, slotX + 5, slotY + 5, imageSize, imageSize, null);
             }
-            
-            // Draw price
+
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Arial", Font.BOLD, 10));
             String priceText = item.buyPrice + "g";
@@ -200,11 +201,12 @@ public class Store {
             g2.drawString(priceText, priceX, slotY + ITEM_SLOT_SIZE - 5);
         }
     }
+
     
     private void drawDescriptionBox(Graphics2D g2, int storeX, int storeY) {
         int descX = storeX + 30;
         int descY = storeY + STORE_HEIGHT - DESCRIPTION_HEIGHT - 80;
-        int descWidth = STORE_WIDTH - 60;
+        int descWidth = STORE_WIDTH - 100;
         
         // Background
         g2.setColor(new Color(101, 67, 33));
@@ -219,11 +221,10 @@ public class Store {
             
             g2.setColor(Color.BLACK);
             g2.setFont(new Font("Arial", Font.BOLD, 14));
-            g2.drawString(selectedItem.name, descX + 10, descY + 25);
+            g2.drawString(selectedItem.name, descX + 10, descY + 15);
             
             g2.setFont(new Font("Arial", Font.PLAIN, 12));
             
-            // Wrap description text
             String[] words = selectedItem.description.split(" ");
             StringBuilder line = new StringBuilder();
             int lineY = descY + 45;
@@ -248,11 +249,11 @@ public class Store {
             
             g2.setFont(new Font("Arial", Font.BOLD, 12));
             g2.setColor(new Color(0, 100, 0));
-            g2.drawString("Price: " + selectedItem.buyPrice + "g", descX + 10, descY + DESCRIPTION_HEIGHT - 25);
+            g2.drawString("Price: " + selectedItem.buyPrice + "g", descX + 10, descY + DESCRIPTION_HEIGHT - 35);
             
             if (selectedItem.energyValue > 0) {
                 g2.setColor(new Color(0, 0, 150));
-                g2.drawString("Energy: +" + selectedItem.energyValue, descX + 150, descY + DESCRIPTION_HEIGHT - 25);
+                g2.drawString("Energy: +" + selectedItem.energyValue, descX + 150, descY + DESCRIPTION_HEIGHT - 35);
             }
         }
     }

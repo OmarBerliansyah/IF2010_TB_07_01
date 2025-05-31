@@ -251,6 +251,7 @@ public class Player extends Entity{
             }
             return null;
     }
+
     public void update(){
         if(gp.ui.showingSleepConfirmDialog) {
             return;
@@ -269,14 +270,14 @@ public class Player extends Entity{
             sleeping();
             return;
         }
-        if (totalIncome >= 17209 && !endGameForIncome && endGameCount < 2) {
+        if (gold >= 17209 && !endGameForIncome && endGameCount < 2) {
             endGame = true;
             endGameForIncome = true;
             endGameTrigger();
             return;
         }
         
-        if (hasMarried && !endGameForMarriage && endGameCount < 2) {
+        if (isMarried()&& !endGameForMarriage && endGameCount < 2) {
             endGame = true;
             endGameForMarriage = true;
             endGameTrigger();
@@ -301,7 +302,7 @@ public class Player extends Entity{
         }
         if(moving){
             handleMovement();
-        }
+        } 
 
         else{
             handleInput();
@@ -339,9 +340,19 @@ public class Player extends Entity{
             return;
         }
 
+        if (energy <= -20) {
+            sleeping();
+            gp.eHandler.teleport(2, 6, 12);
+            return;
+        }
+
  
     }
-
+    public boolean isMarried() {
+        return partner != null && 
+            partner instanceof NPC && 
+            ((NPC)partner).getRelationshipStatus() == NPC.RelationshipStatus.SPOUSE;
+    }
     public void handleMovement(){
         //CHECK TILE COLLISION
         collisionOn = false;
@@ -418,7 +429,8 @@ public class Player extends Entity{
             int npcIndex = gp.cChecker.checkEntity(this, gp.NPC);
             if (npcIndex != 999) {
                 interactNPC(npcIndex);
-            } else {
+            } 
+            else {
                 // Check events jika tidak ada NPC
                 gp.eHandler.checkEvent();
             }
@@ -1465,6 +1477,7 @@ public class Player extends Entity{
         // Refresh house map objects and NPCs
         gp.aSetter.setObject();
         gp.aSetter.setNPC();
+        hasMarried = true;
         // TIME SKIP TO 22:00 (10 PM)
         gp.eManager.setTime(22, 0);
         
@@ -1550,6 +1563,7 @@ public class Player extends Entity{
     public void openShippingBin() {
         if (energy < -15) {
             gp.ui.addMessage("Not enough energy to use shipping bin!");
+            gp.gameState = gp.playState; 
             return;
         }
         
@@ -1601,6 +1615,11 @@ public class Player extends Entity{
             shippingBinItems.add(new ShippingBinItem(itemDef.id,itemName,quantity, itemDef.sellPrice));
         }
         
+        if (energy < -15) {
+            gp.ui.addMessage("You're too exhausted to use the shipping bin!");
+            return false;
+        }
+
         // Remove dari inventory
         playerItem.count -= quantity;
         if (playerItem.count <= 0) {
@@ -2109,8 +2128,13 @@ public class Player extends Entity{
             seasonalMoneyFlows.add(avgSeasonalIncome);
             seasonalMoneyFlows.add(avgSeasonalExpenditure);
 
-            List<NPC> npcs = new ArrayList<>(GamePanel.getNPCs().values());
-
+            List<NPC> npcs = new ArrayList<>();
+            for (String npcName : new String[]{"Emily", "Perry", "Dasco", "Abigail", "Mayor", "Caroline"}) {
+                NPC npc = GamePanel.getOrCreateNPC(npcName, gp);
+                if (npc != null) {
+                    npcs.add(npc);
+                }
+            }
             return new EndGameStats<>(moneyFlows, seasonalMoneyFlows, npcs, totalCropHarvested, fishCaught, totalDaysPlayed);
         }
 
@@ -2131,7 +2155,18 @@ public class Player extends Entity{
                         }
                     }
                 }
+        }
+        
+        private int getNextAvailableObjectIndex(int mapIndex) {
+            Entity[] objects = gp.mapObjects[mapIndex];
+            for (int i = 0; i < objects.length; i++) {
+                if (objects[i] == null) {
+                    return i;
+                }
             }
+            return -1;
+        }
+        
 
         //Testing End Game Stats
         public void cheatMoney(int amount) {

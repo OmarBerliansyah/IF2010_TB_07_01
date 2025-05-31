@@ -1,8 +1,9 @@
 package com.SpakborHills.data;
 
 import java.util.List;
-import com.SpakborHills.entity.NPC;
+
 import com.SpakborHills.entity.Entity.FishableProperties;
+import com.SpakborHills.entity.NPC;
 
 
 public class EndGameStats<T extends List<?>, U extends List<?>, V extends List<NPC>, W, X extends List<FishableProperties>, Y> {
@@ -74,6 +75,14 @@ public class EndGameStats<T extends List<?>, U extends List<?>, V extends List<N
         int[] chatFreq = new int[6];
         int[] giftFreq = new int[6];
         int[] visitFreq = new int[6];
+        // Initialize all arrays first
+        for (int i = 0; i < 6; i++) {
+            npcNames[i] = "-";
+            npcStatuses[i] = "-";
+            chatFreq[i] = 0;
+            giftFreq[i] = 0;
+            visitFreq[i] = 0;
+        }
         for (int i = 0; i < 6; i++) {
             if (i < npcs.size() && npcs.get(i) != null) {
                 npcNames[i] = npcs.get(i).name;
@@ -81,12 +90,6 @@ public class EndGameStats<T extends List<?>, U extends List<?>, V extends List<N
                 chatFreq[i] = npcs.get(i).getChattingFrequency();
                 giftFreq[i] = npcs.get(i).getGiftingFrequency();
                 visitFreq[i] = npcs.get(i).getVisitingFrequency();
-            } else {
-                npcNames[i] = "-";
-                npcStatuses[i] = "-";
-                chatFreq[i] = 0;
-                giftFreq[i] = 0;
-                visitFreq[i] = 0;
             }
         }
 

@@ -440,7 +440,10 @@ public class KeyHandler implements KeyListener {
 
         if (gp.gameState == gp.shoppingState){
             if (code == KeyEvent.VK_ESCAPE) {
-                escPressed = true;
+                    escPressed = true;
+                    gp.gameState = gp.playState;
+                    gp.eHandler.canTouchEvent = true;
+                    return;
             }
             if (code == KeyEvent.VK_UP || code == KeyEvent.VK_W) {
                 upPressed = true; 

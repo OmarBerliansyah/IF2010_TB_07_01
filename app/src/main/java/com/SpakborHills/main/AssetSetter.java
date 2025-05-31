@@ -187,29 +187,65 @@ public class AssetSetter {
         int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
         if(objIndex1 != -1) {
             gp.mapObjects[mapIndex][objIndex1] = new OBJ_Table(gp);
-            gp.mapObjects[mapIndex][objIndex1].worldX = 16 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldX = 17 * gp.tileSize;
             gp.mapObjects[mapIndex][objIndex1].worldY = 16 * gp.tileSize;
+        }
+        int objIndex2 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex2 != -1) {
+            gp.mapObjects[mapIndex][objIndex2] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex2].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex2].worldY = 21 * gp.tileSize;
         }
     }
      private void initializePerryMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Perry map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 21 * gp.tileSize;
+        }
     }
      private void initializeDascoMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Dasco map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 21 * gp.tileSize;
+        }
     }
      private void initializeAbigailMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Abigail map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 21 * gp.tileSize;
+        }
     }
      private void initializeMayorMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Mayor map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 21 * gp.tileSize;
+        }
     }
      private void initializeCarolineMap(int mapIndex) {
         // Ocean map objects jika ada
         System.out.println("Caroline map initialized");
+        int objIndex1 = getNextAvailableObjectIndexForMap(mapIndex);
+        if(objIndex1 != -1) {
+            gp.mapObjects[mapIndex][objIndex1] = new OBJ_Keset(gp);
+            gp.mapObjects[mapIndex][objIndex1].worldX = 12 * gp.tileSize;
+            gp.mapObjects[mapIndex][objIndex1].worldY = 21 * gp.tileSize;
+        }
     }
 // Method untuk menempatkan objek di map tertentu
     private void placeHouseForMap(int mapIndex, int col, int row) {
