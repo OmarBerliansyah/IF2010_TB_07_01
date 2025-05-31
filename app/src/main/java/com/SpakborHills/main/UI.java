@@ -1591,7 +1591,7 @@ public class UI {
         // === COOKING INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
         g2.setColor(Color.LIGHT_GRAY);
-        g2.drawString("💡 Coal gives +1 cooking deposit | Wood is single use | Deposits are free", x + 20, y + 90);
+        g2.drawString("Coal gives plus 1 cooking deposit \n Wood is single use \n Deposits are free", x + 20, y + 90);
     
         // === RECIPE LIST ===
         List<Cooking.Recipe> recipes = gp.cooking.getUnlockedRecipes();
@@ -1626,14 +1626,14 @@ public class UI {
             g2.setColor(canCook ? Color.WHITE : Color.GRAY);
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18F));
             
-            String recipeInfo = recipe.name + " (⚡+" + recipe.energyRestore + ")";
+            String recipeInfo = recipe.name + " (energy plus " + recipe.energyRestore + ")";
             g2.drawString(recipeInfo, x + 40, itemY);
             
             // === INGREDIENTS INFO ===
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 14F));
             g2.setColor(canCook ? Color.LIGHT_GRAY : Color.DARK_GRAY);
             
-            StringBuilder ingredients = new StringBuilder("📦 Needs: ");
+            StringBuilder ingredients = new StringBuilder("Needs: ");
             for (int j = 0; j < recipe.ingredients.size(); j++) {
                 Cooking.Ingredient ing = recipe.ingredients.get(j);
                 ingredients.append(ing.itemName).append(" x").append(ing.quantity);
@@ -1645,7 +1645,7 @@ public class UI {
         // === INSTRUCTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
         g2.setColor(Color.LIGHT_GRAY);
-        String instructions = "ENTER: Cook Recipe | ESC: Close | ↑↓: Navigate";
+        String instructions = "ENTER: Cook Recipe \n ESC: Close \n up and down: Navigate";
         g2.drawString(instructions, x + 20, y + windowHeight - 30);
     }
     
@@ -1667,8 +1667,8 @@ public class UI {
         // === FUEL OPTIONS ===
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
         
-        String[] fuelOptions = {"🪵 Wood (Single Use)", "⚫ Coal (+1 Deposit)"};
-        String[] fuelDescriptions = {"Cook once then consume", "Cook once + get 1 free cook"};
+        String[] fuelOptions = {" Wood (Single Use)", " Coal ( plus 1 Deposit)"};
+        String[] fuelDescriptions = {"Cook once then consume", "Cook once and get 1 free cook"};
         
         int optionY = y + gp.tileSize + 40;
         int optionSpacing = 60;
