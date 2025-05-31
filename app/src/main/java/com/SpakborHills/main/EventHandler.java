@@ -177,7 +177,7 @@ public class EventHandler {
             else if (hit(2, 6, 11, "any") == true) {                
                 if(!gp.ui.showingSleepConfirmDialog){
                     canTouchEvent = false;
-                    gp.gameState = gp.dialogueState;
+                    // gp.gameState = gp.dialogueState;
                     gp.keyH.enterPressed = false;
                     gp.ui.showSleepConfirmationDialog();
                 }

@@ -305,14 +305,29 @@ public class UI {
     }
 
     public void showSleepConfirmationDialog(){
-        gp.keyH.enterPressed = false; // Reset enter key state
+        gp.keyH.enterPressed = false;
+        gp.keyH.leftPressed = false;
+        gp.keyH.rightPressed = false;
+        gp.keyH.upPressed = false;
+        gp.keyH.downPressed = false;
         this.showingSleepConfirmDialog = true;
         this.sleepConfirmCommandNum = 0; // Reset command number to 0 (Yes)
+        if (gp.gameState != gp.dialogueState) {
+            gp.gameState = gp.dialogueState;
+        }
     }
 
     public void closeSleepConfirmationDialog(){
         this.showingSleepConfirmDialog = false;
         gp.eHandler.canTouchEvent = true;
+
+        gp.keyH.enterPressed = false;
+        gp.keyH.leftPressed = false;
+        gp.keyH.rightPressed = false;
+        gp.keyH.upPressed = false;
+        gp.keyH.downPressed = false;
+        gp.keyH.escPressed = false;
+        
         if (gp.gameState == gp.dialogueState) { 
             boolean otherDialogueStillActive = false;
             if (!otherDialogueStillActive) {
@@ -436,16 +451,16 @@ public class UI {
     public void processSleepConfirmationInput() {
         if (!showingSleepConfirmDialog) return; // Hanya proses jika dialog aktif
 
-        if (gp.keyH.leftPressed || (gp.keyH.upPressed && sleepConfirmCommandNum == 1) ) { // Pindah ke kiri (atau atas dari No ke Yes)
+        if (gp.keyH.leftPressed || gp.keyH.upPressed) {
             sleepConfirmCommandNum = 0; // Pilih Yes
             gp.keyH.leftPressed = false;
             gp.keyH.upPressed = false;
-            gp.keyH.enterPressed = false;
-        } else if (gp.keyH.rightPressed || (gp.keyH.downPressed && sleepConfirmCommandNum == 0) ) { // Pindah ke kanan (atau bawah dari Yes ke No)
+        } 
+        
+        if (gp.keyH.rightPressed || gp.keyH.downPressed) {
             sleepConfirmCommandNum = 1; // Pilih No
             gp.keyH.rightPressed = false;
             gp.keyH.downPressed = false;
-            gp.keyH.enterPressed = false;
         }
 
         if (gp.keyH.enterPressed) {
@@ -1116,9 +1131,30 @@ public class UI {
         // Help content (currently empty as requested)
         g2.setFont(inputFont.deriveFont(32F));
         g2.setColor(Color.LIGHT_GRAY);
-        String emptyText = "Help content will be added here";
-        int emptyX = getXforCenteredText(emptyText);
-        g2.drawString(emptyText, emptyX, gp.screenHeight / 2);
+b
+        int startY = gp.tileSize * 4;
+        int lineSpacing = 35;
+        int sectionSpacing = 50;
+
+        String[] basicControls = {
+            "WASD / Arrow Keys - Move Player",
+            "ENTER - Interact with Objects/NPCs",
+            "SPACE - Use Equipped Tool to do Action",
+            "C - Open Character & Inventory Screen",
+            "E - Eating",
+            "R - Propose",
+            "M - Marry",
+            "P - Pause Game",
+            "ESC - Cancel/Close Dialogs"
+        };
+
+        for (String control : basicControls) {
+            g2.drawString(control, getXforCenteredText(control), startY);
+            startY += lineSpacing;
+        }
+        
+        startY += 20;
+        
 
 
         // Back instruction
