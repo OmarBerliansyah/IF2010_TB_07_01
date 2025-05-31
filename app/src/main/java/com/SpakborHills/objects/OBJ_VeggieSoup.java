@@ -8,7 +8,7 @@ public class OBJ_VeggieSoup extends Entity {
     public OBJ_VeggieSoup(GamePanel gp){
         super(gp);
         name = "VeggieSoup";
-        down1 = setup("objects/VeggieSoup",gp.tileSize, gp.tileSize);
+        down1 = setup("objects/VegetableSoup",gp.tileSize, gp.tileSize);
         isPickable = true;
         plusEnergy = 40; 
         buyPrice = 140;

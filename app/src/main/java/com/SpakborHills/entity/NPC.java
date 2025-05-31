@@ -120,6 +120,8 @@ public abstract class NPC extends Entity {
             System.out.println(name + " - Showing dialogue[" + dialogueIndex + "]: " + dialogue[dialogueIndex]);
             
             dialogueIndex++;
+            gp.ui.dialogueScroll = 0;
+
             
             // Check if next dialogue exists
             if (dialogueIndex >= dialogue.length || dialogue[dialogueIndex] == null) {

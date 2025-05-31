@@ -5,6 +5,10 @@ import java.util.Random;
 import com.SpakborHills.main.GamePanel;
 
 public class Emily extends NPC{
+    private boolean walkingToTable = false;
+    private boolean hasReachedTable = false;
+    private int targetX = 17 * 64; 
+    private int targetY = 17 * 64;
 
     public Emily(GamePanel gp) {
         super(gp, "Emily");
@@ -37,6 +41,25 @@ public class Emily extends NPC{
     }
 
     public void setAction(){
+        if (walkingToTable && !hasReachedTable) {
+                int dx = targetX - worldX;
+                int dy = targetY - worldY;
+                if (Math.abs(dx) <= speed && Math.abs(dy) <= speed) {
+                    worldX = targetX;
+                    worldY = targetY;
+                    direction = "down";
+                    walkingToTable = false;
+                    hasReachedTable = true;
+                } 
+                else if (Math.abs(dx) > speed) {
+                        direction = (dx > 0) ? "right" : "left";
+                } 
+                else if (Math.abs(dy) > speed) {
+                        direction = (dy > 0) ? "down" : "up";
+                }
+            }
+        else {
+        }
 
         // actionLockCounter++;
 
@@ -62,6 +85,10 @@ public class Emily extends NPC{
 
     public void speak() {
         super.speak();
+
+        if (dialogueIndex == 0 && !hasReachedTable) {
+            walkingToTable = true;
+        }
     }
 
     public void interactWithTable() {
