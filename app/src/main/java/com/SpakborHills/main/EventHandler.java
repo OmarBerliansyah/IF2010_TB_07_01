@@ -174,7 +174,7 @@ public class EventHandler {
             }
 
             // Interact with Bed
-            else if (hit(2, 6, 11, "any") == true) {                
+            else if (hit(2, 6, 9, "any") == true) {                
                 if(!gp.ui.showingSleepConfirmDialog){
                     canTouchEvent = false;
                     gp.gameState = gp.dialogueState;
