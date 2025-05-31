@@ -586,6 +586,10 @@ public class Player extends Entity{
             }
         }
         else if (currentTool instanceof OBJ_WateringCan) {
+            if(gp.eManager.getCurrentWeather() == Weather.RAINY) {
+                gp.ui.addMessage("It's raining! No need to water the crops.");
+                return;
+            }
             switch(direction) {
                 case "up":
                     // Tile di atas area solid pemain
@@ -986,12 +990,14 @@ public class Player extends Entity{
 
     public void watering(){
         spriteCounter++;
+
         if(spriteCounter <= 5){
             spriteNum = 1;
         }
+
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            if(!tillWithoutEnergy && gp.eManager.getCurrentWeather() != Weather.RAINY){
+            if(!tillWithoutEnergy ){
                 // Tentukan tile yang akan diolah berdasarkan arah pemain
                 int targetCol = 0;
                 int targetRow = 0;
@@ -1027,10 +1033,10 @@ public class Player extends Entity{
                         // gp.playSE(indeksSuaraWatering);
                     }
                 }
-            } else if (gp.eManager.getCurrentWeather() == Weather.RAINY) {
-                gp.ui.addMessage("It's raining! No need to water the crops.");
             } 
         }
+
+
         if(spriteCounter > 25){
             spriteNum = 1;
             spriteCounter = 0;
