@@ -819,15 +819,13 @@ public class Player extends Entity{
                 }
 
                 if (targetCol >= 0 && targetRow >= 0 && targetCol < gp.tileM.mapCols[gp.currentMap] && targetRow < gp.tileM.mapRows[gp.currentMap] && energy >= 5) {
-                    gp.ui.addMessage("CONDITION PASSED - PLANTING NOW!");
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
-                    gp.ui.addMessage("Current tile at target: " + tileNumAtTarget);
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 9; // 9 = TilledSoil
-                        gp.ui.addMessage(""+plantingSeedItem);
+                        // gp.ui.addMessage(""+plantingSeedItem);
                         if (plantingSeedItem != null){
                             Entity seed = plantingSeedItem.item.copy();
-                            gp.ui.addMessage(seed.name);
+                            
 
                             SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
                             if (soilTile == null) {
@@ -839,12 +837,7 @@ public class Player extends Entity{
                             soilTile.isSeedPlanted = true;
                             soilTile.seedType = plantingSeedItem.item.name;
                             soilTile.plantedDay = gp.eManager.getDayCount();
-                            System.out.println("cek");
-                            gp.ui.addMessage("Seed planted at: (" + targetCol + "," + targetRow + ")");
-                            gp.ui.addMessage("Seed type: " + soilTile.seedType);
-                            gp.ui.addMessage("Planted day: " + soilTile.plantedDay);
-                            gp.ui.addMessage("Current day: " + gp.eManager.getDayCount());
-                            gp.ui.addMessage("Planted SoilTile" + soilTile);
+                            
 
                             //plantingSeedItem = null;
                         } else {
@@ -985,7 +978,7 @@ public class Player extends Entity{
         }
         if(spriteCounter > 5 && spriteCounter <= 25){
             spriteNum = 2;
-            if(!tillWithoutEnergy){
+            if(!tillWithoutEnergy && gp.eManager.getCurrentWeather() != Weather.RAINY){
                 // Tentukan tile yang akan diolah berdasarkan arah pemain
                 int targetCol = 0;
                 int targetRow = 0;
@@ -1021,7 +1014,9 @@ public class Player extends Entity{
                         // gp.playSE(indeksSuaraWatering);
                     }
                 }
-            }
+            } else if (gp.eManager.getCurrentWeather() == Weather.RAINY) {
+                gp.ui.addMessage("It's raining! No need to water the crops.");
+            } 
         }
         if(spriteCounter > 25){
             spriteNum = 1;
@@ -1665,6 +1660,7 @@ public class Player extends Entity{
         if (equippedItem.isEdible) {
             this.energy += equippedItem.plusEnergy;
             if (this.energy > 100) this.energy = 100;
+            gp.eManager.addMinutesToTime(5);
 
             gp.ui.addMessage("Ate " + equippedItem.name + " and restored " + equippedItem.plusEnergy + " energy!");
 

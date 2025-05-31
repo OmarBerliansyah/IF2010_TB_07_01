@@ -436,7 +436,7 @@ public class Lighting {
         textY+=lineSpacing;
         g2.drawString(stateStr, textX, textY);
 
-        if(currentWeather == Weather.RAINY && rainGif != null && rainGifImage != null){
+        if(currentWeather == Weather.RAINY && rainGif != null && rainGifImage != null && gp.currentMap != 2 && gp.currentMap != 5 && gp.currentMap != 6 && gp.currentMap != 7 && gp.currentMap != 8 && gp.currentMap != 9 && gp.currentMap != 10){
             g2.drawImage(rainGifImage,0,0,gp.screenWidth, gp.screenHeight, null);
         }else{
         }
