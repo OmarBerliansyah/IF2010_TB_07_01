@@ -35,7 +35,6 @@ public class OBJ_Carp extends Entity implements Entity.FishableProperties { // I
         this.availableLocations = EnumSet.of(Location.MOUNTAIN_LAKE, Location.POND); // Lokasi spesifik
         this.availableStartTimes = new ArrayList<>();               // "Any" Time
         this.availableEndTimes = new ArrayList<>();                 // "Any" Time
-        // Jika Anda ingin eksplisit 0-24 untuk "Any Time"
         // this.availableStartTimes.add(0);
         // this.availableEndTimes.add(24);
     }

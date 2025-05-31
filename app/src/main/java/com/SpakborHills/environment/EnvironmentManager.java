@@ -112,20 +112,20 @@ public class EnvironmentManager implements DaySubject {
 
     public String getWeatherName(){
         if( lighting != null) {
-            return lighting.getWeatherName(); // Asumsi getWeatherName() ada di Lighting.java
+            return lighting.getWeatherName();
         }
         return "SUNNY";
     }
 
     // public void incrementDayAndAdvanceWeather() {
     //     if (lighting != null) {
-    //         lighting.incrementDayAndAdvanceWeather(); // Panggil metode yang ada di Lighting.java
+    //         lighting.incrementDayAndAdvanceWeather(); 
     //     }
     // }
 
     public int getDayCount() {
         if (lighting != null) {
-            return lighting.dayCount; // Asumsi dayCount ada di Lighting.java
+            return lighting.dayCount;
         }
         return 0; // Nilai default jika lighting null
     }

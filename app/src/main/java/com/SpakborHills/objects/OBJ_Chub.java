@@ -35,7 +35,6 @@ public class OBJ_Chub extends Entity implements Entity.FishableProperties { // I
         this.availableLocations = EnumSet.of(Location.FOREST_RIVER, Location.MOUNTAIN_LAKE); // Lokasi spesifik
         this.availableStartTimes = new ArrayList<>();               // "Any" Time
         this.availableEndTimes = new ArrayList<>();                 // "Any" Time
-        // Jika Anda ingin eksplisit 0-24 untuk "Any Time" agar lebih jelas pada formula harga
         // this.availableStartTimes.add(0);
         // this.availableEndTimes.add(24);
     }

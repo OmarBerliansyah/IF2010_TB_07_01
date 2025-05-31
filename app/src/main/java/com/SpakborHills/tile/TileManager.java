@@ -323,7 +323,6 @@ public class TileManager {
             // Pastikan tileNum valid dan tile serta image-nya ada
             if (tileNum < 0 || tileNum >= tile.length || tile[tileNum] == null || tile[tileNum].image == null) {
                 // System.err.println("Warning: Tile index " + tileNum + " tidak valid atau gambar null di ("+worldCol+","+worldRow+")");
-                // Anda bisa menggambar tile placeholder atau skip
                 worldCol++;
                 if (worldCol >= maxMapCol) {
                     worldCol = 0;

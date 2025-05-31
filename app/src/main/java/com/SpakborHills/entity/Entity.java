@@ -187,11 +187,10 @@ public class Entity {
         BufferedImage localImage = null;
 
         try {
-            // Pastikan path lengkap ada di imageName, misal "NPC/abibelakang" bukan "NPC/abibelakang.png"
             InputStream is = getClass().getClassLoader().getResourceAsStream(imageName + ".png");
             if (is == null) {
                 System.err.println("ERROR ENTITY: Gambar tidak ditemukan: " + imageName + ".png");
-                return null; // Kembalikan null jika gambar tidak ditemukan
+                return null;
             }
             localImage = ImageIO.read(is);
             localImage = uTool.scaleImage(localImage, width, height);
@@ -221,36 +220,32 @@ public class Entity {
 
         default int getNumHoursFactor() {
         if (getAvailableStartTimes() == null || getAvailableStartTimes().isEmpty()) {
-            return 24; // "Any" time implicitly, but formula expects actual hours.
-                       // For "Any" time, the condition check will pass, for price calc, use 24 if no specific hours.
-                       // However, fish usually have specific hours.
+            return 24; 
         }
         int totalHours = 0;
         for (int i = 0; i < getAvailableStartTimes().size(); i++) {
             int start = getAvailableStartTimes().get(i);
             int end = getAvailableEndTimes().get(i);
-            if (end == 0) end = 24; // Midnight Carp 20:00 - 02:00 means end is effectively next day 2am.
-                                   // Or, treat 00:00 as start of day. Pufferfish 00:00-16:00 is 16 hours.
-                                   // Halibut: 06-11 (5 jam), 19-02 (7 jam) -> 12 jam
+            if (end == 0) end = 24;
             if (end < start) { // Overnight
                 totalHours += (24 - start) + end;
             } else {
                 totalHours += (end - start);
             }
         }
-        return totalHours == 0 ? 24 : totalHours; // if 0, assume "Any" for formula, though rare.
+        return totalHours == 0 ? 24 : totalHours; 
     }
 
         default int getNumWeatherFactor() {
             if (getAvailableWeathers() == null || getAvailableWeathers().isEmpty() || getAvailableWeathers().size() == Weather.values().length) {
-                return 2; // "Any" atau semua weather (Sunny, Rainy)
+                return 2;
             }
             return getAvailableWeathers().size();
         }
 
         default int getNumLocationsFactor() {
             if (getAvailableLocations() == null || getAvailableLocations().isEmpty()) {
-                return 4; // Should not happen, fish always has locations
+                return 4; 
             }
             return getAvailableLocations().size();
         }

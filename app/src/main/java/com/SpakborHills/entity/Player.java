@@ -901,7 +901,6 @@ public class Player extends Entity{
                         } else {
                             gp.ui.addMessage("No seed selected to plant!"); 
                         }
-                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraCangkul);
                     }
                 }
@@ -962,8 +961,7 @@ public class Player extends Entity{
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLABLE) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 8; // 8 = HoedSoil
-                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
-                        // gp.playSE(indeksSuaraCangkul);
+// \\                        // gp.playSE(indeksSuaraCangkul);
                     }
                 }
             }
@@ -1015,7 +1013,6 @@ public class Player extends Entity{
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.TILLED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 0; // 0 = soil
-                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraRecoverLand);
                     }
                 }
@@ -1070,7 +1067,6 @@ public class Player extends Entity{
                     int tileNumAtTarget = gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow]; // Ambil nomor tile di target
                     if (gp.tileM.tile[tileNumAtTarget].tileType == TileType.PLANTED) { // Periksa tipe tile tersebut
                         gp.tileM.mapTileNum[gp.currentMap][targetCol][targetRow] = 10; // 10 = WateredSoil
-                        // Anda mungkin ingin mengurangi energi pemain di sini atau memainkan suara
                         // gp.playSE(indeksSuaraWatering);
                         SoilTile soilTile = gp.tileM.soilMap[gp.currentMap][targetCol][targetRow];
                         if (soilTile != null && soilTile.isSeedPlanted) {
